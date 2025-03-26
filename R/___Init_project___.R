@@ -125,8 +125,7 @@ sapply(
     "waldo",
     "zip"
   ),
-  utils::install.packages,
-  character.only = TRUE
+  function (x) renv::install(x, prompt = FALSE)
 )
 
 # install RUtilpol from GitHub
