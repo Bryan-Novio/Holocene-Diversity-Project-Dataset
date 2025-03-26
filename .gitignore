@@ -37,3 +37,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# BIG data
+Data/Processed/*
+Outputs/Data/*
+Data/Input/Neotoma_download/*
+Outputs/Meta_and_references/reproducibility_bundle.zip
