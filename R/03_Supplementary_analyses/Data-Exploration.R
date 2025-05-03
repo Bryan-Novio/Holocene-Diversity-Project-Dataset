@@ -1,3 +1,5 @@
+# Data Exploration 
+
 
 library(tidyverse)
 library(here)
@@ -448,10 +450,6 @@ data %>%
   relocate(age_range, .after = age_max) %>% 
   unnest(levels) 
 
-   
-  
-data %>% 
-  select(dataset_id, sitename, region, age_min, age_max, levels) %>%
 
 
 
