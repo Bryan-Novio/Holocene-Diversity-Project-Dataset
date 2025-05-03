@@ -1,10 +1,3 @@
-data(dune, package="vegan")
-
-dune
-
-str(dune)
-
-readRDS()
 
 library(tidyverse)
 library(here)
