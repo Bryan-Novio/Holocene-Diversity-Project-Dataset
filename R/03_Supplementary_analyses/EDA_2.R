@@ -1,3 +1,16 @@
+----------------------------------------------------------#
+  #
+  #
+  #             Holocene Diversity Project
+  #
+  #              Data Exploration -2 Script
+  #
+  #               B.V. Novio &  O. Mottl
+  #                        2025
+  #
+  #----------------------------------------------------------#
+  
+
 # Load up dataset & preliminary data processing
 
 library(tidyverse)
@@ -9,7 +22,14 @@ N_hemisphere <- data %>%
   filter(region %in% c("North America", "Europe", "Asia")) %>% 
   relocate(region)
 
-N_hemisphere %>% unnest(levels)
+
+glimpse(N_hemisphere)
+
+N_hemisphere_regions <- 
+  N_hemisphere %>% 
+  distinct(dataset_id, region)
+
+N_hemisphere %>% unnest(raw_counts)
 
 # Estimate richness per each sample within each record (core/dataset) within Northern hemisphere and plot it temporal trends per continent (region).
 
@@ -33,6 +53,8 @@ data_age <- N_hemisphere %>%
   unnest(levels) %>% 
   select(dataset_id,sample_id, age)
 
+data_age
+
 inner_join(data_richness, data_age, by = c("dataset_id", 'sample_id')) %>% 
   ggplot(aes(y = richness , x = age, group = dataset_id)) +
   geom_line() +
@@ -43,14 +65,14 @@ N_hemisphere$levels[[1]]
 
 data_richnes_age <- inner_join(data_richness, data_age, by = c("dataset_id", 'sample_id'))
   
-data_richness_age_region <- inner_join(data_richnes_age, N_hemisphere, by = c("dataset_id"))
+data_richness_age_region <- inner_join(data_richnes_age, N_hemisphere_regions, by = c("dataset_id"))
 
 # temporal trends per region
 
 data_richness_age_region %>% 
   ggplot(aes(y = richness, x = age, color = region)) + 
-  geom_point(color = "black") +
-  geom_smooth(method = "lm", se = FALSE, size = 2) +
+  geom_point() +
+  geom_smooth(method = "gam", se = FALSE, size = 2) +
   theme_classic()
 
 # Binning - sum pollen count per each taxa (across samples) within a specific time period. Make a function to do this
@@ -78,16 +100,18 @@ binned <- inner_join(pollen_counts, data_age,
           arrange(age)  # min age is -75, max age is 19992 (min-max = 20,067/500 = 40.134)
 binned
 
+
+binned_regions <- inner_join(binned, N_hemisphere_regions, by = "dataset_id")
+
+
 #check bins created 
 binned %>% 
   count(BIN) %>% 
   print(n = 41)  
 
-binned
-
 #recode bins to bin nos.
 
-bin_rec <- binned %>% 
+bin_rec <- binned_regions %>% 
   mutate(
     BIN = fct_recode(BIN,
                      "1" = "[-75,425)",
@@ -135,23 +159,13 @@ bin_rec <- binned %>%
 
 bin_rec
 
-binned %>% 
-  mutate(
-    BIN = fct_recode(BIN,
-                     across(every= c(1:41)
-    )
 
-binned %>% 
-  rowwise() %>% 
-  mutate(
-    BIN = fct_recode(BIN, c(1:41)
-    )
-  )
 #convert BIN from fct to dbl
 
 bin_rec2 <- mutate_if(bin_rec, is.factor, ~ as.numeric(as.character(.x)))
 
 bin_rec2
+
 
 #basis of the function
 
@@ -161,35 +175,78 @@ taxa_sum <- bin_rec2 %>%
   summarise(summed_pollen_count = sum(pollen_counts)) %>% 
   arrange(desc(summed_pollen_count))
 
+taxa_sum
+
 #build function
 
-pollen_sum <- function(df, condition,var1,var2){
+pollen_sum <- function(df, condition,var1,var2, var3){
   df %>% 
     filter({{condition}}) %>% 
-    group_by({{var1}}) %>% 
-    summarise(summed_pollen_count = sum({{var2}})) 
+    group_by({{var1}}, {{var2}}) %>% 
+    summarise(summed_pollen_count = sum({{var3}})) 
 }
+
+bin_rec2 %>% pollen_sum(BIN ==2, taxa,region, pollen_counts)
 
 #final function
 
-bin_rec2 %>% pollen_sum(BIN == 34, taxa, pollen_counts)
+sum_pollen_counts_by_bin_by_taxa_region <- function(df, bin) {
+   pollen_sum(df, BIN == bin, taxa, region, pollen_counts)
+}
 
-    
+sum_pollen_counts_by_bin_by_taxa_region(bin_rec2, 2)
+
+
+# loop# 
+
+vec_bins <- 
+   bin_rec2 %>% distinct(BIN) %>% 
+     pull(BIN)
+
+bin_rec3 <- tibble::tibble()
+
+for (x in vec_bins) {
+  res <-
+    bin_rec2 %>% 
+    pollen_sum(BIN == x, taxa,region, pollen_counts) %>% 
+    mutate(BIN = x)
+  
+  bin_rec3 <- 
+    bind_rows(bin_rec3, res)
+}
+
+res
+
+# map
+
+data_binned <-
+vec_bins %>% 
+  purrr::set_names() %>% 
+  purrr::map(
+  .progress = TRUE,
+  .x = .,
+  .f = ~ sum_pollen_counts_by_bin_by_taxa_region(bin_rec2, bin = .x)
+  ) %>% 
+  bind_rows(.id = "BIN")
+
+data_binned
+
+
 # Estimate richness per each 500  year bin within each record (core/dataset) within Northern hemisphere and plot it temporal trends per continent (region). 
 
-binned_region <- inner_join(binned, N_hemisphere, by = c("dataset_id"))
 
+# richness by BIN
 
-binned_data_richness <- binned_region  %>% 
+binned_data_richness <- data_binned  %>% 
   mutate(
-    present = ifelse(pollen_counts >= 1, 1, 0)
+    present = ifelse(summed_pollen_count >= 1, 1, 0)
   ) %>% 
   group_by(BIN, region) %>% 
-  summarize(richness = sum(present, na.rm = TRUE))
+  summarize(richness = sum(present, na.rm = TRUE, .groups = NULL))
 
 #plot by point: BIN 1 -> -75 yrs, BIN 41 -> >20K BP
   
-binned_data_richness %>% 
+binned_data_richness  %>% 
   ggplot(aes(y = richness, x = BIN, color = region)) + 
   geom_point() +
   scale_x_discrete(labels = c(1:41)) +
@@ -200,6 +257,9 @@ binned_data_richness %>%
   ggplot(aes(y = richness, x = as.factor(BIN),color = region, group = region)) + 
   geom_line(aes(color = region, fct_rev(BIN)))+
   scale_x_discrete(labels = c(41:1)) +
+  xlab("Time Bins") +
+  ylab("Richness") + 
+  geom_smooth(method = "gam", se = FALSE, size = 2) +
   theme_classic()
 
 
