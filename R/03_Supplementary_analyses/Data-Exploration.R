@@ -1,8 +1,4 @@
-data(dune, package="vegan")
 
-dune
-
-str(dune)
 
 readRDS()
 
@@ -260,10 +256,6 @@ data %>%
     aes(yend = dataset_id, xend = age_max, x = age_min)
   )
   
-  
-  
-
-  
 
 #Create a new column representing the temporal range and explore its distribution.
 
@@ -455,10 +447,9 @@ data %>%
   relocate(age_range, .after = age_max) %>% 
   unnest(levels) 
 
-   
-  
+ 
 data %>% 
-  select(dataset_id, sitename, region, age_min, age_max, levels) %>%
+  select(dataset_id, sitename, region, age_min, age_max, levels) %
 
 
 
