@@ -43,3 +43,7 @@ Data/Processed/*
 Outputs/Data/*
 Data/Input/Neotoma_download/*
 Outputs/Meta_and_references/reproducibility_bundle.zip
+.Rproj.user
+.Rdata
+.DS_Store
+.quarto
