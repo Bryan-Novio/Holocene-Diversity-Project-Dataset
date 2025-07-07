@@ -57,6 +57,8 @@ write_rds(prep_data_study_1,here("Data/Processed/Other/prep_data_study_1.rds"))
 # 3. Rarefy data ------------------------------------------
 #----------------------------------------------------------#
 
+set.seed(1234)
+
 rarefied_prep_data_study_1 <- prep_data_study_1 %>% 
   rarefy_all_samples_iter(
     data_source =.,

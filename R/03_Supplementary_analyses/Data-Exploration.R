@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 
 
 readRDS()
-=======
-# Data Exploration 
-
->>>>>>> 1e67f913206d2ab1c20c988f213ead9fd88ce440
 
 library(tidyverse)
 library(here)
@@ -452,12 +447,9 @@ data %>%
   relocate(age_range, .after = age_max) %>% 
   unnest(levels) 
 
-<<<<<<< HEAD
  
 data %>% 
   select(dataset_id, sitename, region, age_min, age_max, levels) %
-=======
->>>>>>> 1e67f913206d2ab1c20c988f213ead9fd88ce440
 
 
 

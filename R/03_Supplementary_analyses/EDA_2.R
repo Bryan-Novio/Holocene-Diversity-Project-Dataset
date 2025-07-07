@@ -259,7 +259,7 @@ binned_data_richness %>%
   scale_x_discrete(labels = c(41:1)) +
   xlab("Time Bins") +
   ylab("Richness") + 
-  geom_smooth(method = "gam", se = FALSE, size = 2) +
+  geom_smooth(method = "gam", se = TRUE, size = 2) +
   theme_classic()
 
 

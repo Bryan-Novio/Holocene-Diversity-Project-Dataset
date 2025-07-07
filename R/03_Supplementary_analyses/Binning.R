@@ -60,95 +60,56 @@ data_age <- N_hemisphere %>%
 #--------------------------------------------------#
 
 
-binned <- inner_join(pollen_counts, data_age,
+data_bin <- inner_join(pollen_counts, data_age,
                      by = c("dataset_id", 'sample_id')) %>% 
   mutate(BIN = cut(age, seq(min(age), 
-                            max(age) + 500, 500), right = FALSE))%>% 
+                            max(age) + 500, 500), right = FALSE))%>%            # create BINS
   arrange(age)  # min age is -75, max age is 19992 (min-max = 20,067/500 = 40.134)
-binned
 
 
-binned_regions <- inner_join(binned, N_hemisphere_regions, by = "dataset_id")
+data_bin
+
+
+data_bin_region <- inner_join(data_bin, N_hemisphere_regions, by = "dataset_id") # join binned data with regions
 
 #--------------------------------------------------#
 ## 2.1. Check bins -----
 #--------------------------------------------------#
 
-binned %>% 
+data_bin_region%>% 
   count(BIN) %>% 
   print(n = 41)  
 
-
+levels(data_bin_region$BIN)
 #--------------------------------------------------#
 ## 2.2. Recode bins -----
 #--------------------------------------------------#
 
 
-bin_rec <- binned_regions %>% 
-  mutate(
-    BIN = fct_recode(BIN,
-                     "1" = "[-75,425)",
-                     "2" = "[425,925)",
-                     "3" = "[925,1.42e+03)",
-                     "4" = "[1.42e+03,1.92e+03)",
-                     "5" = "[1.92e+03,2.42e+03)",
-                     "6" = "[2.42e+03,2.92e+03)",
-                     "7" = "[2.92e+03,3.42e+03)",
-                     "8" = "[3.42e+03,3.92e+03)",
-                     "9" = "[3.92e+03,4.42e+03)",
-                     "10" = "[4.42e+03,4.92e+03)",
-                     "11" = "[4.92e+03,5.42e+03)",
-                     "12" = "[5.42e+03,5.92e+03)",
-                     "13" = "[5.92e+03,6.42e+03)",
-                     "14" = "[6.42e+03,6.92e+03)",
-                     "15" = "[6.92e+03,7.42e+03)",
-                     "16" = "[7.42e+03,7.92e+03)",
-                     "17" = "[7.92e+03,8.42e+03)",
-                     "18" = "[8.42e+03,8.92e+03)",
-                     "19" = "[8.92e+03,9.42e+03)",
-                     "20" = "[9.42e+03,9.92e+03)",
-                     "21" = "[9.92e+03,1.04e+04)",
-                     "22" = "[1.04e+04,1.09e+04)",
-                     "23" = "[1.09e+04,1.14e+04)",
-                     "24" = "[1.14e+04,1.19e+04)",
-                     "25" = "[1.19e+04,1.24e+04)",
-                     "26" = "[1.24e+04,1.29e+04)",
-                     "27" = "[1.29e+04,1.34e+04)",
-                     "28" = "[1.34e+04,1.39e+04)",
-                     "29" = "[1.39e+04,1.44e+04)",
-                     "30" = "[1.44e+04,1.49e+04)",
-                     "31" = "[1.49e+04,1.54e+04)",
-                     "32" = "[1.54e+04,1.59e+04)",
-                     "33" = "[1.59e+04,1.64e+04)",
-                     "34" = "[1.64e+04,1.69e+04)",
-                     "35" = "[1.69e+04,1.74e+04)",
-                     "36" = "[1.74e+04,1.79e+04)",
-                     "37" = "[1.79e+04,1.84e+04)",
-                     "38" = "[1.84e+04,1.89e+04)",
-                     "39" = "[1.89e+04,1.94e+04)",
-                     "40" = "[1.94e+04,1.99e+04)",
-                     "41" = "[1.99e+04,2.04e+04)")
-  )
 
-bin_rec
+data_bin_rec <- data_bin_region %>% 
+  mutate(BIN_chr = as.character(BIN)) %>% 
+  mutate(BIN_fct = as.factor(BIN_chr)) %>% 
+  mutate(BIN_int = as.numeric(BIN_fct) %>% 
+           as.factor()) 
+
+levels(data_bin_rec$BIN_int)
+
+data_bin_rec
 
 #--------------------------------------------------#
 ## 2.3. Convert BIN from fct to dbl -----
 #--------------------------------------------------#
 
-# 
 
-bin_rec2 <- mutate_if(bin_rec, is.factor, ~ as.numeric(as.character(.x)))
+data_bin_rec2 <- mutate_if(data_bin_rec, is.factor, ~ as.numeric(as.character(.x))) 
 
-bin_rec2
-
+data_bin_rec2_clean <- data_bin_rec2 %>% select(!BIN)%>% select(!BIN_fct) %>% rename(BIN = BIN_int)
 
 
 #--------------------------------------------------#
 ## 3. Build function -----
 #--------------------------------------------------#
-
-
 
 pollen_sum <- function(df, condition,var1,var2, var3){
   df %>% 
@@ -157,7 +118,7 @@ pollen_sum <- function(df, condition,var1,var2, var3){
     summarise(summed_pollen_count = sum({{var3}})) 
 }
 
-bin_rec2 %>% pollen_sum(BIN ==2, taxa,region, pollen_counts)
+data_bin_rec2_clean %>% pollen_sum(BIN ==2, taxa,region, pollen_counts)
 
 
 
@@ -170,48 +131,57 @@ sum_pollen_counts_by_bin_by_taxa_region <- function(df, bin) {
   pollen_sum(df, BIN == bin, taxa, region, pollen_counts)
 }
 
-sum_pollen_counts_by_bin_by_taxa_region(bin_rec2, 2)
+sum_pollen_counts_by_bin_by_taxa_region(data_bin_rec2_clean, 2)
 
 
 #--------------------------------------------------#
-## 3.2. Creat loop -----
+## 3.2.1 Create loop -----
 #--------------------------------------------------#
 
 
-vec_bins <- 
-  bin_rec2 %>% distinct(BIN) %>% 
+data_bin_vec <- 
+  data_bin_rec2_clean %>% distinct(BIN) %>% 
   pull(BIN)
 
-bin_rec3 <- tibble::tibble()
 
-for (x in vec_bins) {
+data_bin_rec3 <- tibble::tibble()
+
+res <- tibble::tibble()
+
+for (x in data_bin_vec) {
   res <-
-    bin_rec2 %>% 
+    data_bin_rec2_clean %>% 
     pollen_sum(BIN == x, taxa,region, pollen_counts) %>% 
     mutate(BIN = x)
   
-  bin_rec3 <- 
-    bind_rows(bin_rec3, res)
+  data_bin_rec3 <- 
+    bind_rows(data_bin_rec3, res)
 }
+
 
 res
 
 
+write_rds(res, here("Data/Processed/res.rds"))
 #--------------------------------------------------#
-# 4. Map -----
+# 3.2.2. Map -----
 #--------------------------------------------------#
 
-data_binned <-
-  vec_bins %>% 
+data_bin_2 <-
+  data_bin_vec %>% 
   purrr::set_names() %>% 
   purrr::map(
     .progress = TRUE,
     .x = .,
-    .f = ~ sum_pollen_counts_by_bin_by_taxa_region(bin_rec2, bin = .x)
+    .f = ~ sum_pollen_counts_by_bin_by_taxa_region(data_bin_rec2_clean, bin = .x)
   ) %>% 
   bind_rows(.id = "BIN")
 
-data_binned
+
+data_bin_2
+
+
+write_rds(data_bin_2,here("Data/Processed/data_bin_2.rds"))
 
 
 

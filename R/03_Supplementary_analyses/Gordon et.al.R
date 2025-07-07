@@ -41,7 +41,7 @@ sapply(
 
 set.seed(1234)
 
-prep_data_study3 <- data %>% 
+prep_data_study_3 <- data %>% 
   filter(region == "North America") %>% 
   get_pollen_counts_with_ages() %>% 
   bin_data(bin_size = 500) %>% 
@@ -53,8 +53,8 @@ write_rds(prep_data_study_3,here("Data/Processed/Other/prep_data_study_3.rds"))
 # 3. Rarefy data ------------------------------------------
 #----------------------------------------------------------#
 
-rarefied_prep_data_study3 <- 
-  prep_data_study3 %>%  
+rarefied_prep_data_study_3 <- 
+  prep_data_study_3 %>%  
   rarefy_all_samples_iter(
     data_source =.,
     n_grains = 300,
