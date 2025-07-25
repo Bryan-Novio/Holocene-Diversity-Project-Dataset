@@ -15,6 +15,7 @@
 
 library(tidyverse)
 library(here)
+library(dplyr)
 
 
 data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
@@ -51,7 +52,7 @@ prep_data_study_1 <- data %>%
   mutate(sample_id = paste0(dataset_id,"-",age)) 
 
 
-write_rds(prep_data_study_1,here("Data/Processed/Other/prep_data_study_1.rds"))
+write_rds(prep_data_study_1,here("Outputs/Data/paper_1_study_1/prep_data_study_1.rds"))
 
 #----------------------------------------------------------#
 # 3. Rarefy data ------------------------------------------
@@ -66,21 +67,23 @@ rarefied_prep_data_study_1 <- prep_data_study_1 %>%
     n_iter = 10) %>% 
     separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)
  
-write_rds(rarefied_prep_data_study_1,here("Data/Processed/Other/rarefied_prep_data_study_1.rds"))
+write_rds(rarefied_prep_data_study_1,here("Outputs/Data/paper_1_study_1/prep_data_study_1_rarefied_not_harmonized.rds"))
 
 #----------------------------------------------------------#
 # 4. Estimate richness  -----------------------------------
 #----------------------------------------------------------# 
-  
-richnesss_estimate_1 <- estimate_richness(rarefied_prep_data_study_1)
-  
+richnesss_estimate_1 <- rarefied_prep_data_study_1 %>% 
+  estimate_richness()
+
 #----------------------------------------------------------#
 # 5. Plot site-based richness with age  -------------------
 #----------------------------------------------------------# 
 
-richnesss_estimate_1 %>% 
+
+plot_1_study_1_not_harmonized <-  richnesss_estimate_1 %>% 
  ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
   theme_classic()
 
+ggsave(here("Outputs/Figures/Paper_1/richness_estimate_study_1_rarefied_not_harmonized.png"), width = 8, height = 6)
