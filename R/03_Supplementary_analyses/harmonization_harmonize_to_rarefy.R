@@ -45,14 +45,14 @@ sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Join datasets with neotoma class, ages, pollen grains
+# 3. Join datasets with neotoma class, ages, pollen grains  using  {join_data_prep_ages_pollen} 
 #----------------------------------------------------------# 
 
-prep_data_study_ages_pollen <- purrr::map(prep_data_study_list, join_data_prep_ages_pollen)
+prep_data_study_ages_pollen <- purrr::map(prep_data_study_list, join_data_prep_ages_pollen) 
   
 prep_data_study_ages_pollen[[1]]
 #----------------------------------------------------------#
-# 4. Create harmonize_taxa function -----------------------
+# 4. Create {harmonize_taxa function} -----------------------
 #----------------------------------------------------------# 
 
 harmonize_taxa <- function(data_to_harmonize, prep_data_study_ages_pollen , level) {
@@ -79,7 +79,7 @@ harmonize_taxa <- function(data_to_harmonize, prep_data_study_ages_pollen , leve
 }
 
 #----------------------------------------------------------#
-# 5. Test harmonize_taxa function at different taxo rank --
+# 5. Test {harmonize_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
 # study dataset 1
@@ -108,240 +108,57 @@ harmonized_data_study_4_species <- harmonize_taxa(prep_data_study_list[[4]], pre
 
 #----------------------------------------------------------#
 # 6. Bin (bin = 500), rarefy (n_grains = 500, n_iter = 10) 
-#    and estimate richness harmonized dataset
+#    and estimate richness harmonized dataset using {bin_rarefy_estimate_richness_harmonized_data }
 #----------------------------------------------------------# 
+bin_rarefy_estimate_richness_harmonized_data <- function(harmonized_data_level){
+  
+  harmonized_data_level %>% 
+    bin_data(500) %>%                      # binning 
+    prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
+    mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
+    rarefy_all_samples_iter(                            # rarefaction
+      data_source =.,
+      n_grains = 500,
+      n_iter = 10) %>% 
+    separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
+    estimate_richness() %>%                             # estimate richness
+    mutate(age = as.numeric(age)) %>% 
+    ggplot(aes(y = richness, x = age)) + 
+    geom_point() +
+    geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
+    theme_classic()
+}
 
 #----------------------------------------------------------#
 # study dataset 1
 #----------------------------------------------------------#
-    # at family level
 
-s1_1 <- harmonized_data_study_1_family %>% 
-  bin_data(1000) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10000) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-    # at genus level
-
-s1_2 <- harmonized_data_study_1_genus %>% 
-  bin_data(1000) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-    # at species level
-
-s1_3 <- harmonized_data_study_1_species %>% 
-  bin_data(1000) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
+s1_1 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1_family)  
+s1_2 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1_genus)
+s1_3 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1_species)
 
 #----------------------------------------------------------#
 # study dataset 2
 #----------------------------------------------------------#
 
-    # at family level
-
-s2_1 <- harmonized_data_study_2_family %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-# at genus level
-
-s2_2 <- harmonized_data_study_2_genus %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-# at species level
-
-s2_3 <- harmonized_data_study_2_species %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
+s2_1 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_2_family)
+s2_2 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_2_genus)
+s2_3 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_2_species)
 
 #----------------------------------------------------------#
 # study dataset 3
 #----------------------------------------------------------#
 
-# at family level
-
-s3_1 <- harmonized_data_study_3_family %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-# at genus level
-
-s3_2 <- harmonized_data_study_3_genus %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-# at species level
-
-s3_3 <- harmonized_data_study_3_species %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
+s3_1 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_3_family )
+s3_2 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_3_genus)
+s3_3 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_3_species)
 #----------------------------------------------------------#
 # study dataset 4
 #----------------------------------------------------------#
 
-# at family level
-
-s4_1 <- harmonized_data_study_4_family %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-# at genus level
-
-s4_2 <- harmonized_data_study_4_genus %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
-# at species level
-
-s4_3 <- harmonized_data_study_4_species %>% 
-  bin_data(500) %>%                      # binning 
-  prepare_data_for_richness_estimation("binned") %>%  # prepare data for richness estimation
-  mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(                            # rarefaction
-    data_source =.,
-    n_grains = 500,
-    n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>%                             # estimate richness
-  mutate(across(where(is.character), as.double)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
-
+s4_1 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_4_family)    
+s4_2 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_4_genus)    
+s4_3 <- bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_4_species)    
 
 #----------------------------------------------------------#
 # 7. Plot all rarefied richness per dataset per taxo rank
@@ -350,10 +167,7 @@ s4_3 <- harmonized_data_study_4_species %>%
 rarefied_richness_dataset_rank  <- ggarrange(s1_1, s1_2, s1_3,
                                              s2_1, s2_2, s2_3,
                                              s3_1, s3_2, s3_3,
-                                             s4_1, s4_2, s4_3,
-                labels = c("s1_f", "s1_g", "s1_s",
-                           "s2_f", "s2_g", "s2_s",
-                           "s3_f", "s3_g", "s3_s",
-                           "s4_f", "s4_g", "s4_s"),
-                ncol = 3, nrow = 4, hjust = -2.5, 
-                font.label = list(size = 9, color ="red"))
+                                             s4_1, s4_2, s4_3, labels = c("A", "B", "C","D", "E", "F","G", "H", "I","J", "K", "L"),
+                                             ncol = 3, nrow = 4, hjust = -2.5, 
+                                             font.label = list(size = 9, color ="red")
+                                             )
