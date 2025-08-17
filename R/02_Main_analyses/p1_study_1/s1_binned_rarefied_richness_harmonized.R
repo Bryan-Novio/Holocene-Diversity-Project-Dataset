@@ -14,17 +14,13 @@ library(tidyverse)
 library(here)
 library(dplyr)
 
-
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-harmonization_table_gen_final <- read_csv(here("Data/Processed/Data_harmonised/harmonization_table_gen_final.csv"), show_col_types = FALSE)
-
-taxa_ref_table <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
-
-prep_data_study_1 <-  read_rds(here("Data/Processed/Other/prep_data_study_1.rds"))
- 
+pollen_data_s1 <-  read_rds(here("Data/Processed/Other/prep_data_study_1.rds"))
+harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
+neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -46,21 +42,18 @@ sapply(
   source
 )
 
-#----------------------------------------------------------#
-# 3. Join data sets with neotoma class, ages, pollen grains  using  {join_data_prep_ages_pollen} 
-#----------------------------------------------------------# 
-
-prep_data_study_1_ages_pollen <- prep_data_study_1 |> 
-  join_data_prep_ages_pollen()
 
 #----------------------------------------------------------#
-# 4. Test {harmonize_taxa} at different taxo rank --
+# 3. Test {harmonize_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
+taxa_level <- c("level_5", "level_6", "level_7") 
+taxa_name <- c("family", "genus", "species")
 
-harmonized_data_study_1_family <- harmonize_taxa(prep_data_study_1, prep_data_study_1_ages_pollen, "level_5")
-harmonized_data_study_1_genus <- harmonize_taxa(prep_data_study_1, prep_data_study_1_ages_pollen, "level_6")
-harmonized_data_study_1_species <- harmonize_taxa(prep_data_study_1, prep_data_study_1_ages_pollen, "level_7")
+# Harmonize taxa at different taxonomic levels
+
+harmonized_data_study_1 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s1, data_ancillary, .x)) %>%
+  set_names(taxa_name)
 
 
 #----------------------------------------------------------#
@@ -72,9 +65,9 @@ harmonized_data_study_1_species <- harmonize_taxa(prep_data_study_1, prep_data_s
 # study data set 1
 #----------------------------------------------------------#
 
-s1_1 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1_family)  
-s1_2 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1_genus)
-s1_3 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1_species)
-#----------------------------------------------------------#
 
+# Bin, rarefy and estimate richness for each taxonomic level
+s1_1 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1$family)  
+s1_2 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1$genus)
+s1_3 <-  bin_rarefy_estimate_richness_harmonized_data(harmonized_data_study_1$species)
 

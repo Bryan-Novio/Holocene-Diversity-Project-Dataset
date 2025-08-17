@@ -23,6 +23,15 @@ prep_data_study_list <- list(
   )
 
 prep_data_study_list[[1]]
+prep_data_study_list[[2]]
+prep_data_study_list[[3]]
+prep_data_study_list[[4]]
+
+
+write.csv(prep_data_study_list[[1]], here("Data/Processed/Other/prep_data_study_1.csv"))
+write.csv(prep_data_study_list[[2]], here("Data/Processed/Other/prep_data_study_2.csv"))
+write.csv(prep_data_study_list[[3]], here("Data/Processed/Other/prep_data_study_3.csv"))
+write.csv(prep_data_study_list[[4]], here("Data/Processed/Other/prep_data_study_4.csv"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
