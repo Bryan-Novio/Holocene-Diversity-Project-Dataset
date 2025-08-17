@@ -53,7 +53,7 @@ binned_data <- purrr::map(harmonized_data, ~ bin_data(.x, 500))
 
 prepared_data_for_richness_estimation <- 
   purrr::map(binned_data, ~ prepare_data_for_richness_estimation(.x, "binned")) %>%
-  purrr::map(~ dplyr::mutate(.x, sample_id = paste0(dataset_id, "-", age)))
+  purrr::map( ~ dplyr::mutate(.x, sample_id = paste0(dataset_id, "-", age)))
 
 #----------------------------------------------------------#
 # Write the binned and prepared_data to RDS files
