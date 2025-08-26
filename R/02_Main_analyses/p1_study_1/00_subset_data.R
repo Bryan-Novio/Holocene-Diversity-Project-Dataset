@@ -8,7 +8,7 @@
 # Europe, site-based richness (dataset_id,age), 1000 bins - 
 # rarefy 500 
 # 
-#               ----HARMONIZATION ----
+#               ---- SUBSETTING DATA  ----
 #----------------------------------------------------------#
 
 library(tidyverse)
@@ -19,9 +19,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-pollen_data_s1 <-  read_rds(here("Outputs/Data/paper_1_study_1/datasub_p1_s1_counts_ages.rds"))
-harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
-neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
+
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -44,18 +43,27 @@ source_files <- sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Test {harmonize_taxa} at different taxo rank --
+# 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
 
-taxa_level <- c("level_5", "level_6", "level_7") 
-taxa_name <- c("family", "genus", "species")
 
-# Harmonize taxa at different taxonomic levels
+data_p1_s1 <- data %>% 
+  filter(region =="Europe") %>%   # sub-setting data to Europe
+  relocate(region)
 
-harmonized_data_study_1 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s1, data_ancillary, .x)) %>%
-  set_names(taxa_name)
+data_p1_s1 %>% filter(between(long, -25,35))                                # 25°W and 35°E long and north of 35°N latitude
 
+data_long <- data_p1_s1 %>% filter(between(long, -25,35))  
+
+
+data_long %>% filter(lat <= 35)
+#####3.1. get pollen counts with ages
+
+data_p1_s1_counts_ages <- data_p1_s1 %>% get_pollen_counts_with_ages() 
+
+data_p1_s1_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
 #----------------------------------------------------------#
-# Write the harmonized data to RDS files
-write_rds(harmonized_data_study_1, here("Outputs/Data/paper_1_study_1/harmonized_data_study_1.rds"))
-#----------------------------------------------------------#
+# 4. Write the subset data to RDS file
+#----------------------------------------------------------# 
+
+write_rds(data_p1_s1_counts_ages, here("Outputs/Data/paper_1_study_1/datasub_p1_s1_counts_ages.rds"))

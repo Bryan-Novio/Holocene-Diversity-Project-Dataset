@@ -4,7 +4,8 @@
 #
 #            Paper01| Method 1: Giesecke et al
 #
-#     
+# Europe, site-based richness (dataset_id,age), 1000 bins - 
+# rarefy 500  
 #                          2019
 #
 # 
@@ -13,44 +14,68 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
-library(mgcv)
 library(broom)
+library(mgcv)
+
+
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
 richness <- read_rds(here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
 
-
 #----------------------------------------------------------#
 # 2. Fit rarefied richness and age to a model --
 #----------------------------------------------------------# 
 
-#3.1. Fit a GLM model:
+##### 2.1. Fit a GLM model - because data distribution is not normal
 
-model_fam <- glm(richness ~ age, data = richness$family) #family
-model_gen <- glm(richness ~ age, data = richness$genus) #genus
-model_sp <- glm(richness ~ age, data = richness$species) #species
+model_glm <- purrr::map(richness, ~ stats::glm (data =., richness ~ age))
 
-# model results - GLM
+### 2.1.1. Tabulate GLM model results 
 
-model_fam_study_1 <- tidy(model_fam) #family
-model_gen_study_1 <- tidy(model_gen) #genus
-model_sp_study_1 <- tidy(model_sp) #species 
+model_glm_results <-  purrr::map(model_glm, ~ tidy(., conf.int = TRUE, conf.level = 0.95))
+
+### 2.1.2.  Plot model and some  diagnostics
+
+plot(model_glm$family)
+plot(model_glm$genus)
+plot(model_glm$species)
 
 #----------------------------------------------------------#
-# 3.2. Fit a GAM model:
 
-model_fam_gam <- gam(richness ~ age, data = richness$family, method = 'REML') #family
-model_gen_gam <- gam(richness ~ age, data = richness$genus, method = 'REML') #genus
-model_sp_gam <- gam(richness ~ age, data = richness$species, method = 'REML') #species
+##### 2.2. Fit a GAM model # gam() fucntion # lower GCV score ~ better fit
 
-#model results - GAM
-summary(model_fam_gam) #family
-summary(model_gen_gam) #genus
-summary(model_sp_gam) #species
+model_gam <- purrr::map(richness, ~ mgcv::gam(data =., richness ~ age), method = 'REML')
 
-plot(model_fam_gam,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2) #family
-plot(model_gen_gam,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2) #genus
-plot(model_sp_gam,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2)  #species
+model_gam_fam <-  gam(richness ~ age,  data = richness$family, method = 'REML')
+model_gam_gen <-  gam(richness ~ age,  data = richness$genus, method = 'REML')
+model_gam_sp <-  gam(richness ~ age,  data = richness$species, method = 'REML')
+
+### 2.2.1. Tabulate GAM model results 
+
+model_gam_results <-  purrr::map(model_gam, ~ summary(.))
+
+### 2.2.2.  Plot GAM model
+
+plot(model_gam_fam, pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2) 
+plot(model_gam_gen,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2) 
+plot(model_gam_sp,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2)  
+
+#----------------------------------------------------------#
+
+##### 2.3. Fit a BAM model # bam() function ( as in Gordon et al) using cr [cubic regression spline], if k - higher more wiggly
+
+bs <-  "cr"; k <- 12
+
+model_bam <- purrr::map (richness, ~ mgcv::bam(data = ., richness ~ s(age, bs=bs, k=k), method = "REML"))
+
+### 2.3.1. Tabulate BAM model results 
+
+model_bam_results <-  purrr::map(model_bam, ~ summary(.))
+
+### 2.3.2.  Plot BAM model
+
+plot(model_bam$family, pages =1, rug = FALSE, seWithMean=TRUE)
+plot(model_bam$genus, pages =1, rug = FALSE, seWithMean=TRUE)
+plot(model_bam$species, pages =1, rug = FALSE, seWithMean=TRUE)

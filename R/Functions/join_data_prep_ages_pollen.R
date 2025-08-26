@@ -3,6 +3,6 @@ join_data_prep_ages_pollen <- function(data_prepared) {   # function to join pre
   data_prepared %>%
     rename(taxon_name = taxa) %>% 
     inner_join(neotoma_taxa, by = "taxon_name") %>% 
-    select(dataset_id, age, pollen_grains, sample_id, neotoma_names) %>% 
+    select(dataset_id, age, pollen_counts, sample_id, neotoma_names) %>% 
     rename(taxon_name = neotoma_names)
 }

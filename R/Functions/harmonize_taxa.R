@@ -22,7 +22,7 @@ harmonize_taxa <- function(data_to_harmonize, data_ancillary, level) {
     select(taxon_name, level_5, level_6, level_7, level_8) %>%
     inner_join(prep_data_study_ages_pollen, by = "taxon_name", relationship = "many-to-many") %>%
     group_by(dataset_id, sample_id, age, !!taxa_level) %>%
-    summarize(pollen_sum = sum(pollen_grains), .groups = "drop") %>% 
+    summarize(pollen_sum = sum(pollen_counts), .groups = "drop") %>% 
     rename(taxa = starts_with("level_")) %>% 
     rename(pollen_counts = pollen_sum) %>% 
     drop_na()

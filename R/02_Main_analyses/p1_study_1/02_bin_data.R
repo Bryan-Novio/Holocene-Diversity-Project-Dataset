@@ -3,7 +3,8 @@
 #
 #            Paper01| Method 1: Giesecke et al
 #
-#     
+# Europe, site-based richness (dataset_id,age), 1000 bins - 
+# rarefy 500 
 #                          2019
 #
 # 
@@ -12,7 +13,6 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
@@ -35,7 +35,7 @@ fun_list <-
 
 # Load the function into the global environment
 
-sapply(
+source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -47,7 +47,7 @@ sapply(
 
 # Bin  data 
 
-binned_data <- purrr::map(harmonized_data, ~ bin_data(.x, 500)) 
+binned_data <- purrr::map(harmonized_data, ~ bin_data(.x, 1000)) 
 
 # Prepare data for richness estimation
 

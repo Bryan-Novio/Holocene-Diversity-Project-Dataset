@@ -3,7 +3,9 @@
 #
 #            Paper01| Method 1: Giesecke et al
 #
-#     
+#
+# Europe, site-based richness (dataset_id,age), 1000 bins - 
+# rarefy 500 
 #                          2019
 #
 # 
@@ -12,7 +14,6 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
@@ -35,7 +36,7 @@ fun_list <-
 
 # Load the function into the global environment
 
-sapply(
+source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -51,5 +52,6 @@ rarefied_data <- purrr::map(prepared_data_for_richness_estimation, ~ rarefy_all_
 
 #----------------------------------------------------------#
 # Write the rarefied data to an RDS file
+
 write_rds(rarefied_data, here("Outputs/Data/paper_1_study_1/rarefied_data_study_1.rds"))
 #----------------------------------------------------------#
