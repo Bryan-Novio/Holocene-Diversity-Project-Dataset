@@ -3,7 +3,8 @@
 #
 #            Paper01| Method 1: Giesecke et al
 #
-#     
+# Europe, site-based richness (dataset_id,age), 1000 bins - 
+# rarefy 500 
 #                          2019
 #
 # 
@@ -35,7 +36,7 @@ fun_list <-
 
 # Load the function into the global environment
 
-sapply(
+source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
