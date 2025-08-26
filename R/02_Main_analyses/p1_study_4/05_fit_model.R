@@ -43,6 +43,9 @@ model_sp_study_1 <- tidy(model_sp) #species
 #----------------------------------------------------------#
 # 3.2. Fit a GAM model:
 
+
+###### use gam function
+
 model_fam_gam <- gam(richness ~ age, data = richness$family, method = 'REML') #family
 model_gen_gam <- gam(richness ~ age, data = richness$genus, method = 'REML') #genus
 model_sp_gam <- gam(richness ~ age, data = richness$species, method = 'REML') #species
@@ -55,4 +58,12 @@ summary(model_sp_gam) #species
 plot(model_fam_gam,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2) #family
 plot(model_gen_gam,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2) #genus
 plot(model_sp_gam,pages=1,residuals=TRUE,all.terms=TRUE,shade=TRUE,shade.col=2)  #species
+
+##### use bam function( as in Gordon et al)
+
+bs <-  "cr"; k <- 12
+b <- bam(richness ~ s(age, bs=bs, k=k), data = richness$family, method = "GCV.Cp") # method 1
+plot(b, pages =1 , rug=FALSE)
+plot(b, pages = 1, rug=FALSE, seWithMean = TRUE)
+summary(b)
 

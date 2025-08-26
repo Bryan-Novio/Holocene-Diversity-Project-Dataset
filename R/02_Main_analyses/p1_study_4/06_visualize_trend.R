@@ -16,6 +16,7 @@ library(tidyverse)
 library(here)
 library(dplyr)
 library(ggplot2)
+library(ggpubr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
@@ -28,22 +29,21 @@ richness <- read_rds(here("Outputs/Data/paper_1_study_4/richness_data_study_4.rd
 #----------------------------------------------------------# 
 
 # 2.1. GLM model:
-
-richness$family %>%                           #family
+p1 <- richness$family %>%                           #family
   mutate(age = as.numeric(age)) %>% 
   ggplot(aes(y = richness, x = age)) + 
   geom_point() +
   geom_smooth(method = "glm", se = TRUE, linewidth = 0.5,) +
   theme_classic()
 
-richness$genus %>%                           #genus
+p2 <- richness$genus %>%                           #genus
   mutate(age = as.numeric(age)) %>% 
   ggplot(aes(y = richness, x = age)) + 
   geom_point() +
   geom_smooth(method = "glm", se = TRUE, linewidth = 0.5,) +
   theme_classic()
 
-richness$species%>%                          #species
+p3 <- richness$species%>%                          #species
   mutate(age = as.numeric(age)) %>% 
   ggplot(aes(y = richness, x = age)) + 
   geom_point() +
@@ -53,24 +53,52 @@ richness$species%>%                          #species
 #----------------------------------------------------------#
 # 2.2. GAM model:
 
-richness$family %>%                     #family
+p4 <- richness$family %>%                     #family
   mutate(age = as.numeric(age)) %>% 
   ggplot(aes(y = richness, x = age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
   theme_classic()
 
-richness$genus %>%                      #genus
+p5 <- richness$genus %>%                      #genus
   mutate(age = as.numeric(age)) %>% 
   ggplot(aes(y = richness, x = age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
   theme_classic()
 
-richness$species%>%                     #species
+p6 <- richness$species%>%                     #species
   mutate(age = as.numeric(age)) %>% 
   ggplot(aes(y = richness, x = age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
   theme_classic()
+
+
+#----------------------------------------------------------#
+# 2.3. combine model plots
+
+p7 <- richness$family %>%
+  mutate(age = as.numeric(age)) %>%
+  ggplot(aes(y = richness, x = age)) +
+  geom_point() +
+  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5, aes(color = "GLM")) +
+  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5, aes(color = "GAM")) 
+
+
+p8 <- richness$genus %>%
+  mutate(age = as.numeric(age)) %>%
+  ggplot(aes(y = richness, x = age)) +
+  geom_point() +
+  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5, aes(color = "GLM")) +
+  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5, aes(color = "GAM"))
+
+p9 <- richness$species %>%
+  mutate(age = as.numeric(age)) %>%
+  ggplot(aes(y = richness, x = age)) +
+  geom_point() +
+  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5, aes(color = "GLM")) +
+  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5, aes(color = "GAM")) 
+
+p10 <- ggarrange(p7,p8,p9, common.legend = TRUE, nrow = 1, labels="auto", label.y = 1)
 

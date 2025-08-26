@@ -36,7 +36,7 @@ fun_list <-
 
 # Load the function into the global environment
 
-sapply(
+source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
