@@ -22,7 +22,7 @@ library(dplyr)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-pollen_data_s2 <-  read_rds(here("Data/Processed/Other/prep_data_study_2.rds"))
+pollen_data_s2 <-  read_rds(here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
 harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
 neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
@@ -60,5 +60,6 @@ harmonized_data_study_2 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
+
 write_rds(harmonized_data_study_2, here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
 #----------------------------------------------------------#

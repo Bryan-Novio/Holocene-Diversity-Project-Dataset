@@ -57,5 +57,6 @@ harmonized_data_study_1 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
+
 write_rds(harmonized_data_study_1, here("Outputs/Data/paper_1_study_1/harmonized_data_study_1.rds"))
 #----------------------------------------------------------#

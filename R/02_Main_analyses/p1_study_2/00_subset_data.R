@@ -1,6 +1,7 @@
 #----------------------------------------------------------#
 #               Holocene Diversity Project
 #
+#
 #            Paper01| Method 2: Simova et al
 #
 #                       
@@ -8,18 +9,19 @@
 # North America, site-based richness (dataset_id,age, 
 # 1000 bins - rarefy 400 
 #
-#              ---- RICHNESS ESTIMATION ----
+#
+#               ---- SUBSETTING DATA  ----
 #----------------------------------------------------------#
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
+data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
+
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -42,15 +44,32 @@ source_files <- sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank --
+# 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
 
-richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
-  purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
 
+data_p1_s2 <- data %>% 
+  filter(region =="North America") %>%   # sub-setting data to North America
+  relocate(region)
+
+##### 3.2. get pollen counts with ages
+
+data_p1_s2_counts_ages <- data_p1_s2  %>% get_pollen_counts_with_ages() 
+
+data_p1_s2_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+
+
+##### 3.1. filter dataset  to 12ka below
+
+data_p1_s2_counts_ages_12ka <- data_p1_s2_counts_ages %>% 
+  filter(age >= -75 & age <= 12000) %>% 
+  relocate(age)
+
+max(data_p1_s2_counts_ages_12ka$age)
+min(data_p1_s2_counts_ages_12ka$age)
 
 #----------------------------------------------------------#
-# Write the richness data to an RDS file
+# 4. Write the subset data to RDS file
+#----------------------------------------------------------# 
 
-write_rds(richness, here("Outputs/Data/paper_1_study_2/richness_data_study_2.rds"))
-#----------------------------------------------------------#
+write_rds(data_p1_s2_counts_ages_12ka, here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))

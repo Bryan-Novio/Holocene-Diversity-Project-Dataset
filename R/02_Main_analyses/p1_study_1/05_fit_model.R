@@ -17,18 +17,20 @@ library(here)
 library(broom)
 library(mgcv)
 
-
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness <- read_rds(here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
+taxa_richness <- read_rds(here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
+genus_richness <- read_rds(here("Outputs/Data/paper_1_study_1/richness_data_genus_s1.rds"))
 
 #----------------------------------------------------------#
 # 2. Fit rarefied richness and age to a model --
 #----------------------------------------------------------# 
 
 ##### 2.1. Fit a GLM model - because data distribution is not normal
+
+model_glm <- glm(richness ~ age, data = taxa_richness, family = gaussian())
 
 model_glm <- purrr::map(richness, ~ stats::glm (data =., richness ~ age))
 

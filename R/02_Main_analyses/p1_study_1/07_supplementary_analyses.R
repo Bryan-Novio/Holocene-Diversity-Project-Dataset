@@ -10,6 +10,7 @@
 #
 # 
 #               ----SUPPLEMENTARY ANALYSES  ----
+#
 #----------------------------------------------------------#
 
 library(tidyverse)
@@ -20,7 +21,6 @@ library(here)
 #----------------------------------------------------------# 
 
 data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
-
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -46,13 +46,9 @@ source_files <- sapply(
 # 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
 
+# subset pollen data to 25°W and 35°E longitude and north of 35°N latitude
 
-data_p1_s1 <- data %>% 
-  filter(region =="Europe") %>%   # sub-setting data to Europe  - 25°W and 35°E long and north of 35°N latitude
-  relocate(region)
-
-
-data_p1_s1 %>% colnames() # check columns
+data_p1_s1 <- data %>% filter(long >= -25 & long <= 35,lat >= 35) 
 
 
 min(data_p1_s1$lat) #min lat
@@ -61,69 +57,70 @@ max(data_p1_s1$lat) # max lat
 min(data_p1_s1$long) #min long
 max(data_p1_s1$long) # max long
 
-########divide data into sub-regions
-
-data_p1_s1_sub_region <- data_p1_s1 %>%
-  mutate(subregion = case_when(
-    lat > 57 ~ "Boreal",
-    lat < 45 ~ "Meridional/Submeridional",
-    lat == 40 & lat <= 60  ~ "Temperate Oceanic",
-    lat == 40 & lat <= 60 & long >= -11 ~ "Temperate Continental",
-    lat >= 45 & lat <= 47 & long >= -5 & long <= -15 ~ "Alps",
-  )) %>% relocate(subregion, .after = region) %>% drop_na("subregion")
-
-data_p1_s1_sub_region %>% count(subregion) # check subregions
-
-#####3.1. get pollen counts with ages
-
-data_p1_s1_counts_ages <- data_p1_s1 %>% get_pollen_counts_with_ages() 
-
-data_p1_s1_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
-
-                               
-
-
-
-
-#               ----HARMONIZATION ----
 #----------------------------------------------------------#
+# 3. Divide subset data into sub-regions
+#----------------------------------------------------------# 
 
-library(tidyverse)
-library(here)
+# assign data points to sub-regions
+
+data_p1_s1_sub_region <- data_p1_s1  %>%
+  mutate(subregion = case_when(
+    lat > 57 ~ "Boreal", 
+    lat >= 45 & lat <= 47 & long <= 15 & long >= 5 ~ "Alps", 
+    lat < 45 ~ "Meridional/Submeridional", 
+    long < 11 ~ "Temperate Oceanic", 
+    long >= 11 ~ "Temperate Continental"
+  )) %>%
+  relocate(subregion, .after = region) 
+
+# visualize in map
+
+data_p1_s1_sub_region %>% 
+ggplot(aes(x=long, y= lat, color = subregion)) +
+  borders(fill= "gray", colour = "black") +
+  geom_point() +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  coord_quickmap(xlim = c(-25,35), ylim = c(35,75))
+  
+
+data_p1_s1_sub_region %>% count(subregion)# check subregions
+
+
+data_p1_s1_sub_region %>% filter(subregion == "Alps") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Boreal") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Meridional/Submeridional") %>% unnest(levels) %>% relocate(age,sample_id) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Temperate Continental") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Temperate Oceanic") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+
+#----------------------------------------------------------#
+# 4. Get pollen counts with ages
+#----------------------------------------------------------# 
+
+data_p1_s1_subregion_counts_ages <- data_p1_s1_sub_region %>% 
+  get_pollen_counts_with_ages() 
+
+data_p1_s1_subregion_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+
+
+#                   ----HARMONIZATION ----
+#----------------------------------------------------------#
 
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-pollen_data_s1 <-  read_rds(here("Outputs/Data/paper_1_study_1/datasub_p1_s1_counts_ages.rds"))
 harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
 neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
-
-pollen_data_s1 %>% arrange(desc(age)) %>% head(10) # max. age -> 19,810 cal BP
 #----------------------------------------------------------#
-# 2. Load functions ---------------------------------------
-#----------------------------------------------------------#
-
-# Get a vector of general functions
-
-fun_list <-
-  list.files(
-    path = "R/Functions/",
-    pattern = "\\.R$",
-    recursive = TRUE
-  )
-
-# Load the function into the global environment
-
-source_files <- sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
-
-#----------------------------------------------------------#
-# 3. Test {harmonize_taxa} at different taxo rank --
+# 2. Test {harmonize_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
 taxa_level <- c("level_5", "level_6", "level_7") 
@@ -131,122 +128,87 @@ taxa_name <- c("family", "genus", "species")
 
 # Harmonize taxa at different taxonomic levels
 
-harmonized_data_study_1 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s1, data_ancillary, .x)) %>%
+harmonized_data_study <- purrr::map(taxa_level, ~ harmonize_taxa(data_p1_s1_subregion_counts_ages, data_ancillary, .x)) %>%
   set_names(taxa_name)
 
-#----------------------------------------------------------#
-# Write the harmonized data to RDS files
-write_rds(harmonized_data_study_1, here("Outputs/Data/paper_1_study_1/harmonized_data_study_1.rds"))
-#----------------------------------------------------------#
-
+harmonized_data_study$genus
 
 #               ----  BINNING  ----
 #----------------------------------------------------------#
 
-library(tidyverse)
-library(here)
+harmonized_data_study$genus %>% bin_data(1000)
+
+max(harmonized_data_study$genus$age)
 
 #----------------------------------------------------------#
-# 1. Load data set -----------------------------------------
+# 2. Bin data  at different taxo rank --
 #----------------------------------------------------------# 
 
-harmonized_data <- read_rds(here("Outputs/Data/paper_1_study_1/harmonized_data_study_1.rds"))
-
-harmonized_data$genus %>% arrange(desc(age)) %>% head(10) # max. age
-#----------------------------------------------------------#
-# 2. Load functions ---------------------------------------
-#----------------------------------------------------------#
-
-# Get a vector of general functions
-
-fun_list <-
-  list.files(
-    path = "R/Functions/",
-    pattern = "\\.R$",
-    recursive = TRUE
-  )
-
-# Load the function into the global environment
-
-source_files <- sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
-
-#----------------------------------------------------------#
-# 3. Bin data  at different taxo rank --
-#----------------------------------------------------------# 
+# Bin data
 
 
-# Bin  data 
+data_binned <-  harmonized_data_study$genus %>% 
+  mutate(
+    BIN = cut(age, seq(min(age), 
+                      20000, 1000), right = FALSE),
+    BIN_chr = as.character(BIN),
+    BIN_fct = as.factor(BIN_chr),
+    BIN_int = as.factor(as.numeric(BIN_fct)), # recode BINS to integer, then factor) 
+    BIN = BIN_int) %>% 
+  group_by(dataset_id ,sample_id, taxa, BIN, BIN_chr) %>% 
+  summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop")
 
-binned_data <- purrr::map(harmonized_data, ~ bin_data(.x, 1000)) 
+
+
 # Prepare data for richness estimation
 
-prepared_data_for_richness_estimation <- 
-  purrr::map(binned_data, ~ prepare_data_for_richness_estimation(.x, "binned")) %>%
-  purrr::map( ~ dplyr::mutate(.x, sample_id = paste0(dataset_id, "-", age)))
+prepared_data_for_richness_estimation <- data_binned %>% 
+  rename(
+    age = BIN,
+    pollen_grains = summed_pollen_count
+  ) %>% 
+  select(dataset_id, sample_id, age, taxa, pollen_grains) %>% 
+  filter(pollen_grains > 0) %>% 
+  mutate(age = as.numeric(age)  * 1000) 
 
+max(prepared_data_for_richness_estimation$age)
+
+#                    ----RAREFACTION  ----
 #----------------------------------------------------------#
-# Write the binned and prepared_data to RDS files
-write_rds(binned_data, here("Outputs/Data/paper_1_study_1/binned_data_study_1.rds"))
-write_rds(prepared_data_for_richness_estimation, here("Outputs/Data/paper_1_study_1/prepared_data_for_richness_estimation_study_1.rds"))
-
-
-#----RAREFACTION  ----
-  #----------------------------------------------------------#
   
-library(tidyverse)
-library(here)
-
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_1/prepared_data_for_richness_estimation_study_1.rds"))
-
-prepared_data_for_richness_estimation$genus %>% arrange(desc(age)) %>% head(10) # max. age
-#----------------------------------------------------------#
-# 2. Load functions ---------------------------------------
-#----------------------------------------------------------#
-
-# Get a vector of general functions
-
-fun_list <-
-  list.files(
-    path = "R/Functions/",
-    pattern = "\\.R$",
-    recursive = TRUE
-  )
-
-# Load the function into the global environment
-
-source_files <- sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
+prepared_data_for_richness_estimation %>% arrange(desc(age)) %>% head(10) # max. age
 
 #----------------------------------------------------------#
-# 3. Rarefy data  at different taxo rank --
+# 2. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-rarefied_data <- purrr::map(prepared_data_for_richness_estimation, ~ rarefy_all_samples_iter(
-  data_source =.,n_grains = 500, n_iter = 10)) %>% 
-  purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
+all_samples <- unique(prepared_data_for_richness_estimation$sample_id)
+
+# Apply rarefaction to all samples
+
+results_list <- map(
+  .x = all_samples,
+  .f = ~ rarefy_pollen_grains_samp_iter(
+    data_source = prepared_data_for_richness_estimation ,
+    sample_id = .x,
+    n_grains = 500,
+    n_iter = 1),
+  .progress = "TRUE")
+
+results <- dplyr::bind_rows(results_list) %>%  # rarefied richness
+  as_tibble()
+
+age <- prepared_data_for_richness_estimation %>% select(age, sample_id) # get age
+
+results_age_rarefied <- left_join(results, age, by ="sample_id", multiple = "any") # add age col to rarefied richness
 
 
+#                 ---- RICHNESS ESTIMATION ----            #
 #----------------------------------------------------------#
-# Write the rarefied data to an RDS file
-
-write_rds(rarefied_data, here("Outputs/Data/paper_1_study_1/rarefied_data_study_1.rds"))
-#----------------------------------------------------------#
-
-
-#---- RICHNESS ESTIMATION ----
-  #----------------------------------------------------------#
-  
-  library(tidyverse)
-library(here)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
@@ -255,230 +217,179 @@ library(here)
 rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_1/rarefied_data_study_1.rds"))
 
 #----------------------------------------------------------#
-# 2. Load functions ---------------------------------------
-#----------------------------------------------------------#
-
-# Get a vector of general functions
-
-fun_list <-
-  list.files(
-    path = "R/Functions/",
-    pattern = "\\.R$",
-    recursive = TRUE
-  )
-
-# Load the function into the global environment
-
-source_files <- sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
-
-#----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank --
+# 2. Estimate richness  at different taxo rank --
 #----------------------------------------------------------# 
 
-richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
-  purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
+richness <- results_age_rarefied %>%    # subregion richness
+  mutate(present = ifelse(avg_n_pollen_grains >= 1, 1, 0)) %>% 
+  group_by(dataset_id,age, sample_id) %>% 
+  summarize(richness = sum(present, na.rm = TRUE, .groups = NULL))
 
 
-#----------------------------------------------------------#
-# Write the richness data to an RDS file
-write_rds(richness, here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
-#----------------------------------------------------------#
-
-
-#---- TREND VISUALIZATION ----
-  #----------------------------------------------------------#
+data_subregion <- data_p1_s1_sub_region  %>% unnest(levels) %>%  select(subregion, sample_id)
   
-  library(tidyverse)
-library(here)
-library(ggplot2)
-library(ggpubr)
-library(mgcv)
+richness_subregion <- left_join(richness, data_subregion, by ="sample_id") 
 
-#----------------------------------------------------------#
-# 1. Load data set -----------------------------------------
-#----------------------------------------------------------# 
+min(richness_subregion$age)
+max(richness_subregion$age)
 
-richness <- read_rds(here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
+# compute median richness
 
-#----------------------------------------------------------#
-# 2. Visualize trends --
-#----------------------------------------------------------# 
-
-# 2.1. GLM model:
-
-model_gen_glm <- glm(richness ~ age, data = richness$species)
-model_gen_glm <- glm(richness ~ age, data = richness$genus)
-model_gen_glm <- glm(richness ~ age, data = richness$species)
-
-###### family
-
-
-## 2.1.1. Data frame for predictions
-
-new_data <- with(richness$family, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# 2.1.2. Predict the values and standard errors on the response scale
-
-predictions <- predict(model_gen_glm, new_data, se.fit = TRUE, type = "response")
-
-# 2.1.3. Add predictions and confidence intervals to the new data frame
-
-new_data$fit <- predictions$fit
-new_data$lwr <- predictions$fit - 1.96 * predictions$se.fit
-new_data$upr <- predictions$fit + 1.96 * predictions$se.fit
-
-# 2.1.4. Plot the results using ggplot2
-
-ggplot(new_data, aes(x = age, y = fit)) +
-  geom_point(data = richness$family, aes(y = richness), alpha = 0.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
-  geom_line(color = "blue", linewidth = 1) +
-  labs(
-    x = "Age",
-    y = "Predicted Richness"
+median_richness_data <- richness_subregion  %>%
+  group_by(age, subregion) %>%
+  summarise(
+    median_richness = median(richness, na.rm = TRUE),
+    .groups = "drop"
   )
 
-
-###### genus
-
-## 2.1.1. Data frame for predictions
-
-new_data <- with(richness$genus, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# 2.1.2. Predict the values and standard errors on the response scale
-
-predictions <- predict(model_gen_glm, new_data, se.fit = TRUE, type = "response")
-
-# 2.1.3. Add predictions and confidence intervals to the new data frame
-
-new_data$fit <- predictions$fit
-new_data$lwr <- predictions$fit - 1.96 * predictions$se.fit
-new_data$upr <- predictions$fit + 1.96 * predictions$se.fit
-
-# 2.1.4. Plot the results using ggplot2
-
-ggplot(new_data, aes(x = age, y = fit)) +
-  geom_point(data = richness$genus, aes(y = richness), alpha = 0.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
-  geom_line(color = "blue", linewidth = 1) +
-  labs(
-    x = "Age",
-    y = "Predicted Richness"
-  )
-
-###### species
+median_richness_15k <- median_richness_data %>% filter(age <= 15000)
 
 
-## 2.1.1. Data frame for predictions
+## same
 
-new_data <- with(richness$species, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# 2.1.2. Predict the values and standard errors on the response scale
-
-predictions <- predict(model_gen_glm, new_data, se.fit = TRUE, type = "response")
-
-# 2.1.3. Add predictions and confidence intervals to the new data frame
-
-new_data$fit <- predictions$fit
-new_data$lwr <- predictions$fit - 1.96 * predictions$se.fit
-new_data$upr <- predictions$fit + 1.96 * predictions$se.fit
-
-# 2.1.4. Plot the results using ggplot2
-
-ggplot(new_data, aes(x = age, y = fit)) +
-  geom_point(data = richness$species, aes(y = richness), alpha = 0.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
-  geom_line(color = "blue", linewidth = 1) +
-  labs(
-    x = "Age",
-    y = "Predicted Richness"
-  )
-
-
-# 2.2. GAM model:
-
-
-# Assuming your model is already run
-model_gam_identity <- gam(richness ~ s(age), data = richness$genus, family = gaussian(link = "identity"))
-
-# Create a data frame for predictions
-new_data <- with(richness$genus, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# Predict the smooth term
-# Use type = "lpmatrix" to get the design matrix for the smooth term
-# This allows you to reconstruct the effect with standard errors
-lp_matrix <- predict(model_gam_identity, new_data, type = "lpmatrix")
-smooth_effect <- lp_matrix %*% coef(model_gam_identity)      
-smooth_se <- sqrt(rowSums((lp_matrix %*% vcov(model_gam_identity)) * lp_matrix))
-
-# Construct the data frame for plotting
-plot_data <- data.frame(
-  age = new_data$age,
-  fit = smooth_effect + coef(model_gam_identity)["(Intercept)"],
-  lwr = smooth_effect + coef(model_gam_identity)["(Intercept)"] - 1.96 * smooth_se,
-  upr = smooth_effect + coef(model_gam_identity)["(Intercept)"] + 1.96 * smooth_se
-)
-
-# Plot the results using ggplot2
-ggplot(plot_data, aes(x = age, y = fit)) +
-  # Add confidence interval ribbon
-  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.2) +
-  # Add smooth line
-  geom_line() +
-  # Add raw data points
-  geom_point(data = richness$genus, aes(x = age, y = richness)) +
-  # Add labels and title
-  labs(
-    title = "GAM Partial Effects Plot for 'age'",
-    y = "Predicted Richness",
-    x = "Age"
+ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)) +
+  geom_line(linewidth = 1) +
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
   ) +
-  # Apply a clean theme
-  theme_minimal()
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
-######################
+ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)) +
+  annotate("rect", xmin = Inf, xmax = 11500, ymin = -Inf, ymax = Inf, fill = "green", alpha = 0.2) +
+  annotate("rect", xmin = 11500, xmax = 8500, ymin = -Inf, ymax = Inf, fill = "lightgreen", alpha = 0.2) +
+  annotate("rect", xmin = 8500, xmax = 4500, ymin = -Inf, ymax = Inf, fill = "lightyellow", alpha = 0.2) +
+  annotate("rect", xmin = 4500, xmax = 0, ymin = -Inf, ymax = Inf, fill = "orange", alpha = 0.2) +
+  geom_line(size = 1) +
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
+  ) +
+  scale_y_continuous(breaks = c(0, 20, 25, 30)) +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(y = "Median site richness")
 
 
+#========================================================#
 
-harmonized_data$genus %>% arrange(desc(age)) %>% head(10) 
+#richness by time against altitude
 
+#past 10K cal bp
 
-harmonized_data$genus %>%  bin_data( 1000) %>% 
-  prepare_data_for_richness_estimation("binned") %>%
-   mutate( sample_id = paste0(dataset_id, "-", age)) %>% arrange(desc(age)) %>% head(10) 
+richness_subregion_lat <- left_join(richness, subregion, by ="sample_id", multiple = "any") %>% 
+  select(dataset_id.x,age.x,sample_id,richness, subregion, lat) %>% 
+  rename(dataset_id = dataset_id.x, age = age.x)
 
+ten <- richness_subregion_lat %>% 
+  group_by(dataset_id) %>% 
+  filter(age == 10000) %>% 
+    ggplot(aes(x = lat, y = richness)) +
+    geom_point(color = "blue")+
+    geom_smooth(method = "lm", se = FALSE, color = "red") +
+    scale_x_continuous(position = "top") +
+    geom_text(
+    x = Inf,
+    y = Inf,
+    label = "10 ka",
+    hjust = 1.1,
+    vjust = 1.1,
+    size = 4)+
+    theme_classic()
 
+#past 7K cal bp
 
-harmonized_data$genus %>% filter(age <= 15000) %>%
-  arrange(desc(age)) %>% 
-  bin_data(1000) %>%
-  prepare_data_for_richness_estimation("binned") %>%arrange(desc(age))
+sev  <- richness_subregion_lat %>% 
+  group_by(dataset_id) %>% 
+  filter(age == 7000) %>% 
+  ggplot(aes(x = lat, y = richness)) +
+  geom_point(color = "blue")+
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  scale_x_continuous(position = "top") +
+  geom_text(
+    x = Inf,
+    y = Inf,
+    label = "7 ka",
+    hjust = 1.1,
+    vjust = 1.1,
+    size = 4)+
+  theme_classic()
 
+#past 4K cal bp
 
+four <- richness_subregion_lat %>% 
+  group_by(dataset_id) %>% 
+  filter(age == 4000) %>% 
+  ggplot(aes(x = lat, y = richness)) +
+  geom_point(color = "blue")+
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  scale_x_continuous(position = "top") +
+  geom_text(
+    x = Inf,
+    y = Inf,
+    label = "4 ka",
+    hjust = 1.1,
+    vjust = 1.1,
+    size = 4) +
+    theme_classic()
 
+#past 3K cal bp
 
-harmonized_data$genus %>% 
-  mutate(
-    BIN = cut(age, seq(min(age), 
-                       max(age) + 1000, 1000), right = FALSE),
-    BIN_chr = as.character(BIN),
-    BIN_fct = as.factor(BIN_chr),
-    BIN_int = as.factor(as.numeric(BIN_fct)), # recode BINS to integer, then factor) 
-    BIN = BIN_int) %>% arrange(desc(age)) %>% head(10) %>% 
-    filter
+three <- richness_subregion_lat %>% 
+  group_by(dataset_id) %>% 
+  filter(age == 3000) %>% 
+  ggplot(aes(x = lat, y = richness)) +
+  geom_point(color = "blue")+
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  scale_x_continuous(position = "top") +
+  geom_text(
+    x = Inf,
+    y = Inf,
+    label = "3 ka",
+    hjust = 1.1,
+    vjust = 1.1,
+    size = 4)+
+  theme_classic()
 
+#past 1K cal bp
 
+one <- richness_subregion_lat %>% 
+  group_by(dataset_id) %>% 
+  filter(age == 1000) %>% 
+  ggplot(aes(x = lat, y = richness)) +
+  geom_point(color = "blue")+
+  geom_smooth(method = "lm", se = FALSE, color = "red") + 
+  scale_x_continuous(position = "top") +
+  geom_text(
+    x = Inf,
+    y = Inf,
+    label = "1 ka",
+    hjust = 1.1,
+    vjust = 1.1,
+    size = 4
+  ) +
+  theme_classic() 
 
+lat_trend <- ggarrange(ten,sev,four, three, one, common.legend = TRUE, nrow = 1, label.y = 1)
 
-  
-  
-  group_by(dataset_id , taxa, BIN) %>% 
-  summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop") %>% 
-  prepare_data_for_richness_estimation("binned") %>% arrange(desc(age)) %>% head(10) 
-  
-  
-  purrr::map( ~ dplyr::mutate(.x, sample_id = paste0(dataset_id, "-", age)))
+#===========================================================================================#

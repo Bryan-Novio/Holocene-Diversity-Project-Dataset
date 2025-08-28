@@ -45,25 +45,69 @@ source_files <- sapply(
 #----------------------------------------------------------#
 # 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
+# subset pollen data to 25°W and 35°E longitude and north of 35°N latitude
 
+data_p1_s1 <- data %>% filter(long >= -25 & long <= 35,lat >= 35) 
 
-data_p1_s1 <- data %>% 
-  filter(region =="Europe") %>%   # sub-setting data to Europe
-  relocate(region)
+min(data_p1_s1$lat) #min lat
+max(data_p1_s1$lat) # max lat
 
-data_p1_s1 %>% filter(between(long, -25,35))                                # 25°W and 35°E long and north of 35°N latitude
+min(data_p1_s1$long) #min long
+max(data_p1_s1$long) # max long
 
-data_long <- data_p1_s1 %>% filter(between(long, -25,35))  
-
-
-data_long %>% filter(lat <= 35)
-#####3.1. get pollen counts with ages
-
-data_p1_s1_counts_ages <- data_p1_s1 %>% get_pollen_counts_with_ages() 
-
-data_p1_s1_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
 #----------------------------------------------------------#
-# 4. Write the subset data to RDS file
+# 4. Divide subset data into sub-regions
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s1_counts_ages, here("Outputs/Data/paper_1_study_1/datasub_p1_s1_counts_ages.rds"))
+# assign data points to sub-regions
+
+data_p1_s1_sub_region <- data_p1_s1  %>%
+  mutate(subregion = case_when(
+    lat > 57 ~ "Boreal", 
+    lat >= 45 & lat <= 47 & long <= 15 & long >= 5 ~ "Alps", 
+    lat < 45 ~ "Meridional/Submeridional", 
+    long < 11 ~ "Temperate Oceanic", 
+    long >= 11 ~ "Temperate Continental"
+  )) %>%
+  relocate(subregion, .after = region) 
+
+# visualize in map
+
+data_p1_s1_sub_region %>% 
+  ggplot(aes(x=long, y= lat, color = subregion)) +
+  borders(fill= "gray", colour = "black") +
+  geom_point() +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  coord_quickmap(xlim = c(-25,35), ylim = c(35,75))
+
+
+data_p1_s1_sub_region %>% count(subregion)# check subregions
+
+
+data_p1_s1_sub_region %>% filter(subregion == "Alps") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Boreal") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Meridional/Submeridional") %>% unnest(levels) %>% relocate(age,sample_id) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Temperate Continental") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% filter(subregion == "Temperate Oceanic") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+
+#----------------------------------------------------------#
+# 5. Get pollen counts with ages
+#----------------------------------------------------------# 
+
+data_p1_s1_subregion_counts_ages <- data_p1_s1_sub_region %>% 
+  get_pollen_counts_with_ages() 
+
+data_p1_s1_subregion_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+
+
+#----------------------------------------------------------#
+# 6. Write the subset data to RDS file
+#----------------------------------------------------------# 
+
+write_rds(data_p1_s1_subregion_counts_ages, here("Outputs/Data/paper_1_study_1/datasub_p1_s1_counts_ages.rds"))

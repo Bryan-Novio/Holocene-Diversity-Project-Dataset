@@ -19,7 +19,7 @@ library(here)
 #----------------------------------------------------------# 
 
 rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_1/rarefied_data_study_1.rds"))
-
+rarefied_data_genus <- read_rds(here("Outputs/Data/paper_1_study_1/rarefied_data_genus_s1.rds"))
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -44,11 +44,17 @@ source_files <- sapply(
 # 3. Estimate richness  at different taxo rank --
 #----------------------------------------------------------# 
 
-richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
+data_richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
             purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
 
+data_richness_genus <- rarefied_data_genus %>% 
+  estimate_richness() %>% 
+  dplyr::mutate(age = as.numeric(age))
 
 #----------------------------------------------------------#
 # Write the richness data to an RDS file
-write_rds(richness, here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
+
+write_rds(data_richness, here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
+write_rds(data_richness_genus, here("Outputs/Data/paper_1_study_1/richness_data_genus_s1.rds"))
+
 #----------------------------------------------------------#
