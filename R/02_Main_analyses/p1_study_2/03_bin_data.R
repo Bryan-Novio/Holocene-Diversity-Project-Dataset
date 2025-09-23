@@ -13,13 +13,13 @@
   
   library(tidyverse)
   library(here)
-  library(dplyr)
   
   #----------------------------------------------------------#
   # 1. Load data set -----------------------------------------
   #----------------------------------------------------------# 
   
   harmonized_data <- read_rds(here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
+  woody_taxa <- read_csv(here("Data/Processed/Other/woody_taxa_res.csv"), show_col_types = FALSE)
   
   #----------------------------------------------------------#
   # 2. Load functions ---------------------------------------
@@ -42,22 +42,29 @@
   )
   
   #----------------------------------------------------------#
-  # 3. Bin data  at different taxo rank --
-  #----------------------------------------------------------# 
+  # 3. Filter woody taxa from harmonized dataset ------------
+  #----------------------------------------------------------#
   
+  harmonized_data_woody <- inner_join(woody_taxa, harmonized_data$species, by = "taxa", relationship = "many-to-many")
+ 
+  #----------------------------------------------------------#
+  # 4. Bin data  at different taxo rank --
+  #----------------------------------------------------------# 
   
   # Bin  data 
   
-  binned_data <- purrr::map(harmonized_data, ~ bin_data(.x, 500)) 
+  binned_data <- harmonized_data_woody %>%  bin_data(1000)
   
   # Prepare data for richness estimation
   
-  prepared_data_for_richness_estimation <- 
-    purrr::map(binned_data, ~ prepare_data_for_richness_estimation(.x, "binned")) %>%
-    purrr::map( ~ dplyr::mutate(.x, sample_id = paste0(dataset_id, "-", age)))
+  prepared_data_for_richness_estimation <- binned_data %>% 
+    prepare_data_for_richness_estimation("binned") %>%
+    mutate(sample_id = paste0(dataset_id, "-", age))
   
   #----------------------------------------------------------#
-  # Write the binned and prepared_data to RDS files
+  # 5. Write the binned and prepared_data to RDS files
+  #----------------------------------------------------------# 
+  
   write_rds(binned_data, here("Outputs/Data/paper_1_study_2/binned_data_study_2.rds"))
   write_rds(prepared_data_for_richness_estimation, here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
   

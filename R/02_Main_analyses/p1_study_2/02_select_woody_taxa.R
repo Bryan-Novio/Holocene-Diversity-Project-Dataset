@@ -1,5 +1,7 @@
-#----------------------------------------------------------#
+#----------------------------------------------------------#     
+#               
 #               Holocene Diversity Project
+#
 #
 #            Paper01| Method 2: Simova et al
 #
@@ -8,18 +10,19 @@
 # North America, site-based richness (dataset_id,age, 
 # 1000 bins - rarefy 400 
 #
-#              ---- RICHNESS ESTIMATION ----
+#
+#           ----  SELECT WOODY TAXA  ----
 #----------------------------------------------------------#
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
+harmonized_data_study_2 <- read_rds(here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
+woody_taxa <- read_csv("Data/Processed/Other/woody_taxa_simova.csv", show_col_types = FALSE)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -41,16 +44,26 @@ source_files <- sapply(
   source
 )
 
+
 #----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank --
+# 2. Reclassify harmonized dataset using woody taxa list ---
 #----------------------------------------------------------# 
 
-richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
-  purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
+woody_taxa_re <- woody_taxa %>% rename(taxa ='Pollen type') %>% select(taxa)
 
+View(woody_taxa_re)
+
+
+raw_taxa <- purrr::map(list(harmonized_data_study_2$genus, harmonized_data_study_2$species), ~dplyr::select(.x, taxa)) %>% 
+                       unlist() %>%  as_tibble_col() %>% unique() %>% 
+                       rename(taxa=value)
+
+woody_taxa <- inner_join(woody_taxa_re,raw_taxa, by = "taxa")
 
 #----------------------------------------------------------#
-# Write the richness data to an RDS file
+# 5. Save reclassified harmonized taxa  ------------------
+#----------------------------------------------------------# 
 
-write_rds(richness, here("Outputs/Data/paper_1_study_2/richness_data_study_2.rds"))
-#----------------------------------------------------------#
+write_csv(woody_taxa, here("Data/Processed/Other/woody_taxa_res.csv"))
+
+

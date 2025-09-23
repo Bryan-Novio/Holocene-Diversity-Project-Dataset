@@ -8,18 +8,17 @@
 # North America, site-based richness (dataset_id,age, 
 # 1000 bins - rarefy 400 
 #
-#                  ----RAREFACTION  ----
+#              ---- RICHNESS ESTIMATION ----
 #----------------------------------------------------------#
-  
+
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
+rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -32,25 +31,27 @@ fun_list <-
     path = "R/Functions/",
     pattern = "\\.R$",
     recursive = TRUE
-    )
+  )
 
 # Load the function into the global environment
 
 source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
-  )
+)
 
 #----------------------------------------------------------#
-# 3. Rarefy data  at different taxo rank --
+# 3. Estimate richness  at different taxo rank ------------
 #----------------------------------------------------------# 
 
-rarefied_data <- purrr::map(prepared_data_for_richness_estimation, ~ rarefy_all_samples_iter(
-data_source =.,n_grains = 500, n_iter = 10)) %>% 
-purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
+richness <- rarefied_data %>% 
+  estimate_richness() %>% 
+  mutate(age = as.numeric(age))
 
+summary(richness)
 
 #----------------------------------------------------------#
-# Write the rarefied data to an RDS file
-  write_rds(rarefied_data, here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
+# 4. Write the richness data to an RDS file ---------------
 #----------------------------------------------------------#
+
+write_rds(richness, here("Outputs/Data/paper_1_study_2/richness_data_study_2.rds"))
