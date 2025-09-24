@@ -45,7 +45,7 @@
   # 3. Filter woody taxa from harmonized dataset ------------
   #----------------------------------------------------------#
   
-  harmonized_data_woody <- inner_join(woody_taxa, harmonized_data$species, by = "taxa", relationship = "many-to-many")
+  harmonized_data_woody <- inner_join(woody_taxa, harmonized_data$genus, by = "taxa", relationship = "many-to-many")
  
   #----------------------------------------------------------#
   # 4. Bin data  at different taxo rank --

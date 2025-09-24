@@ -20,7 +20,8 @@ library(dplyr)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_3/rarefied_data_study_3.rds"))
+rarefied_data_eu <- read_rds(here("Outputs/Data/paper_1_study_3/rarefied_data_study_3_eu.rds"))
+rarefied_data_na <- read_rds(here("Outputs/Data/paper_1_study_3/rarefied_data_study_3_na.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -43,15 +44,30 @@ source_files <- sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank --
+# 3. Estimate richness  at different taxo rank -- at 12 cal yr bp (based on Gordon et al)
 #----------------------------------------------------------# 
 
-richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
-  purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
+richness_eu <- rarefied_data_eu %>% 
+            estimate_richness() %>% 
+            dplyr::mutate(age = as.numeric(age))
 
+richness_eu_12k <- richness_eu %>% filter(age <= 12000)
+
+
+
+richness_na <- rarefied_data_na %>% 
+            estimate_richness() %>% 
+            dplyr::mutate(age = as.numeric(age))
+
+richness_na_12k <- richness_na %>% filter(age <= 12000)
 
 #----------------------------------------------------------#
 # Write the richness data to an RDS file
 
-write_rds(richness, here("Outputs/Data/paper_1_study_3/richness_data_study_3.rds"))
+write_rds(richness_eu_12k, here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu_12k.rds"))
+write_rds(richness_na_12k, here("Outputs/Data/paper_1_study_3/richness_data_study_3_na_12k.rds"))
+
+write_rds(richness_eu, here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu.rds"))
+write_rds(richness_na, here("Outputs/Data/paper_1_study_3/richness_data_study_3_na.rds"))
+
 #----------------------------------------------------------#

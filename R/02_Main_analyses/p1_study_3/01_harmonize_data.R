@@ -6,7 +6,7 @@
 #                       
 #                          2024
 #
-# North America, site-based richness (dataset_id,age, 
+# North America & Europe, site-based richness (dataset_id,age, 
 # 500 bins - rarefy 300 
 #
 #                 ----HARMONIZATION ----
@@ -20,9 +20,14 @@ library(dplyr)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-pollen_data_s3 <-  read_rds(here("Data/Processed/Other/prep_data_study_3.rds"))
-harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
+pollen_data_s3_eu <-  read_rds(here("Outputs/Data/paper_1_study_3/datasub_p1_s3_eu_counts_ages.rds"))
+pollen_data_s3_na <-  read_rds(here("Outputs/Data/paper_1_study_3/datasub_p1_s3_na_counts_ages.rds"))
+
+harmonization_table_eu  <- read_csv(here("Data/Input/Harmonisation_tables/s3_EU_harmonization_table.csv"), show_col_types = FALSE)
+harmonization_table_na  <- read_csv(here("Data/Input/Harmonisation_tables/s3_EU_harmonization_table.csv"), show_col_types = FALSE)
+
 neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -53,10 +58,14 @@ taxa_name <- c("family", "genus", "species")
 
 # Harmonize taxa at different taxonomic levels
 
-harmonized_data_study_3<- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s3, data_ancillary, .x)) %>%
-  set_names(taxa_name)
+harmonized_data_study_3_eu <- harmonize_taxa_taxa_s3_01(pollen_data_s3_eu, neotoma_taxa, harmonization_table_eu) 
 
+harmonized_data_study_3_na <- harmonize_taxa_taxa_s3_01(pollen_data_s3_na, neotoma_taxa, harmonization_table_na) 
+  
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
-write_rds(harmonized_data_study_3, here("Outputs/Data/paper_1_study_3/harmonized_data_study_3.rds"))
+
+write_rds(harmonized_data_study_3_eu, here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_eu.rds"))
+write_rds(harmonized_data_study_3_na, here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_na.rds"))
+
 #----------------------------------------------------------#

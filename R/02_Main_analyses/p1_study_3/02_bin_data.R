@@ -20,7 +20,9 @@ library(dplyr)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-harmonized_data <- read_rds(here("Outputs/Data/paper_1_study_3/harmonized_data_study_3.rds"))
+harmonized_data_study_3_eu <- read_rds(here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_eu.rds"))
+
+harmonized_data_study_3_na <- read_rds(here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_na.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -49,16 +51,25 @@ source_files <- sapply(
 
 # Bin  data 
 
-binned_data <- purrr::map(harmonized_data, ~ bin_data(.x, 500)) 
+binned_data_eu <-  bin_data(harmonized_data_study_3_eu, 500)
+binned_data_na <-  bin_data(harmonized_data_study_3_na, 500)
 
 # Prepare data for richness estimation
 
-prepared_data_for_richness_estimation <- 
-  purrr::map(binned_data, ~ prepare_data_for_richness_estimation(.x, "binned")) %>%
-  purrr::map( ~ dplyr::mutate(.x, sample_id = paste0(dataset_id, "-", age)))
+prepared_data_for_richness_estimation_eu <- binned_data_eu %>% 
+  prepare_data_for_richness_estimation("binned") %>%
+   dplyr::mutate(sample_id = paste0(dataset_id, "-", age))
+
+prepared_data_for_richness_estimation_na <- binned_data_na %>% 
+  prepare_data_for_richness_estimation("binned") %>%
+  dplyr::mutate(sample_id = paste0(dataset_id, "-", age))
 
 #----------------------------------------------------------#
 # Write the binned and prepared_data to RDS files
 
-write_rds(binned_data, here("Outputs/Data/paper_1_study_3/binned_data_study_3.rds"))
-write_rds(prepared_data_for_richness_estimation, here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3.rds"))
+write_rds(binned_data_eu, here("Outputs/Data/paper_1_study_3/binned_data_study_eu.rds"))
+write_rds(binned_data_na, here("Outputs/Data/paper_1_study_3/binned_data_study_na.rds"))
+
+write_rds(prepared_data_for_richness_estimation_eu, here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3_eu.rds"))
+write_rds(prepared_data_for_richness_estimation_na, here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3_na.rds"))
+

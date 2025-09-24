@@ -14,91 +14,91 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
-library(ggplot2)
-library(ggpubr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3.rds"))
+richness_eu <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu.rds"))
+richness_na <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_na.rds"))
+
+model_eu_s3 <- read_rds(here("Outputs/Data/paper_1_study_3/model_eu_s3.rds"))
+model_na_s3 <- read_rds(here("Outputs/Data/paper_1_study_2/model_na_s3.rds"))
 
 #----------------------------------------------------------#
 # 2. Visualize trends --
 #----------------------------------------------------------# 
 
-# 2.1. GLM model:
+#2.1. using actual data 
 
-p1 <- richness$family %>%                           #family
-  mutate(age = as.numeric(age)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
+## without RE
+
+richness_eu %>%
+  ggplot(aes(x = age, y = richness)) +
   geom_point() +
-  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5,) +
+  geom_smooth(aes(group=1), method = "gam", formula = y ~ s(x) ) +
+  scale_x_reverse() +
+  geom_vline(xintercept = 9800, color = 'red') +
   theme_classic()
 
-p2 <- richness$genus %>%                           #genus
-  mutate(age = as.numeric(age)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
+## with RE (geom_smooth does not allow RE in gam model from mgcv) (not working)
+
+dataset_id <-  factor(richness$dataset_id)
+
+ggplot(richness, aes(x = age, y = richness)) +
   geom_point() +
-  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5,) +
+  geom_smooth(method = "gam", formula = y ~ s(x) + s(dataset_id, bs="re")) +
+  scale_x_reverse() +
+  geom_vline(xintercept = 9800, color = 'red') +
   theme_classic()
 
-p3 <- richness$species%>%                          #species
-  mutate(age = as.numeric(age)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
+## use plot_smooth from 'itsadug' package (use base R for plotting)
 
-#----------------------------------------------------------#
-# 2.2. GAM model:
+plot(model_eu_s3, select=1)
+plot(model_na_s3, select=1)
 
-p4 <- richness$family %>%                     #family
-  mutate(age = as.numeric(age)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
+itsadug::plot_smooth(model_eu_s3, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
+itsadug::plot_smooth(model_na_s3, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
 
-p5 <- richness$genus %>%                      #genus
-  mutate(age = as.numeric(age)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
+##reverse x-axis 
 
-p6 <- richness$species%>%                     #species
-  mutate(age = as.numeric(age)) %>% 
-  ggplot(aes(y = richness, x = age)) + 
-  geom_point() +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
-  theme_classic()
+p <- ggplotify::as.ggplot(
+  function() {
+    # Plot the smooth term
+    p <- plot_smooth(model_1_s2, view = 'age', rm.ranef = TRUE, rug = FALSE)
+    
+    # Add the scale_x_reverse() layer to the ggplot object 'p'
+    p  + scale_x_reverse() 
+  }
+)
+
+p 
+
+#2.2. using predicted data (-- fit the GAM with mgcv and plot its predictions)
 
 
-#----------------------------------------------------------#
-# 2.3. combine model plots
+# model_1_s2
 
-p7 <- richness$family %>%
-  mutate(age = as.numeric(age)) %>%
-  ggplot(aes(y = richness, x = age)) +
-  geom_point() +
-  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5, aes(color = "GLM")) +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5, aes(color = "GAM")) 
+newdata <- data.frame(age = seq(from = min(richness$age), to = max(richness$age), length.out = 100),
+                      dataset_id = factor(1001))
+
+predictions <- predict(model_1_s2, newdata = newdata, se.fit = TRUE, exclude = "s(dataset_id)")
+
+newdata$fit <- predictions$fit 
+newdata$se <- predictions$se.fit
 
 
-p8 <- richness$genus %>%
-  mutate(age = as.numeric(age)) %>%
-  ggplot(aes(y = richness, x = age)) +
-  geom_point() +
-  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5, aes(color = "GLM")) +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5, aes(color = "GAM"))
+ggplot(richness, aes(x = age, y = richness)) +
+  geom_point(alpha = 0.5) +
+  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
+  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
+  geom_vline(xintercept = 9800, color = "red") +
+  theme_classic() +
+  scale_x_reverse()
 
-p9 <- richness$species %>%
-  mutate(age = as.numeric(age)) %>%
-  ggplot(aes(y = richness, x = age)) +
-  geom_point() +
-  geom_smooth(method = "glm", se = TRUE, linewidth = 0.5, aes(color = "GLM")) +
-  geom_smooth(method = "gam", se = TRUE, linewidth = 0.5, aes(color = "GAM")) 
-
-p10 <- ggarrange(p7,p8,p9, common.legend = TRUE)
+ggplot(richness, aes(x = age, y = richness)) +
+  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
+  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
+  geom_vline(xintercept = 9800, color = "red") +
+  theme_classic() +
+  scale_x_reverse()

@@ -30,11 +30,17 @@ richness <- read_rds(here("Outputs/Data/paper_1_study_2/richness_data_study_2.rd
 richness_re <- richness %>%                 # convert dataset_id as factor variable
   mutate(dataset_id = as_factor(dataset_id))
 
-model <- gam(richness ~ s(age) + s(dataset_id, bs="re"), data = richness_re, method = "REML")
+
+model_1 <- gam(richness ~ s(age) + s(dataset_id, bs="re"), data = richness_re)  # gaussian (normal dist. of residuals)
+model_2 <- gam(richness ~ s(age) + s(dataset_id, bs="re"), data = richness_re, family = poisson(link = "log"))
 
 # 2.2. model summary
 
-summary(model)
+summary(model_1)
+summary(model_2)
+
+plot(model, select = 1)
+
 plot.gam(model)
 
 #----------------------------------------------------------#
@@ -42,4 +48,5 @@ plot.gam(model)
 #----------------------------------------------------------# 
 
 richness_re <- write_rds(richness_re,here("Outputs/Data/paper_1_study_2/richness_data_study_2_re.rds"))
-model_s2 <- write_rds(model,here("Outputs/Data/paper_1_study_2/model_s2.rds"))
+model_1_s2 <- write_rds(model_1,here("Outputs/Data/paper_1_study_2/model_1_s2.rds"))
+model_2_s2 <- write_rds(model_2,here("Outputs/Data/paper_1_study_2/model_2_s2.rds"))

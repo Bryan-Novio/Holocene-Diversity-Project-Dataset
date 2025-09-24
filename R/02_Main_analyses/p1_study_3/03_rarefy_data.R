@@ -14,13 +14,13 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3.rds"))
+prepared_data_for_richness_estimation_eu <- read_rds(here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3_eu.rds"))
+prepared_data_for_richness_estimation_na <- read_rds(here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3_na.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -46,13 +46,18 @@ source_files <- sapply(
 # 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-rarefied_data <- purrr::map(prepared_data_for_richness_estimation, ~ rarefy_all_samples_iter(
-  data_source =.,n_grains = 500, n_iter = 10)) %>% 
-  purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
+rarefied_data_eu <- prepared_data_for_richness_estimation_eu %>% 
+         rarefy_all_samples_iter(n_grains = 300, n_iter = 10) %>% 
+            separate_wider_delim(sample_id, "-", names = c("sample_id","age"))
 
+rarefied_data_na <- prepared_data_for_richness_estimation_na %>% 
+         rarefy_all_samples_iter(n_grains = 300, n_iter = 10) %>% 
+            separate_wider_delim(sample_id, "-", names = c("sample_id","age"))
 
 #----------------------------------------------------------#
 # Write the rarefied data to an RDS file
 
-write_rds(rarefied_data, here("Outputs/Data/paper_1_study_3/rarefied_data_study_3.rds"))
+write_rds(rarefied_data_eu, here("Outputs/Data/paper_1_study_3/rarefied_data_study_3_eu.rds"))
+write_rds(rarefied_data_na, here("Outputs/Data/paper_1_study_3/rarefied_data_study_3_na.rds"))
+
 #----------------------------------------------------------#

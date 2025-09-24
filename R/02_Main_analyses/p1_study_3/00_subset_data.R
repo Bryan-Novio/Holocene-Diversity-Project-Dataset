@@ -6,7 +6,7 @@
 #                       
 #                          2024
 #
-# North America, site-based richness (dataset_id,age, 
+# North America & Europe, site-based richness (dataset_id,age, 
 # 500 bins - rarefy 300 
 #
 #
@@ -47,24 +47,28 @@ source_files <- sapply(
 # 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
 
-
-data_p1_s2 <- data %>% 
-  filter(region =="Europe") %>%   # sub-setting data to Europe
+# sub-setting data to Europe/N.America
+ 
+data_p1_s3_EU  <- data %>% filter(long >= -25 & long <= 35,lat >= 35) %>%  
   relocate(region)
 
-data_p1_s2 %>% filter(between(long, -25,35))                                # 25°W and 35°E long and north of 35°N latitude
 
-data_long <- data_p1_s2 %>% filter(between(long, -25,35))  
-
-data_long %>% filter(lat <= 35)
-
+data_p1_s3_NA <- data %>% 
+  filter(region =="North America") %>%  
+  relocate(region)
+  
 #####3.1. get pollen counts with ages
 
-data_p1_s2_counts_ages <- data_p1_s2 %>% get_pollen_counts_with_ages() 
+data_p1_s3_eu_counts_ages <- data_p1_s3_EU %>% get_pollen_counts_with_ages() 
+data_p1_s3_na_counts_ages <- data_p1_s3_NA %>% get_pollen_counts_with_ages() 
 
-data_p1_s2_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+
+data_p1_s3_eu_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+data_p1_s3_na_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+
 #----------------------------------------------------------#
 # 4. Write the subset data to RDS file
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s2_counts_ages, here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
+write_rds(data_p1_s3_eu_counts_ages, here("Outputs/Data/paper_1_study_3/datasub_p1_s3_eu_counts_ages.rds"))
+write_rds(data_p1_s3_na_counts_ages, here("Outputs/Data/paper_1_study_3/datasub_p1_s3_na_counts_ages.rds"))
