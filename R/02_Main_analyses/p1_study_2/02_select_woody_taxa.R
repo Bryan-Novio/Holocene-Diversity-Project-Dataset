@@ -52,12 +52,15 @@ source_files <- sapply(
 
 woody_taxa_re <- woody_taxa %>% rename(taxa ='Pollen type') %>% select(taxa)
 
-View(woody_taxa_re)
+woody_taxa_re %>% unique()
 
+# Extract all unique taxa from harmonized dataset
 
 raw_taxa <- purrr::map(list(harmonized_data_study_2$genus, harmonized_data_study_2$species), ~dplyr::select(.x, taxa)) %>% 
                        unlist() %>%  as_tibble_col() %>% unique() %>% 
                        rename(taxa=value)
+
+raw_taxa %>% unique()
 
 woody_taxa_match <- inner_join(woody_taxa_re,raw_taxa, by = "taxa")
 
