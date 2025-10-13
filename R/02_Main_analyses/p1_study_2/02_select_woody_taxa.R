@@ -21,9 +21,11 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-harmonized_data_study_2 <- read_rds(here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
 
+pollen_data_s2 <-  read_rds(here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
 woody_taxa <- read_csv("Data/Processed/Other/woody_taxa_simova.csv", show_col_types = FALSE)
+neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -50,24 +52,31 @@ source_files <- sapply(
 # 2. Reclassify harmonized dataset using woody taxa list ---
 #----------------------------------------------------------# 
 
-woody_taxa_re <- woody_taxa %>% rename(taxa ='Pollen type') %>% select(taxa)
+woody_taxa_re <- woody_taxa %>% rename(taxa ='Taxon name orig.') %>% select(taxa)
 
 woody_taxa_re %>% unique()
 
 # Extract all unique taxa from harmonized dataset
 
-raw_taxa <- purrr::map(list(harmonized_data_study_2$genus, harmonized_data_study_2$species), ~dplyr::select(.x, taxa)) %>% 
-                       unlist() %>%  as_tibble_col() %>% unique() %>% 
-                       rename(taxa=value)
+pollen_data_s2_re <- pollen_data_s2 %>% rename(taxon_name =  taxa) 
 
-raw_taxa %>% unique()
+study_2_taxa <- inner_join(pollen_data_s2_re,neotoma_taxa, by = "taxon_name" ) %>% distinct(neotoma_names)
 
-woody_taxa_match <- inner_join(woody_taxa_re,raw_taxa, by = "taxa")
+woody_taxa_match <- inner_join(woody_taxa_re,study_2_taxa, by = join_by("taxa"=="neotoma_names"))
+
+woody_taxa_non_match <- anti_join(woody_taxa_re,study_2_taxa, by = join_by("taxa"=="neotoma_names"))
+
+woody_taxa_non_match_re <- read_csv(here("Data/Processed/Other/woody_taxa_non_match.csv")) %>% 
+                           filter(woody_web_search =='yes') %>% 
+                           select(taxa)
+                
+
+
 
 #----------------------------------------------------------#
 # 5. Save reclassified harmonized taxa  ------------------
 #----------------------------------------------------------# 
 
 write_csv(woody_taxa_match, here("Data/Processed/Other/woody_taxa_res.csv"))
-
+write_csv(woody_taxa_non_match, here("Data/Processed/Other/woody_taxa_non_match.csv"))
 

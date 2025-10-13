@@ -83,3 +83,7 @@ plot.gam(model_na_12k)
 model_eu_s3 <- write_rds(model_eu,here("Outputs/Data/paper_1_study_3/model_eu_s3.rds"))
 model_na_s3 <- write_rds(model_na,here("Outputs/Data/paper_1_study_2/model_na_s3.rds"))
 
+model_eu_12k_s3 <- write_rds(model_eu_12k,here("Outputs/Data/paper_1_study_3/model_eu_12k_s3.rds"))
+model_na_12k_s3 <- write_rds(model_na_12k,here("Outputs/Data/paper_1_study_3/model_na_12k_s3.rds"))
+
+

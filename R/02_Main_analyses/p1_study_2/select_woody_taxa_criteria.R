@@ -16,10 +16,13 @@
 
 library(tidyverse)
 library(here)
+
 library(usethis)
 library(devtools)
+
 library(DBI)
 library(RPostgreSQL)
+
 library(BIEN)
 library(rtry)
 
@@ -114,9 +117,6 @@ taxa_orig_neotoma_databases <- left_join(taxa_orig_neotoma_cf,all_taxa_height_da
 
 # Genera labeled with “cf.” were merged with the certain genera 
 
-
-
-#
 taxa_bien_height_crit_met <- taxa_bien_height %>% 
   filter(height >= 1.5) %>%  #  criteria of height >= 1.5 m
   mutate(genus = word(taxa, 1)) %>% # extract genus name
@@ -235,15 +235,23 @@ all_taxa_height_databases_genus_sep <- all_taxa_height_databases_genus %>%
   ungroup() %>%
   select(genus, height) %>%
   arrange(genus)
+  
+  
+  
+  
 
-# MODIFICATION: Use the separated genus list to join with the height database at the genus level.
+
+#### MODIFIED VERSION
+  
+
+
+#  Use the separated genus list to join with the height database at the genus level.
 # This finds height for the original remaining genera.
 matched_taxa_genus_level <- inner_join(taxa_orig_neotoma_remain_type_genus_sep,
                                        all_taxa_height_databases_genus_sep,
                                        by = "genus") %>%
   select(genus, height) %>%
-  # Note: The group_by/slice_max is redundant here as it was already done on
-  # all_taxa_height_databases_genus_sep, but kept for clarity/safety.
+
   group_by(genus) %>%
   slice_max(order_by = height, n = 1, with_ties = FALSE) %>%
   ungroup() %>%
@@ -255,156 +263,41 @@ matched_taxa_genus_level <- inner_join(taxa_orig_neotoma_remain_type_genus_sep,
 # NEW STEP: Identify the set of taxa from 'taxa_orig_neotoma' that now have height.
 # -------------------------------------------------------------------------------- #
 
-# 1. Start with the 'taxa_orig_neotoma_databases' (taxa with height at species level)
+# Start with the 'taxa_orig_neotoma_databases' (taxa with height at species level)
 taxa_with_height_species_level <- taxa_orig_neotoma_databases %>%
   select(taxa) %>%
   distinct()
 
-# 2. Get the original full list of taxa that had no height info (the "remain" list)
-taxa_orig_neotoma_remain_full <- anti_join(taxa_orig_neotoma, taxa_orig_neotoma_databases, by = "taxa") %>%
-  arrange(taxa) # This is your original list of 98 taxa without height
 
-# 3. For the 'remain' list, check if their *genus* is in the 'matched_taxa_genus_level'
+# Get the original full list of taxa that had no height info (the "remain" list)
+taxa_orig_neotoma_remain_full <- anti_join(taxa_orig_neotoma, taxa_orig_neotoma_databases, by = "taxa") %>%
+  arrange(taxa) 
+
+
+# For the 'remain' list, check if their *genus* is in the 'matched_taxa_genus_level'
 taxa_with_height_genus_level <- taxa_orig_neotoma_remain_full %>%
-  # Extract the genus name (before the first space or hyphen) for joining
+
   separate(taxa, into = c("genus", "rest"), sep = "[ -]", extra = "drop", fill = "right", remove = FALSE) %>%
   inner_join(matched_taxa_genus_level, by = c("genus" = "taxa")) %>%
-  select(taxa) %>% # Keep only the original full taxon name
+  select(taxa) %>% 
   distinct()
 
-# 4. Combine ALL taxa from 'taxa_orig_neotoma' that now have height info
+
+
+# Combine ALL taxa from 'taxa_orig_neotoma' that now have height info
 all_taxa_with_height <- bind_rows(taxa_with_height_species_level,
                                   taxa_with_height_genus_level) %>%
-  distinct(taxa) # This is the complete set of taxa that meet the height criterion
+  distinct(taxa)
 
-# 5. Final Anti-join: Return the least number of taxa from 'taxa_orig_neotoma'
-# This set contains only the taxa that *still* have no height information
+
+
+
+# Final Anti-join: Return the least number of taxa from 'taxa_orig_neotoma'
+
 taxa_orig_neotoma_remain_FINAL <- anti_join(taxa_orig_neotoma, all_taxa_with_height, by = "taxa") %>%
   arrange(taxa) %>%
   select(taxa)
 
 View(taxa_orig_neotoma_remain_FINAL)
-
-
-
-
-# The resulting data frame 'taxa_orig_neotoma_remain_FINAL' will contain the LEAST number of taxa from
-# 'taxa_orig_neotoma' because it includes only the records that failed the height check at *both*
-# species level and genus level.
-
-
 taxa_orig_neotoma_remain_FINAL
-
-
-
-
-
-
-
-
-
-##############################
-
-#option 2
-# R function to classify and aggregate tree taxa based on your rules
-# Input: data frame with at least columns: Taxon, MaxHeight_m
-# Output: cleaned and aggregated data frame at genus level
-
-
-library(dplyr)
-library(stringr)
-
-process_taxa <- function(df) {
-  
-  # --- Step 1. Define helpers ---
-  
-  # genera that are vines to remove
-  vine_genera <- c("Vitis", "Smilax", "Parthenocissus", "Lonicera")
-  
-  # family → genus merges (NA monotypic families)
-  family_merge <- c("Ulmaceae"="Ulmus", "Grossulariaceae"="Ribes", "Aquifoliaceae"="Ilex")
-  
-  # known synonym merges
-  synonym_merge <- c("Nemopanthus"="Ilex")
-  
-  # uncertain aggregated pairs to keep
-  aggregated_keep <- list(
-    c("Ostrya","Carpinus"),
-    c("Prunus","Sorbus"),
-    c("Rhus","Toxicodendron"),
-    c("Juniperus","Thuja"),
-    c("Myrica","Comptonia")
-  )
-  
-  # uncertain aggregated pairs to remove
-  aggregated_remove <- list(
-    c("Larix","Pseudotsuga"),
-    c("Fagus","Nyssa"),
-    c("Celtis","Maclura")
-  )
-  
-  # --- Step 2. Tree definition: woody taxa ≥ 1.5 m ---
-  df <- df %>%
-    mutate(IsTree = ifelse(!is.na(MaxHeight_m) & MaxHeight_m >= 1.5, TRUE, FALSE))
-  
-  # --- Step 3. Extract genus name from Taxon ---
-  df <- df %>%
-    mutate(Genus = word(Taxon, 1)) # first word = genus
-  
-  # --- Step 4. Remove vines ---
-  df <- df %>%
-    filter(!(Genus %in% vine_genera))
-  
-  # --- Step 5. Merge families with monotypic genera ---
-  df <- df %>%
-    mutate(Genus = ifelse(Genus %in% names(family_merge), 
-                          family_merge[Genus], Genus))
-  
-  # --- Step 6. Remove families with >1 genera ---
-  df <- df %>%
-    filter(!str_detect(Genus, "aceae"))  # drop if still family-level
-  
-  # --- Step 7. Merge synonyms ---
-  df <- df %>%
-    mutate(Genus = ifelse(Genus %in% names(synonym_merge),
-                          synonym_merge[Genus], Genus))
-  
-  # --- Step 8. Handle "cf." taxa ---
-  df <- df %>%
-    mutate(Genus = str_replace(Genus, "cf\\.", "")) %>%
-    mutate(Genus = str_trim(Genus))
-  
-  # --- Step 9. Handle aggregated taxa ---
-  df <- df %>%
-    rowwise() %>%
-    mutate(Genus = {
-      if (str_detect(Taxon, "/")) {
-        parts <- unlist(str_split(Genus, "/"))
-        # if in keep list, keep aggregated unit
-        if (any(sapply(aggregated_keep, function(x) all(x %in% parts)))) {
-          paste(parts, collapse="/")
-        } else if (any(sapply(aggregated_remove, function(x) all(x %in% parts)))) {
-          NA  # drop
-        } else {
-          NA
-        }
-      } else {
-        Genus
-      }
-    }) %>%
-    ungroup() %>%
-    filter(!is.na(Genus))
-  
-  # --- Step 10. Aggregate to genus level ---
-  df_genus <- df %>%
-    group_by(Genus) %>%
-    summarise(MaxHeight_m = max(MaxHeight_m, na.rm=TRUE),
-              Tree = any(IsTree, na.rm=TRUE),
-              n_species = n())
-  
-  return(df_genus)
-}
-
-
-processed <- process_taxa(taxa_orig_neotoma)
 
