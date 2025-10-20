@@ -81,6 +81,7 @@ un_taxa_re_woody <- un_taxa_re %>% filter(woodiness == "woody") %>%  select(taxa
 
 study_2_taxa_final <- bind_rows(woody_taxa_match,un_taxa_re_woody) %>% distinct() # combine woody taxa identified using Simova list with identified by web search
 
+
 #----------------------------------------------------------#
 # 5. Save reclassified harmonized taxa  ------------------
 #----------------------------------------------------------# 

@@ -37,7 +37,6 @@ model_2_s2 <- read_rds(here("Outputs/Data/paper_1_study_2/model_2_s2.rds"))
 
 richness %>%
   ggplot(aes(x = age, y = richness)) +
-  geom_point() +
   geom_smooth(aes(group=1), method = "gam", formula = y ~ s(x) ) +
   scale_x_reverse() +
   geom_vline(xintercept = 9800, color = 'red') +
@@ -56,7 +55,7 @@ ggplot(richness, aes(x = age, y = richness)) +
 
 ## use plot_smooth from 'itsadug' package (use base R for plotting)
 
-itsadug::plot_smooth(model_1_s2, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
+itsadug::plot_smooth(model_1, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
 itsadug::plot_smooth(model_2_s2, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
 
 ##reverse x-axis 

@@ -46,19 +46,15 @@ source_files <- sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Test {harmonize_taxa} at different taxo rank --
+# 3. Harmonize at genus level --
 #----------------------------------------------------------# 
 
-taxa_level <- c("level_5", "level_6", "level_7") 
-taxa_name <- c("family", "genus", "species")
 
-# Harmonize taxa at different taxonomic levels
-
-harmonized_data_study_2 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s2, .x)) %>%
-  set_names(taxa_name)
+harmonized_data_study_2 <- harmonize_taxa_s2_01(data_p1_s2_12k_1k_counts_ages, neotoma_taxa = neotoma_taxa, study_2_harmonized = study_2_harmonized) 
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
 
 write_rds(harmonized_data_study_2, here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
+
 #----------------------------------------------------------#

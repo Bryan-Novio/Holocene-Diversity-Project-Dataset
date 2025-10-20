@@ -70,4 +70,13 @@ binned_data_400_11_re <- binned_data %>% filter(dataset_id != 15081 & dataset_id
 #----------------------------------------------------------# 
   
 write_rds(binned_data_400_11_re, here("Outputs/Data/paper_1_study_2/binned_data_400_11_re.rds"))
+
+
+bin_data <- harmonized_data_study_2 %>% bin_data(1000)
+
+data_for_richness <- bin_data  %>%
+  prepare_data_for_richness_estimation("binned") %>% 
+  mutate(sample_id = paste0(dataset_id, "-", age))
+
+
   
