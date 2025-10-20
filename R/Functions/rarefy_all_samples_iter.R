@@ -1,6 +1,6 @@
 rarefy_all_samples_iter <- function(data_source, n_grains, n_iter){
   
-  all_samples <- unique(data_source$sample_id)
+  all_samples <- unique( data_source$sample_id)
   
   # Apply rarefaction to all samples
   results_list <- map(

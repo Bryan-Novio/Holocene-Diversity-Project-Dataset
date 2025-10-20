@@ -18,6 +18,19 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
+
+# Prepare data for richness estimation
+
+prepared_data_for_richness_estimation_2 <- binned_data %>% 
+  prepare_data_for_richness_estimation("binned") %>%
+  mutate(sample_id = paste0(dataset_id, "-", age))
+
+
+
+harmonized_data_study_2 <- read_rds(here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
+
+harmonized_data_study_2_re <- harmonized_data_study_2  %>% rename(pollen_grains = pollen_counts)
+
 prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
 
 #----------------------------------------------------------#
@@ -44,9 +57,10 @@ source_files <- sapply(
 # 3. Rarefy data  at different taxo rank ------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- prepared_data_for_richness_estimation %>%
+rarefied_data <- data_for_richness  %>%
   rarefy_all_samples_iter(n_grains = 400, n_iter = 10) %>% 
-separate_wider_delim(sample_id, "-", names = c("sample_id","age"))
+  separate_wider_delim(sample_id, "-", names = c("sample_id","age"))
+
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file----------------

@@ -57,6 +57,8 @@ plant_height <- BIEN::BIEN_trait_trait(trait = "whole plant height") # load data
 
 plant_height <- read_rds(here("Data/Processed/Other/bien_plant_height.rds"))
 
+taxa_bien_height <- read_csv( here("Data/Processed/Other/taxa_bien_height.csv"))
+
 taxa_bien_height <-  plant_height %>% 
   select(scrubbed_species_binomial, trait_name, trait_value, latitude, longitude) %>% 
   rename(taxa = scrubbed_species_binomial, height = trait_value) %>% 
@@ -70,9 +72,10 @@ View(taxa_bien_height)
 
 #2.3.2. Obtain plant height from TRY database - Plant height (TraitID 18)
 
-TRYdataset_path <- "C:/Users/Bryan/Documents/Holocene-Diversity-Project-Dataset/Data/Processed/Other/44417.txt"
+TRYdataset_path <- here("Data/Processed/Other/TRY_plant_height_s2_p1.txt")
 
 TRY_plant_height <- rtry_import(TRYdataset_path)
+
 
 TRY_plant_height_explored <- rtry_explore(TRY_plant_height,
                                      AccSpeciesName, TraitName, StdValue, UnitName,
@@ -99,6 +102,13 @@ all_taxa_height_databases <- all_taxa_height  %>%
   ungroup() %>% 
   select(taxa, height) %>% 
   arrange(taxa)  # 8,190 taxa with height info retaining row with max value
+
+write_csv(all_taxa_height_databases, here("Data/Processed/Other/all_taxa_height_databases.csv"))
+semi_join(all_taxa_height_databases,un_taxa, by ="taxa") %>% filter(height > 1.5)
+
+
+
+
 
 # Remove “cf.” from certain genera to search for height
 

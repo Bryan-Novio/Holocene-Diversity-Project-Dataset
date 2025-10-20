@@ -1,70 +1,73 @@
-  #----------------------------------------------------------#
-  #               Holocene Diversity Project
-  #
-  #            Paper01| Method 2: Simova et al
-  #
-  #                       
-  #                          2023
-  # North America, site-based richness (dataset_id,age, 
-  # 1000 bins - rarefy 400 
-  #
-  #                 ----  BINNING  ----
-  #----------------------------------------------------------#
+#----------------------------------------------------------#
+#               Holocene Diversity Project
+#
+#            Paper01| Method 2: Simova et al
+#
+#                       
+#                          2023
+# North America, site-based richness (dataset_id,age, 
+# 1000 bins - rarefy 400 
+#
+#                 ----  BINNING  ----
+#----------------------------------------------------------#
   
-  library(tidyverse)
-  library(here)
+library(tidyverse)
+library(here)
   
-  #----------------------------------------------------------#
-  # 1. Load data set -----------------------------------------
-  #----------------------------------------------------------# 
+#----------------------------------------------------------#
+# 1. Load data set -----------------------------------------
+#----------------------------------------------------------# 
   
-  harmonized_data <- read_rds(here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
-  woody_taxa <- read_csv(here("Data/Processed/Other/woody_taxa_res.csv"), show_col_types = FALSE)
+data_p1_s2_12k_1k_counts_ages <- read_rds(here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k_counts_ages.rds"))
   
-  #----------------------------------------------------------#
-  # 2. Load functions ---------------------------------------
-  #----------------------------------------------------------#
+#----------------------------------------------------------#
+# 2. Load functions ---------------------------------------
+#----------------------------------------------------------#
   
-  # Get a vector of general functions
+# Get a vector of general functions
   
-  fun_list <-
+fun_list <-
     list.files(
       path = "R/Functions/",
       pattern = "\\.R$",
       recursive = TRUE
     )
   
-  # Load the function into the global environment
+# Load the function into the global environment
   
-  source_files <-  sapply(
+source_files <-  sapply(
     paste0("R/Functions/", fun_list, sep = ""),
     source
   )
-  
-  #----------------------------------------------------------#
-  # 3. Filter woody taxa from harmonized dataset ------------
-  #----------------------------------------------------------#
-  
-  harmonized_data_woody <- inner_join(woody_taxa, harmonized_data$genus, by = "taxa", relationship = "many-to-many")
  
-  #----------------------------------------------------------#
-  # 4. Bin data  at different taxo rank --
-  #----------------------------------------------------------# 
+#----------------------------------------------------------#
+# 3. Bin data  at different taxo rank --
+#----------------------------------------------------------# 
   
-  # Bin  data 
+# Bin  data 
   
-  binned_data <- harmonized_data_woody %>%  bin_data(1000)
+binned_data <- data_p1_s2_12k_1k_counts_ages %>% bin_data(1000)
+
+# Filter out bins with < 400 pollen grains total 
+
+binned_data_400 <- binned_data %>%
+  group_by(BIN) %>%
+  summarise(
+    total_pollen = sum(summed_pollen_count)
+  )
+
+# Filter out cores with < 11 bins 
+
+binned_data_400_11 <- binned_data %>%
+  group_by(dataset_id) %>% 
+  summarize(BIN_count = n_distinct(BIN)) %>% 
+  filter(BIN_count > 11)
+
+binned_data_400_11_re <- binned_data %>% filter(dataset_id != 15081 & dataset_id != 17324)
+
+#----------------------------------------------------------#
+# 5. Write the binned and prepared_data to RDS files
+#----------------------------------------------------------# 
   
-  # Prepare data for richness estimation
-  
-  prepared_data_for_richness_estimation <- binned_data %>% 
-    prepare_data_for_richness_estimation("binned") %>%
-    mutate(sample_id = paste0(dataset_id, "-", age))
-  
-  #----------------------------------------------------------#
-  # 5. Write the binned and prepared_data to RDS files
-  #----------------------------------------------------------# 
-  
-  write_rds(binned_data, here("Outputs/Data/paper_1_study_2/binned_data_study_2.rds"))
-  write_rds(prepared_data_for_richness_estimation, here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
+write_rds(binned_data_400_11_re, here("Outputs/Data/paper_1_study_2/binned_data_400_11_re.rds"))
   

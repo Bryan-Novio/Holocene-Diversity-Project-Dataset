@@ -21,8 +21,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-pollen_data_s2 <-  read_rds(here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
-harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
+data_p1_s2_12k_1k_counts_ages <- read_rds(here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k_counts_ages.rds"))
+study_2_harmonized <- read_csv(here("Data/Processed/Other/study_2_taxa_final_clean.csv")) #99 distinct pollen_type
 neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
 #----------------------------------------------------------#
@@ -54,7 +54,7 @@ taxa_name <- c("family", "genus", "species")
 
 # Harmonize taxa at different taxonomic levels
 
-harmonized_data_study_2 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s2, data_ancillary, .x)) %>%
+harmonized_data_study_2 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s2, .x)) %>%
   set_names(taxa_name)
 
 #----------------------------------------------------------#
