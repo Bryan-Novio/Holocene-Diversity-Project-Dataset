@@ -1,14 +1,14 @@
-#----------------------------------------------------------#     
-#               
+#----------------------------------------------------------#
+#
 #               Holocene Diversity Project
 #
 #
 #            Paper01| Method 2: Simova et al
 #
-#                       
+#
 #                          2023
-# North America, site-based richness (dataset_id,age, 
-# 1000 bins - rarefy 400 
+# North America, site-based richness (dataset_id,age,
+# 1000 bins - rarefy 400
 #
 #
 #           ----  SELECT WOODY TAXA  ----
@@ -19,15 +19,21 @@ library(here)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-binned_data_400_11_re <- read_rds(here("Outputs/Data/paper_1_study_2/binned_data_400_11_re.rds"))
+data_binned_filtered <-
+  read_rds(
+    here("Outputs/Data/paper_1_study_2/data_binned_filtered.rds")
+  )
 
-
-pollen_data_s2 <-  read_rds(here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
+# This is as supplementary file from DOI: XXX
 woody_taxa <- read_csv("Data/Processed/Other/woody_taxa_simova.csv", show_col_types = FALSE)
-neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
-all_taxa_height_databases <- read_csv(here("Data/Processed/Other/all_taxa_height_databases.csv")) # from BIEN & TRY 
+
+
+neotoma_taxa <- readr::read_csv(
+  here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"),
+  show_col_types = FALSE
+)
 
 
 #----------------------------------------------------------#
@@ -53,9 +59,11 @@ source_files <- sapply(
 
 #----------------------------------------------------------#
 # 2. Reclassify harmonized dataset using woody taxa list ---
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-woody_taxa_re <- woody_taxa %>% rename(taxa ='Taxon name orig.') %>% select(taxa)
+woody_taxa_re <- woody_taxa %>%
+  rename(taxa = "Taxon name orig.") %>%
+  select(taxa)
 
 View(woody_taxa_re)
 
@@ -63,29 +71,78 @@ woody_taxa_re %>% unique()
 
 # Extract all unique taxa from rawdataset
 
-binned_data_400_11_re_taxa <- binned_data_400_11_re %>% distinct(taxa) 
+data_binned_filtered_taxa <- data_binned_filtered %>%
+  distinct(taxa)
 
-study_2_taxa <- inner_join(binned_data_400_11_re_taxa, neotoma_taxa, by = join_by("taxa"=="taxon_name") ) %>% distinct(neotoma_names) 
+study_2_taxa <- inner_join(
+  data_binned_filtered_taxa,
+  neotoma_taxa,
+  by = join_by("taxa" == "taxon_name")
+) %>%
+  distinct(neotoma_names)
 
-woody_taxa_match <- inner_join(woody_taxa_re, study_2_taxa, by = join_by("taxa"=="neotoma_names")) # 133 woody match 
 
-woody_taxa_non_match <- anti_join(woody_taxa_re,study_2_taxa, by = join_by("taxa"=="neotoma_names")) # 259 from Simova et al list but not in study_taxa list 
+woody_taxa_match <- inner_join(
+  woody_taxa_re,
+  study_2_taxa,
+  by = join_by("taxa" == "neotoma_names")
+)
 
-study_2_taxa_re <-  study_2_taxa %>%  rename(taxa = neotoma_names)
+# -> It now has 133 woody match
 
-un_taxa <- anti_join(study_2_taxa_re, woody_taxa_re, by = "taxa") %>% distinct(taxa) # 243 unclassified taxa
+study_2_taxa_re <-
+  study_2_taxa %>% rename(taxa = neotoma_names)
 
-un_taxa_re <- read_csv(here("Data/Processed/Other/unclass_taxa_re.csv")) # read now classified taxa based on web search # 242 only because of duplicate of (cf.) Oxyria digyna
+un_taxa <- anti_join(
+  study_2_taxa_re,
+  woody_taxa,
+  by = join_by("neotoma_names" == "taxa")
+) %>%
+  distinct(taxa) # 243 unclassified taxa
 
-un_taxa_re_woody <- un_taxa_re %>% filter(woodiness == "woody") %>%  select(taxa) # select on woody taxa from web search = 87 only
-
-study_2_taxa_final <- bind_rows(woody_taxa_match,un_taxa_re_woody) %>% distinct() # combine woody taxa identified using Simova list with identified by web search
+# save the unmached taxa
+write_csv(un_taxa, here("Data/Processed/Other/unclass_taxa.csv"))
 
 
 #----------------------------------------------------------#
-# 5. Save reclassified harmonized taxa  ------------------
-#----------------------------------------------------------# 
+# 3. Manual search for the unmached taxa  ------------------
+#----------------------------------------------------------#
 
-write_csv(un_taxa, here("Data/Processed/Other/unclass_taxa.csv"))
-write_csv(study_2_taxa_final, here("Data/Processed/Other/study_2_taxa_final.csv"))
+# We have individually assing the unmached taxa and
+#   saved as `unclass_taxa_filled.csv`
 
+#----------------------------------------------------------#
+# 4. Manual search for the unmached taxa  ------------------
+#----------------------------------------------------------#
+
+# read now classified taxa based on web search # 242 only because of duplicate of (cf.) Oxyria digyna
+
+un_taxa_re <- read_csv(here("Data/Processed/Other/unclass_taxa_filled.csv"))
+
+un_taxa_re_woody <-
+  un_taxa_re %>%
+  # select on woody taxa from web search = 87 only
+  filter(woodiness == "woody") %>%
+  select(taxa)
+
+# combine woody taxa identified using Simova list with identified by web search
+data_taxa_all_woody <-
+  bind_rows(woody_taxa_match, un_taxa_re_woody) %>%
+  distinct()
+
+#----------------------------------------------------------#
+# 5. Filter only woody taxa  ------------------
+#----------------------------------------------------------#
+
+data_only_woody <-
+  data_binned_filtered %>%
+  dplyr::inner_join(
+    data_taxa_all_woody,
+    by = "taxa" # ????
+  )
+
+#----------------------------------------------------------#
+# 6. Save reclassified harmonized taxa  ------------------
+#----------------------------------------------------------#
+
+write_csv(data_only_woody, here("Data/Processed/Other/data_only_woody.csv"))
