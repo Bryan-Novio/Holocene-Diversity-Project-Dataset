@@ -60,7 +60,6 @@ itsadug::plot_smooth(model_2_s2, view = 'age', rm.ranef = TRUE, rug = FALSE, eeg
 
 ##reverse x-axis 
 
-
 p <- ggplotify::as.ggplot(
   function() {
     # Plot the smooth term

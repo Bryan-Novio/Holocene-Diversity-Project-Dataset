@@ -1,14 +1,12 @@
-
-
 #----------------------------------------------------------#
 #               Holocene Diversity Project
 #
 #            Paper01| Method 2: Simova et al
 #
-#                       
+#
 #                          2023
-# North America, site-based richness (dataset_id,age, 
-# 1000 bins - rarefy 400 
+# North America, site-based richness (dataset_id,age,
+# 1000 bins - rarefy 400
 #
 #                   ---HARMONIZATION ----
 #
@@ -16,14 +14,22 @@
 
 library(tidyverse)
 library(here)
+library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-data_p1_s2_12k_1k_counts_ages <- read_rds(here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k_counts_ages.rds"))
-study_2_harmonized <- read_csv(here("Data/Processed/Other/study_2_taxa_final_clean.csv")) #99 distinct pollen_type
-neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+data_p1_s2_12k_1k_counts_ages <- read_rds(
+  here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k_counts_ages.rds"))
+
+data_only_woody <- read_csv(
+  here("Data/Processed/Other/data_only_woody.csv")
+) # 196 distinct pollen_type
+
+harmonisation_table <- readr::read_csv(
+  here::here("Data/harmonization_table_rev.csv")
+)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -46,15 +52,34 @@ source_files <- sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Harmonize at genus level --
-#----------------------------------------------------------# 
+# 3. Test {harmonize_taxa} at different taxo rank --
+#----------------------------------------------------------#
 
+data_only_woody_fix_cols <- data_only_woody %>% 
+  rename(taxon_name = taxa, pollen_counts = summed_pollen_count)
 
-harmonized_data_study_2 <- harmonize_taxa_s2_01(data_p1_s2_12k_1k_counts_ages, neotoma_taxa = neotoma_taxa, study_2_harmonized = study_2_harmonized) 
+age <- data_p1_s2_12k_1k_counts_ages %>% 
+  select(dataset_id,sample_id, age) %>%
+  distinct(dataset_id, .keep_all = TRUE) %>% 
+  mutate(dataset_id = as.double(dataset_id))
+
+data_only_woody_fix_cols_age <- data_only_woody_fix_cols %>% 
+  inner_join(age, by = "dataset_id") %>% 
+  rename(sample_id = sample_id.x) %>% 
+  select(taxon_name,dataset_id,sample_id, pollen_counts,age)
+  
+# Harmonize taxa at different taxonomic levels
+
+data_study2_harmonised <-
+  harmonize_taxa(
+    data_to_harmonize = data_only_woody_fix_cols_age,
+    harmonisation_table = harmonisation_table,
+    level = "level_6"
+  )
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
 
-write_rds(harmonized_data_study_2, here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
+write_rds(data_study2_harmonised, here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
 
 #----------------------------------------------------------#
