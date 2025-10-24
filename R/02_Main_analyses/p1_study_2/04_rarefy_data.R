@@ -13,24 +13,13 @@
 
 library(tidyverse)
 library(here)
+library(vegan)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------#
 
-
-# Prepare data for richness estimation
-
-prepared_data_for_richness_estimation_2 <- binned_data %>%
-  prepare_data_for_richness_estimation("binned") %>%
-  mutate(sample_id = paste0(dataset_id, "-", age))
-
-
-harmonized_data_study_2 <- read_rds(here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
-
-harmonized_data_study_2_re <- harmonized_data_study_2 %>% rename(pollen_grains = pollen_counts)
-
-prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
+data_study2_harmonised <- read_rds(here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -50,18 +39,38 @@ fun_list <-
 source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
-)
+  )
 
 #----------------------------------------------------------#
 # 3. Rarefy data  at different taxo rank ------------------
 #----------------------------------------------------------#
 
+data_to_rarefy_1 <- 
+  data_study2_harmonised %>%
+  select(dataset_id,sample_id, taxa, pollen_counts) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  ) %>% 
+  nest(samples = c(sample_id, taxa, pollen_counts)
+  ) %>% 
+  unnest(samples) %>% 
+  pivot_wider(
+    names_from = taxa,
+    values_from = pollen_counts
+  ) 
+  
+data_to_rarefy_2 <- 
+  data_to_rarefy_1 %>% 
+  nest(samples = c(,2:106)
+  ) 
+  
 set.seed(1234)
+
 rarefied_data <-
-  data_for_richness %>%
-  rarefy_all_samples(n_grains = 400)
+  data_to_rarefy_2 %>%
+  rarefy_all_samples(400)
 
-
+rarefied_data %>% unnest(data)
+  
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file----------------
 #----------------------------------------------------------#

@@ -1,5 +1,5 @@
 rarefy_all_samples <- function(data_source, n_grains) {
-  # we expect that the data lookls like
+  # we expect that the data looks like
   # dataset_id, samples, ...
 
   assertthat::assert_that(
@@ -15,7 +15,7 @@ rarefy_all_samples <- function(data_source, n_grains) {
   # samples is a nested data
   # sample_id,. taxa1, taxa2, ....
   assertthat::assert_that(
-    all(c("sample_id") %in% colnames(data_source$samles[[1]])),
+    all(c("sample_id") %in% colnames(data_source$samples[[1]])),
     msg = "Column `samples` must contain columns 'sample_id' "
   )
 
@@ -23,15 +23,17 @@ rarefy_all_samples <- function(data_source, n_grains) {
     data_source %>%
     tidyr::unnest(samples) %>%
     dplyr::mutate(
-      dataset_sample_id = paste0(dataset_id, "__", sample_id)
+      dataset_sample_id = paste0(dataset_id,"_", sample_id)
     ) %>%
-    dplyr::select(-c(dataset_id, sample_id)) %>%
-    tibble::column_to_rownames(dataset_sample_id)
+    dplyr::mutate(
+      dplyr::across(-dataset_sample_id, ~ tidyr::replace_na(.,0))
+    ) %>% 
+    tibble::column_to_rownames("dataset_sample_id")
 
-
+  
   results <-
     vegan::rrarefy(data_prepared, sample = n_grains) %>%
-    tibble::rownames_to_column("dataset_sample_id") %>%
+    as_tibble(rownames = "dataset_sample_id") %>% # convert matrix to data frame
     dplyr::mutate(
       dataset_id = stringr::str_subset(dataset_sample_id, "__", negate = TRUE),
       sample_id = stringr::str_remove(dataset_sample_id, ".*__")
@@ -41,3 +43,4 @@ rarefy_all_samples <- function(data_source, n_grains) {
 
   return(results)
 }
+
