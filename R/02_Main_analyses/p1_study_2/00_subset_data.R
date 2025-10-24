@@ -62,7 +62,7 @@ data_p1_s2_12k <- data_p1_s2 %>%
   ) %>%
   filter(age_span >= 12000)
 
-# aleternative
+# alternative
 # data_p1_s2_12k <- data_p1_s2 %>%
 # filter_cores_by_total_span(age_span = 12e3)
 

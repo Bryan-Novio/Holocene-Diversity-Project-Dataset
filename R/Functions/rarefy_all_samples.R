@@ -1,5 +1,5 @@
 rarefy_all_samples <- function(data_source, n_grains) {
-  # we expect that the data lookls like
+  # we expect that the data looks like
   # dataset_id, samples, ...
 
   assertthat::assert_that(
