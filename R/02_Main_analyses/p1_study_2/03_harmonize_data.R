@@ -55,24 +55,25 @@ source_files <- sapply(
 # 3. Test {harmonize_taxa} at different taxo rank --
 #----------------------------------------------------------#
 
-data_only_woody_fix_cols <- data_only_woody %>% 
-  rename(taxon_name = taxa, pollen_counts = summed_pollen_count)
+data_only_woody_renamed <- data_only_woody %>% 
+  rename(taxon_name = taxa, pollen_counts = summed_pollen_count)  
 
-age <- data_p1_s2_12k_1k_counts_ages %>% 
+pollen_ages <- data_p1_s2_12k_1k_counts_ages %>% 
   select(dataset_id,sample_id, age) %>%
   distinct(dataset_id, .keep_all = TRUE) %>% 
-  mutate(dataset_id = as.double(dataset_id))
+  mutate(dataset_id = as.double(dataset_id),
+         sample_id = as.double(sample_id)
+  )
 
-data_only_woody_fix_cols_age <- data_only_woody_fix_cols %>% 
-  inner_join(age, by = "dataset_id") %>% 
-  rename(sample_id = sample_id.x) %>% 
+data_only_woody_with_ages <- data_only_woody_renamed %>% 
+  inner_join(pollen_ages, by = c("dataset_id","sample_id")) %>% 
   select(taxon_name,dataset_id,sample_id, pollen_counts,age)
   
 # Harmonize taxa at different taxonomic levels
 
 data_study2_harmonised <-
   harmonize_taxa(
-    data_to_harmonize = data_only_woody_fix_cols_age,
+    data_to_harmonize = data_only_woody_with_ages,
     harmonisation_table = harmonisation_table,
     level = "level_6"
   )

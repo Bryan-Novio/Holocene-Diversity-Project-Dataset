@@ -134,7 +134,7 @@ data_taxa_all_woody <-
 #----------------------------------------------------------#
 
 data_binned_filtered_re <- data_binned_filtered %>%
-  inner_join(neotoma_taxa, by = join_by("taxa"== "taxon_name")) %>% 
+  inner_join(neotoma_taxa, by = join_by("taxa"== "taxon_name")) %>%  # use neotoma taxa names for the data frame
   select(dataset_id,sample_id,BIN, BIN_chr, summed_pollen_count,n, neotoma_names) %>% 
   rename(taxa = neotoma_names) %>% 
   relocate(taxa)
