@@ -69,6 +69,7 @@ rarefied_data <-
   data_to_rarefy_2 %>%
   rarefy_all_samples(400)
 
+
 rarefied_data %>% unnest(data)
   
 #----------------------------------------------------------#
