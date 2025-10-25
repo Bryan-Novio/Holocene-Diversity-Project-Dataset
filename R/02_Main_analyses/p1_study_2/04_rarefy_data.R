@@ -19,7 +19,21 @@ library(vegan)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------#
 
+<<<<<<< HEAD
 data_study2_harmonised <- read_rds(here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
+=======
+
+data_study2_harmonised <- read_rds(here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
+
+# Prepare data for richness estimation
+
+prepared_data_for_richness_estimation_2 <- binned_data %>%
+  prepare_data_for_richness_estimation("binned") %>%
+  mutate(sample_id = paste0(dataset_id, "-", age))
+
+
+prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
+>>>>>>> 41830e6b03f055e26fd00e1bb141700c9deb88a8
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -66,8 +80,13 @@ data_to_rarefy_2 <-
 set.seed(1234)
 
 rarefied_data <-
+<<<<<<< HEAD
   data_to_rarefy_2 %>%
   rarefy_all_samples(400)
+=======
+  data_study2_harmonised %>%
+  rarefy_all_samples(n_grains = 400)
+>>>>>>> 41830e6b03f055e26fd00e1bb141700c9deb88a8
 
 rarefied_data %>% unnest(data)
   
