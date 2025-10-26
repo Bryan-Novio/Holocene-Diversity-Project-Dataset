@@ -75,4 +75,5 @@ rarefied_data %>% unnest(data)
 # 4. Write the rarefied data to an RDS file----------------
 #----------------------------------------------------------#
 
+write_rds(data_to_rarefy_2, here("Outputs/Data/paper_1_study_2/data_to_rarefy_study_2.rds"))
 write_rds(rarefied_data, here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
