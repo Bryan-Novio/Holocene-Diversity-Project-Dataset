@@ -1,5 +1,10 @@
 prepare_data_for_richness_estimation <- function(data_source, type){
   
+  assertthat::assert_that(
+  is.data.frame(data_source),
+  msg = "data_source has to be a data.frame"
+  )
+  
   if (type == "binned"){
     res <-
     prepared_data_for_richness_estimation <- data_source %>% 
