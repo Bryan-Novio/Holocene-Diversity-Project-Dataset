@@ -1,5 +1,10 @@
 bin_data <- function(data_source, bin_size){
   
+  assertthat::assert_that(
+  is.data.frame(data_source),
+  msg = "data_source has to be a data.frame"
+  )
+  
   data_binned <-  data_source %>% 
     mutate(
       BIN = cut(age, seq(min(age), 

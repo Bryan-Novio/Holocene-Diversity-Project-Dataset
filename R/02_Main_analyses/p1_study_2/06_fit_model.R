@@ -41,7 +41,7 @@ summary(model_2)
 
 plot(model, select = 1)
 
-plot.gam(model)
+plot.gam(model_1)
 
 #----------------------------------------------------------#
 # 3. Save model and richness_re as RDS files --

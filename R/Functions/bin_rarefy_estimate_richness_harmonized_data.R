@@ -1,5 +1,9 @@
 
 bin_rarefy_estimate_richness_harmonized_data <- function(harmonized_data_level){
+assertthat::assert_that(
+is.data.frame(harmonized_data_level),
+msg = "harmonized_data_level has to be a data.frame"
+)
   
 harmonized_data_level %>% 
     bin_data(500) %>%                      # binning 

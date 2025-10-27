@@ -1,14 +1,12 @@
-
-
 #----------------------------------------------------------#
 #               Holocene Diversity Project
 #
 #            Paper01| Method 2: Simova et al
 #
-#                       
+#
 #                          2023
-# North America, site-based richness (dataset_id,age, 
-# 1000 bins - rarefy 400 
+# North America, site-based richness (dataset_id,age,
+# 1000 bins - rarefy 400
 #
 #                   ---HARMONIZATION ----
 #
@@ -16,14 +14,19 @@
 
 library(tidyverse)
 library(here)
+library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-pollen_data_s2 <-  read_rds(here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
-harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_col_types = FALSE)
-neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+data_only_woody <- read_csv(
+  here("Data/Processed/Other/data_only_woody.csv")
+) # 196 distinct pollen_type
+
+harmonisation_table <- readr::read_csv(
+  here::here("Data/harmonization_table_rev.csv")
+)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -45,20 +48,31 @@ source_files <- sapply(
   source
 )
 
-#----------------------------------------------------------#
+
 # 3. Test {harmonize_taxa} at different taxo rank --
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-taxa_level <- c("level_5", "level_6", "level_7") 
-taxa_name <- c("family", "genus", "species")
+data_only_woody_renamed <- data_only_woody %>% 
+  rename(taxon_name = taxa, pollen_counts = summed_pollen_count, age = BIN) %>% 
+  dplyr::group_by(dataset_id, age, taxon_name ) %>%
+  dplyr::summarize(
+    pollen_counts = sum(pollen_counts),
+    .groups = "drop"
+  )
 
+  
 # Harmonize taxa at different taxonomic levels
 
-harmonized_data_study_2 <- purrr::map(taxa_level, ~ harmonize_taxa(pollen_data_s2, data_ancillary, .x)) %>%
-  set_names(taxa_name)
+data_study2_harmonised <-
+  harmonize_taxa(
+    data_to_harmonize = data_only_woody_renamed,
+    harmonisation_table = harmonisation_table,
+    level = "level_6"
+  )
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
 
-write_rds(harmonized_data_study_2, here("Outputs/Data/paper_1_study_2/harmonized_data_study_2.rds"))
+write_rds(data_study2_harmonised, here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
+
 #----------------------------------------------------------#

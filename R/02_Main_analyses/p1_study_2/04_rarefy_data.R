@@ -3,22 +3,23 @@
 #
 #            Paper01| Method 2: Simova et al
 #
-#                       
+#
 #                          2023
-# North America, site-based richness (dataset_id,age, 
-# 1000 bins - rarefy 400 
+# North America, site-based richness (dataset_id,age,
+# 1000 bins - rarefy 400
 #
 #                  ----RAREFACTION  ----
 #----------------------------------------------------------#
-  
+
 library(tidyverse)
 library(here)
+library(vegan)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_2/prepared_data_for_richness_estimation_study_2.rds"))
+data_study2_harmonised <- read_rds(here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -31,7 +32,7 @@ fun_list <-
     path = "R/Functions/",
     pattern = "\\.R$",
     recursive = TRUE
-    )
+  )
 
 # Load the function into the global environment
 
@@ -42,14 +43,32 @@ source_files <- sapply(
 
 #----------------------------------------------------------#
 # 3. Rarefy data  at different taxo rank ------------------
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
-rarefied_data <- prepared_data_for_richness_estimation %>%
-  rarefy_all_samples_iter(n_grains = 400, n_iter = 10) %>% 
-separate_wider_delim(sample_id, "-", names = c("sample_id","age"))
+data_to_rarefy <- 
+  data_study2_harmonised %>%
+  select(dataset_id, age, taxon_name, pollen_counts) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  )  %>% 
+  pivot_wider(
+    names_from = taxon_name,
+    values_from = pollen_counts
+  )
+  
+  
+set.seed(1234)
 
+rarefied_data <-
+  rarefy_all_samples(
+    data_source = data_to_rarefy,
+    n_grains = 400
+    )
+
+rarefied_data %>% unnest(data)
+  
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file----------------
 #----------------------------------------------------------#
 
+write_rds(data_to_rarefy_2, here("Outputs/Data/paper_1_study_2/data_to_rarefy_study_2.rds"))
 write_rds(rarefied_data, here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
