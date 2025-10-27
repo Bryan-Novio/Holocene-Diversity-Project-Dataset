@@ -54,14 +54,9 @@ data_binned_400 <- select_only_bins_with_specific_pollen_grain_sum(data_binned, 
 
 ############# combine data_binned with origin
 
-sample_id <- data_p1_s2_12k_1k_counts_ages %>% 
-  select(dataset_id,sample_id)
-
-data_binned_to_be_filtered <- inner_join(data_binned,sample_id, by = "dataset_id") #attach sample_id to binned data
-
 data_binned_filtered <-
   select_cores_with_specific_number_of_bins(
-  data_binned_to_be_filtered,
+    data_binned_400,
     n_bins = 11
   )
 
@@ -69,6 +64,4 @@ data_binned_filtered <-
 # 5. Write the binned and prepared_data to RDS files
 #----------------------------------------------------------#
 
-write_rds(data_binned, here("Outputs/Data/paper_1_study_2/data_binned.rds"))
-write_rds(data_binned_400, here("Outputs/Data/paper_1_study_2/data_binned_400.rds"))
 write_rds(data_binned_filtered, here("Outputs/Data/paper_1_study_2/data_binned_filtered.rds"))

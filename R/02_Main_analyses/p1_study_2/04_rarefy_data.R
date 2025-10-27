@@ -45,29 +45,24 @@ source_files <- sapply(
 # 3. Rarefy data  at different taxo rank ------------------
 #----------------------------------------------------------#
 
-data_to_rarefy_1 <- 
+data_to_rarefy <- 
   data_study2_harmonised %>%
-  select(dataset_id,sample_id, taxa, pollen_counts) %>% 
+  select(dataset_id, age, taxon_name, pollen_counts) %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
-  ) %>% 
-  nest(samples = c(sample_id, taxa, pollen_counts)
-  ) %>% 
-  unnest(samples) %>% 
+  )  %>% 
   pivot_wider(
-    names_from = taxa,
+    names_from = taxon_name,
     values_from = pollen_counts
-  ) 
+  )
   
-data_to_rarefy_2 <- 
-  data_to_rarefy_1 %>% 
-  nest(samples = c(,2:106)
-  ) 
   
 set.seed(1234)
 
 rarefied_data <-
-  data_to_rarefy_2 %>%
-  rarefy_all_samples(400)
+  rarefy_all_samples(
+    data_source = data_to_rarefy,
+    n_grains = 400
+    )
 
 rarefied_data %>% unnest(data)
   

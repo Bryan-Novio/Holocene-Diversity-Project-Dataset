@@ -20,9 +20,6 @@ library(dplyr)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------#
 
-data_p1_s2_12k_1k_counts_ages <- read_rds(
-  here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k_counts_ages.rds"))
-
 data_only_woody <- read_csv(
   here("Data/Processed/Other/data_only_woody.csv")
 ) # 196 distinct pollen_type
@@ -56,24 +53,19 @@ source_files <- sapply(
 #----------------------------------------------------------#
 
 data_only_woody_renamed <- data_only_woody %>% 
-  rename(taxon_name = taxa, pollen_counts = summed_pollen_count)  
-
-pollen_ages <- data_p1_s2_12k_1k_counts_ages %>% 
-  select(dataset_id,sample_id, age) %>%
-  distinct(dataset_id, .keep_all = TRUE) %>% 
-  mutate(dataset_id = as.double(dataset_id),
-         sample_id = as.double(sample_id)
+  rename(taxon_name = taxa, pollen_counts = summed_pollen_count, age = BIN) %>% 
+  dplyr::group_by(dataset_id, age, taxon_name ) %>%
+  dplyr::summarize(
+    pollen_counts = sum(pollen_counts),
+    .groups = "drop"
   )
 
-data_only_woody_with_ages <- data_only_woody_renamed %>% 
-  inner_join(pollen_ages, by = c("dataset_id","sample_id")) %>% 
-  select(taxon_name,dataset_id,sample_id, pollen_counts,age)
   
 # Harmonize taxa at different taxonomic levels
 
 data_study2_harmonised <-
   harmonize_taxa(
-    data_to_harmonize = data_only_woody_with_ages,
+    data_to_harmonize = data_only_woody_renamed,
     harmonisation_table = harmonisation_table,
     level = "level_6"
   )

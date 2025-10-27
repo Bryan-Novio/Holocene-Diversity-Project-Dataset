@@ -79,6 +79,4 @@ data_p1_s2_12k_1k_counts_ages <- data_p1_s2_12k_1k %>%
 # 4. Write the subset data to RDS file
 #----------------------------------------------------------#
 
-write_rds(data_p1_s2_12k, here("Outputs/Data/paper_1_study_2/data_p1_s2_12k.rds"))
-write_rds(data_p1_s2_12k_1k, here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k.rds"))
 write_rds(data_p1_s2_12k_1k_counts_ages, here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
