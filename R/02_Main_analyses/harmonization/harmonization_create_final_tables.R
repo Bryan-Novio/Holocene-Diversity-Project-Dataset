@@ -18,7 +18,6 @@ taxa_ref_table       <- readr::read_csv(here("Data/Input/Harmonisation_tables/ta
 
 method_data_files
 
-
 method_data <- purrr::map(method_data_files,readr::read_rds) 
 method_data_taxa <- purrr::map(method_data, ~ pull(.x, taxa))  # extract taxon per study
 str(method_data_taxa)
@@ -214,10 +213,8 @@ data %>%
     values_drop_na = TRUE)
 
 
-
 harmonized_data_study_1_fam_re <- harmonized_data_study_1_fam %>%  rename(taxa = level_5)
 harmonized_data_study_1_fam_re_1 <- harmonized_data_study_1_fam_re %>%  rename(pollen_counts = pollen_sum)
-
 
 
 #----------------------------------------------------------#

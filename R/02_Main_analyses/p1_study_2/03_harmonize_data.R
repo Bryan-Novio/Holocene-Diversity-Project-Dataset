@@ -24,7 +24,11 @@ data_only_woody <- read_csv(
   here("Data/Processed/Other/data_only_woody.csv")
 ) # 196 distinct pollen_type
 
-harmonisation_table <- readr::read_csv(
+harmonisation_table <- readr::read_csv(         # new harmonization_table
+  here::here("Data/Processed/Data_harmonised/harmonization_table_new.csv")
+)
+
+harmonisation_table <- readr::read_csv(        # old harmonization_table
   here::here("Data/harmonization_table_rev.csv")
 )
 
@@ -60,7 +64,6 @@ data_only_woody_renamed <- data_only_woody %>%
     .groups = "drop"
   )
 
-  
 # Harmonize taxa at different taxonomic levels
 
 data_study2_harmonised <-

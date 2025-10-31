@@ -44,15 +44,11 @@ source_files <- sapply(
 
 data_binned <- data_p1_s2_12k_1k_counts_ages %>% bin_data(1000)
 
-
 # Filter out bins with < 400 pollen grains total
 
 data_binned_400 <- select_only_bins_with_specific_pollen_grain_sum(data_binned, 400)
 
 # Filter out cores with < 11 bins
-
-
-############# combine data_binned with origin
 
 data_binned_filtered <-
   select_cores_with_specific_number_of_bins(
