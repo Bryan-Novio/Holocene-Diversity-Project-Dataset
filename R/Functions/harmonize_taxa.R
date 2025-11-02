@@ -50,7 +50,7 @@ harmonize_taxa <- function(data_to_harmonize, harmonisation_table, level) {
     )
   
   assertthat::assert_that(
-    nrow(data_taxa_missing) == 0,
+    nrow(data_taxa_missing) != 0,
     msg = "harmonisation table must contain taxon_names"
   )
 

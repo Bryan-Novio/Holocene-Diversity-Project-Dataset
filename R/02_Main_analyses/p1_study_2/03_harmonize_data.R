@@ -28,10 +28,6 @@ harmonisation_table <- readr::read_csv(         # new harmonization_table
   here::here("Data/Processed/Data_harmonised/harmonization_table_new.csv")
 )
 
-harmonisation_table <- readr::read_csv(        # old harmonization_table
-  here::here("Data/harmonization_table_rev.csv")
-)
-
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -63,6 +59,7 @@ data_only_woody_renamed <- data_only_woody %>%
     pollen_counts = sum(pollen_counts),
     .groups = "drop"
   )
+
 
 # Harmonize taxa at different taxonomic levels
 

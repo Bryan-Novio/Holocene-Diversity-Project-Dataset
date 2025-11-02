@@ -63,8 +63,6 @@ rarefied_data <-
     data_source = data_to_rarefy,
     n_grains = 400
     )
-
-rarefied_data %>% unnest(data)
   
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file----------------
