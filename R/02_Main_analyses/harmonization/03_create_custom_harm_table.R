@@ -1,39 +1,77 @@
+#----------------------------------------------------------#
+#               Holocene Diversity Project
+#
+#                      ALL STUDIES
+#
+#                     HARMONIZATION 
+#             (Create harmonisation table)
+#
+#----------------------------------------------------------#
+# 1. Load data files ----
+#----------------------------------------------------------#
 
-#PART 3: CREATE CUSTOM HARMONISATION TABLE----
+classified_taxa_succeeded <- 
+  read_rds(here("Data/Processed/Data_harmonised/classified_taxa_succeeded.rds"))
 
-additional_class_taxa <- read_csv(here("Data/Processed/Data_harmonised/additional_class_taxa.csv"))
-class_taxa_success   <- read_rds(here("Data/Processed/Data_harmonised/class_taxa_succeeded.rds"))
-class_taxa_plants    <- read_csv(here("Data/Processed/Data_harmonised/class_taxa_plants.csv"), show_col_types = FALSE)
-taxa_ref_table       <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+classified_taxa_plants <- 
+  read_rds(here("Data/Processed/Data_harmonised/classified_taxa_plants.rds"))
+
+not_plants_classified <- 
+  read_csv(here("Data/Processed/Data_harmonised/not_plants_classified.csv"))
+
+classified_taxa_hlist_table_filled <- 
+  read_csv(here("Data/Processed/Data_harmonised/classified_taxa_hlist_table.csv"))
+
 
 #----------------------------------------------------------#
-# 1. Create general harmonization table 
+# 2. Create general harmonization table ----
 #----------------------------------------------------------#
 
-class_taxa_hlist <- class_taxa_success %>% 
+classified_taxa_hlist <- 
+  classified_taxa_succeeded %>% 
   select(sel_name,classification) %>% 
-  inner_join(class_taxa_plants, by =  "sel_name") %>%            
+  inner_join(classified_taxa_plants, by =  "sel_name") %>%            
   select(sel_name, classification) %>% 
   unnest_wider(classification) %>% 
   select(sel_name, name, rank)
 
-class_taxa_hlist_level <- class_taxa_hlist %>% 
-  select(sel_name, rank) %>% 
-  unnest(rank) %>% 
+classified_taxa_hlist <- 
+  classified_taxa_succeeded %>% 
+  left_join(classified_taxa_plants, by = "neotoma_names") %>% 
+  select(neotoma_names, name, rank)
+
+class_taxa_hlist_level <-
+  classified_taxa_hlist %>% 
+  select(neotoma_names, rank) %>% 
   distinct(rank)
 
-class_taxa_hlist_init <- class_taxa_hlist %>% 
-  select(sel_name, name) %>% 
-  unnest_wider(name, names_sep = "_" ) 
+classified_taxa_hlist_table <- classified_taxa_hlist  %>% 
+  select(neotoma_names, name, rank) %>% 
+  pivot_wider(names_from = rank, values_from = name, names_sep = "_") %>% 
+  mutate(across(where(is.list), 
+  ~sapply(., function(x) if (length(x) == 0) NA_character_
+          else paste(x, collapse = ", ")))) %>% 
+  select(-c(subspecies,variety))
 
-class_taxa_hlist_final <-  class_taxa_hlist_init %>% 
-  rename_with(.fn = ~ str_replace(.x,"name_", "level_"), 
-              .cols = starts_with("name_")
-  ) 
 
-harmonization_table_gen <- class_taxa_hlist_final %>% rename(taxon_name = sel_name) 
+classified_taxa_hlist_table_filled_names <- 
+  names((classified_taxa_hlist_table_filled))
 
-harmonization_table_gen_combined <- bind_rows(harmonization_table_gen, additional_class_taxa) #
+classified_taxa_hlist_table_filled_names <- 
+  classified_taxa_hlist_table_filled %>%  
+  rename(level_= classified_taxa_hlist_table_filled_names, -1) 
 
-write_csv(harmonization_table_gen_combined, here("Data/Processed/Data_harmonised/harmonization_table_new.csv"))
+new_name <- paste0("level_", 1:7)
+
+classified_plants <- 
+  classified_taxa_hlist_table_filled_names %>% 
+  set_names("neotoma_names", new_name)
+
+harmonization_table_all_studies <- bind_rows(classified_plants, not_plants_classified) 
+
+#----------------------------------------------------------#
+# 3.Save general harmonization table  ----
+#----------------------------------------------------------#
+
+write_rds(harmonization_table_all_studies, here("Data/Processed/Data_harmonised/harmonization_table_all_studies.rds"))
 
