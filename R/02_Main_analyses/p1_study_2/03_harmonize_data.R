@@ -24,9 +24,11 @@ data_only_woody <- read_csv(
   here("Data/Processed/Other/data_only_woody.csv")
 ) # 196 distinct pollen_type
 
-harmonisation_table <- readr::read_csv(         # new harmonization_table
-  here::here("Data/Processed/Data_harmonised/harmonization_table_new.csv")
-)
+harmonisation_table <- 
+  readr::read_rds(  
+  here::here("Data/Processed/Data_harmonised/harmonization_table_all_studies.rds")
+) %>% 
+  rename(taxon_name = neotoma_names)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------

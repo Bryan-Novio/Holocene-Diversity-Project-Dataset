@@ -9,10 +9,10 @@ harmonize_taxa <- function(data_to_harmonize, harmonisation_table, level) {
     msg = "data must contain columns 'dataset_id', 'age', 'taxon_name', 'pollen_counts' "
   )
 
-  taxa_level <- sym("level_6") # Convert string to symbol for use in dplyr
+  taxa_level <- sym(level) # Convert string to symbol for use in dplyr
 
   harmonisation_table_prep <- harmonisation_table %>% 
-    dplyr::select(taxon_name, !!"level_6") %>%
+    dplyr::select(taxon_name, !!taxa_level) %>%
     rlang::set_names(
       nm = c("taxon_name", "taxa_harmonised")
     ) %>% 
@@ -50,7 +50,7 @@ harmonize_taxa <- function(data_to_harmonize, harmonisation_table, level) {
     )
   
   assertthat::assert_that(
-    nrow(data_taxa_missing) != 0,
+    nrow(data_taxa_missing) == 0,
     msg = "harmonisation table must contain taxon_names"
   )
 
