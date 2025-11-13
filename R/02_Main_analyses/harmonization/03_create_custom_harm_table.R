@@ -22,6 +22,9 @@ not_plants_classified <-
 classified_taxa_hlist_table_filled <- 
   read_csv(here("Data/Processed/Data_harmonised/classified_taxa_hlist_table.csv"))
 
+not_plants_classified_manually <-
+  read_csv(here("Data/Processed/Data_harmonised/not_plants_classified_manually.csv"))
+
 
 #----------------------------------------------------------#
 # 2. Create general harmonization table ----
@@ -67,7 +70,8 @@ classified_plants <-
   classified_taxa_hlist_table_filled_names %>% 
   set_names("neotoma_names", new_name)
 
-harmonization_table_all_studies <- bind_rows(classified_plants, not_plants_classified) 
+harmonization_table_all_studies <-
+  bind_rows(classified_plants, not_plants_classified) 
 
 #----------------------------------------------------------#
 # 3.Save general harmonization table  ----

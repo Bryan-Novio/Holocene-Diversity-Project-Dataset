@@ -16,10 +16,8 @@ library(here)
 #----------------------------------------------------------#
 
 classified_taxa <-
-  read_rds(here("Data/Processed/Data_harmonised/classified_taxa_neotoma_p1_all_subset.rds"))
+  read_rds(here("Data/Processed/Paper_1/classified_taxa_neotoma_p1_all_subset.rds"))
 
-not_plants_classified_manually <-
-  read_csv(here("Data/Processed/Data_harmonised/not_plants_classified_manually.csv"))
 
 #----------------------------------------------------------#
 # 2. Load functions ----
@@ -52,18 +50,19 @@ classified_taxa_checked <-
   dplyr::mutate(
     has_no_results = purrr::map_lgl(
       .x = classification ,.f =
-        class_taxa_tib_has_no_result
+        return_taxa_not_classified
     )
   ) 
 
 # select on classification results column as logical
 
-classified_taxa_has_no_res <- classified_taxa_checked %>%
+classified_taxa_has_no_res <- 
+  classified_taxa_checked %>%
   filter(has_no_results==TRUE) %>% 
   select(neotoma_names) %>% 
   distinct()
 
-# list of succesful classifications
+# list of successful classifications
 
 classified_taxa_success <- 
   classified_taxa_checked %>%
@@ -72,7 +71,7 @@ classified_taxa_success <-
   distinct()
 
 #----------------------------------------------------------#
-# 4. Filter classification as plant or an animal ----
+# 4. Filter classification as plant or not plants ----
 #----------------------------------------------------------#  
 
 # successful classification with tabulated results
@@ -95,8 +94,14 @@ classified_taxa_plants <- classified_taxa_succeeded %>%
   mutate(is_plant = TRUE) %>% 
   select(neotoma_names, is_plant)
 
+
+write_rds(classified_taxa_succeeded, here("Data/Processed/Data_harmonised/classified_taxa_succeeded.rds"))
+write_rds(classified_taxa_plants, here("Data/Processed/Data_harmonised/classified_taxa_plants.rds"))
+
+
+
 #----------------------------------------------------------#
-# 5. Manual classification of failed taxa ----
+# 5. detect of failed taxa ----
 #----------------------------------------------------------#  
 
 # 758 failed to be classified and 15 classified as not_plants initially = 773 taxa need manual classification
@@ -115,11 +120,25 @@ not_plants <-
   ) %>% 
   filter(is_plant ==FALSE)
 
+
 # combine failed classification and classified as not_plants
 
 not_plants_to_classify_manual <- 
   bind_rows(classified_taxa_has_no_res, not_plants) %>% 
   select(neotoma_names)
+
+
+write_csv(not_plants_to_classify_manual, here("Data/Processed/Data_harmonised/taxa_to_classify.csv"))
+
+
+#----------------------------------------------------------#
+# 5. Manual classification of failed taxa ----
+#----------------------------------------------------------# 
+
+
+
+
+
 
 # get col names from not_plants_classified_manually
 
@@ -141,7 +160,3 @@ not_plants_classified <-
 #----------------------------------------------------------#
 # 6. Save classified taxa files ----
 #----------------------------------------------------------#  
-
-write_rds(classified_taxa_succeeded, here("Data/Processed/Data_harmonised/classified_taxa_succeeded.rds"))
-write_rds(classified_taxa_plants, here("Data/Processed/Data_harmonised/classified_taxa_plants.rds"))
-write_csv(not_plants_classified,here("Data/Processed/Data_harmonised/not_plants_classified.csv"))
