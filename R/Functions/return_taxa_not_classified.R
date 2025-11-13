@@ -1,6 +1,6 @@
 
 
-class_taxa_tib_has_no_result <- function(x) {   # function to id taxon with failed classifications
+return_taxa_not_classified <- function(x) {   # function to id taxon with failed classifications
 
 name_cols <- colnames(x$result) 
 
