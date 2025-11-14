@@ -15,10 +15,10 @@ library(here)
 #----------------------------------------------------------#
 
 data_classified_plants_successs <- 
-  read_csv(here("Data/Processed/Paper_1/data_classified_plants_successs.csv"))
+  read_csv(here("Data/Paper_1/data_classified_plants_successs.csv"))
 
 not_plants_classified <-
-  read_csv(here("Data/Processed/Paper_1/not_plants_classified.csv"))
+  read_csv(here("Data/Paper_1/not_plants_classified.csv"))
 
 #----------------------------------------------------------#
 # 2. Create general harmonization table ----
@@ -60,4 +60,4 @@ harmonization_table_all_studies <-
 # 3.Save general harmonization table  ----
 #----------------------------------------------------------#
 
-write_csv(harmonization_table_all_studies, here("Data/Processed/Paper_1/harmonization_table_all_studies.csv"))
+write_csv(harmonization_table_all_studies, here("Data/Paper_1/harmonization_table_all_studies.csv"))

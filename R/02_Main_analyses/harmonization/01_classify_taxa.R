@@ -69,4 +69,4 @@ classified_taxa <-
 # 5. Save classified_taxa as RDS file -----
 #----------------------------------------------------------#
 
-write_rds(classified_taxa, here("Data/Processed/Paper_1/classified_taxa_neotoma_p1_all_subset.rds"))
+write_rds(classified_taxa, here("Data/Paper_1/classified_taxa_neotoma_p1_all_subset.rds"))

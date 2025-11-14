@@ -16,7 +16,7 @@ library(here)
 #----------------------------------------------------------#
 
 classified_taxa <-
-  read_rds(here("Data/Processed/Paper_1/classified_taxa_neotoma_p1_all_subset.rds"))
+  read_rds(here("Data/Paper_1/classified_taxa_neotoma_p1_all_subset.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ----
@@ -127,12 +127,12 @@ not_plants_to_classify_manual <-
   select(neotoma_names)
 
 
-write_csv(not_plants_to_classify_manual, here("Data/Processed/Paper_1/taxa_to_classify.csv"))
+write_csv(not_plants_to_classify_manual, here("Data/Paper_1/taxa_to_classify.csv"))
 
 # load failed taxa manually classified
 
 not_plants_classified_manually <-
-  read_csv(here("Data/Processed/Paper_1/taxa_to_classify_filled.csv"))
+  read_csv(here("Data/Paper_1/taxa_to_classify_filled.csv"))
 
 # get col names from not_plants_classified_manually
 
@@ -155,6 +155,6 @@ not_plants_classified <-
 # 6. Save classified taxa files ----
 #----------------------------------------------------------#  
 
-write_csv(data_classified_plants_successs, here("Data/Processed/Paper_1/data_classified_plants_successs.csv"))
-write_csv(not_plants_classified, here("Data/Processed/Paper_1/not_plants_classified.csv"))
+write_csv(data_classified_plants_successs, here("Data/Paper_1/data_classified_plants_successs.csv"))
+write_csv(not_plants_classified, here("Data/Paper_1/not_plants_classified.csv"))
 
