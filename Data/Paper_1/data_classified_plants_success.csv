@@ -68,9 +68,6 @@ Artemisia,Magnoliopsida,class
 Artemisia,Asterales,order
 Artemisia,Asteraceae,family
 Artemisia,Artemisia,genus
-Asteroideae undiff.,Animalia,kingdom
-Asteroideae undiff.,Echinodermata,phylum
-Asteroideae undiff.,Asteroidea,class
 Berberidaceae,Plantae,kingdom
 Berberidaceae,Tracheophyta,phylum
 Berberidaceae,Magnoliopsida,class
@@ -1178,9 +1175,6 @@ Salsola,Magnoliopsida,class
 Salsola,Caryophyllales,order
 Salsola,Amaranthaceae,family
 Salsola,Salsola,genus
-Asteroideae,Animalia,kingdom
-Asteroideae,Echinodermata,phylum
-Asteroideae,Asteroidea,class
 Cyclachaena xanthiifolia,Plantae,kingdom
 Cyclachaena xanthiifolia,Tracheophyta,phylum
 Cyclachaena xanthiifolia,Magnoliopsida,class
@@ -1408,9 +1402,6 @@ Iva annua-type,Magnoliopsida,class
 Iva annua-type,Asterales,order
 Iva annua-type,Asteraceae,family
 Iva annua-type,Iva,genus
-Poaceae (Cerealia),Animalia,kingdom
-Poaceae (Cerealia),Mollusca,phylum
-Poaceae (Cerealia),Cerealis,genus
 Poaceae undiff.,Plantae,kingdom
 Poaceae undiff.,Tracheophyta,phylum
 Poaceae undiff.,Liliopsida,class
@@ -2287,9 +2278,6 @@ Pleurospermum,Magnoliopsida,class
 Pleurospermum,Apiales,order
 Pleurospermum,Apiaceae,family
 Pleurospermum,Pleurospermum,genus
-Poaceae (Cerealia) undiff.,Animalia,kingdom
-Poaceae (Cerealia) undiff.,Mollusca,phylum
-Poaceae (Cerealia) undiff.,Cerealis,genus
 Polygonum aviculare,Plantae,kingdom
 Polygonum aviculare,Tracheophyta,phylum
 Polygonum aviculare,Magnoliopsida,class
@@ -5684,12 +5672,6 @@ Gentianella campestris,Gentianales,order
 Gentianella campestris,Gentianaceae,family
 Gentianella campestris,Gentianella,genus
 Gentianella campestris,Gentianella campestris,species
-Hystrix,Animalia,kingdom
-Hystrix,Chordata,phylum
-Hystrix,Mammalia,class
-Hystrix,Rodentia,order
-Hystrix,Hystricidae,family
-Hystrix,Hystrix,genus
 Primula vulgaris-type,Plantae,kingdom
 Primula vulgaris-type,Tracheophyta,phylum
 Primula vulgaris-type,Magnoliopsida,class
@@ -7048,11 +7030,6 @@ Quercus (evergreen-type),Magnoliopsida,class
 Quercus (evergreen-type),Fagales,order
 Quercus (evergreen-type),Fagaceae,family
 Quercus (evergreen-type),Quercus,genus
-Anthemideae,Animalia,kingdom
-Anthemideae,Cnidaria,phylum
-Anthemideae,Anthozoa,class
-Anthemideae,Actiniaria,order
-Anthemideae,Antheidae,family
 Crepis,Animalia,kingdom
 Crepis,Bryozoa,phylum
 Crepis,Gymnolaemata,class
@@ -7229,9 +7206,6 @@ Tozzia alpina,Lamiales,order
 Tozzia alpina,Orobanchaceae,family
 Tozzia alpina,Tozzia,genus
 Tozzia alpina,Tozzia alpina,species
-Asteroideae pro parte,Animalia,kingdom
-Asteroideae pro parte,Echinodermata,phylum
-Asteroideae pro parte,Asteroidea,class
 Caryophyllaceae pro parte,Plantae,kingdom
 Caryophyllaceae pro parte,Tracheophyta,phylum
 Caryophyllaceae pro parte,Magnoliopsida,class
@@ -7398,11 +7372,6 @@ Zygophyllum,Magnoliopsida,class
 Zygophyllum,Zygophyllales,order
 Zygophyllum,Zygophyllaceae,family
 Zygophyllum,Zygophyllum,genus
-Coniferae undiff.,Animalia,kingdom
-Coniferae undiff.,Arthropoda,phylum
-Coniferae undiff.,Ostracoda,class
-Coniferae undiff.,Podocopida,order
-Coniferae undiff.,Coniferina,genus
 Clematis,Plantae,kingdom
 Clematis,Tracheophyta,phylum
 Clematis,Magnoliopsida,class
@@ -12657,12 +12626,6 @@ Pinus ponderosa,Pinales,order
 Pinus ponderosa,Pinaceae,family
 Pinus ponderosa,Pinus,genus
 Pinus ponderosa,Pinus ponderosa,species
-Asteroideae (coarse spine),Animalia,kingdom
-Asteroideae (coarse spine),Echinodermata,phylum
-Asteroideae (coarse spine),Asteroidea,class
-Asteroideae (large),Animalia,kingdom
-Asteroideae (large),Echinodermata,phylum
-Asteroideae (large),Asteroidea,class
 Pinus aristata,Plantae,kingdom
 Pinus aristata,Tracheophyta,phylum
 Pinus aristata,Pinopsida,class
@@ -13500,13 +13463,6 @@ Salix reticulata-type,Magnoliopsida,class
 Salix reticulata-type,Malpighiales,order
 Salix reticulata-type,Salicaceae,family
 Salix reticulata-type,Salix,genus
-Pinus subsect. Cembroides,Animalia,kingdom
-Pinus subsect. Cembroides,Arthropoda,phylum
-Pinus subsect. Cembroides,Insecta,class
-Pinus subsect. Cembroides,Coleoptera,order
-Pinus subsect. Cembroides,Curculionidae,family
-Pinus subsect. Cembroides,Conophthorus,genus
-Pinus subsect. Cembroides,Conophthorus cembroides,species
 Agave,Plantae,kingdom
 Agave,Tracheophyta,phylum
 Agave,Liliopsida,class
@@ -13978,9 +13934,6 @@ Populus grandidentata-type,Magnoliopsida,class
 Populus grandidentata-type,Malpighiales,order
 Populus grandidentata-type,Salicaceae,family
 Populus grandidentata-type,Populus,genus
-Asteroideae (high spine),Animalia,kingdom
-Asteroideae (high spine),Echinodermata,phylum
-Asteroideae (high spine),Asteroidea,class
 Coptis,Plantae,kingdom
 Coptis,Tracheophyta,phylum
 Coptis,Magnoliopsida,class
@@ -14354,11 +14307,6 @@ Magnolia virginiana-type,Magnoliopsida,class
 Magnolia virginiana-type,Magnoliales,order
 Magnolia virginiana-type,Magnoliaceae,family
 Magnolia virginiana-type,Magnolia,genus
-Coniferae,Animalia,kingdom
-Coniferae,Arthropoda,phylum
-Coniferae,Ostracoda,class
-Coniferae,Podocopida,order
-Coniferae,Coniferina,genus
 Combretaceae,Plantae,kingdom
 Combretaceae,Tracheophyta,phylum
 Combretaceae,Magnoliopsida,class
@@ -14963,8 +14911,6 @@ Lythraceae,Tracheophyta,phylum
 Lythraceae,Magnoliopsida,class
 Lythraceae,Myrtales,order
 Lythraceae,Lythraceae,family
-Picea sect. Omorika,Fungi,kingdom
-Picea sect. Omorika,Omoriza,genus
 Tsuga diversifolia,Plantae,kingdom
 Tsuga diversifolia,Tracheophyta,phylum
 Tsuga diversifolia,Pinopsida,class
@@ -15575,10 +15521,3 @@ Omalotheca,Magnoliopsida,class
 Omalotheca,Asterales,order
 Omalotheca,Asteraceae,family
 Omalotheca,Omalotheca,genus
-Betula sect. Costatae,Animalia,kingdom
-Betula sect. Costatae,Platyhelminthes,phylum
-Betula sect. Costatae,Monogenea,class
-Betula sect. Costatae,Gyrodactylidea,order
-Betula sect. Costatae,Gyrodactylidae,family
-Betula sect. Costatae,Gyrodactylus,genus
-Betula sect. Costatae,Gyrodactylus costatae,species

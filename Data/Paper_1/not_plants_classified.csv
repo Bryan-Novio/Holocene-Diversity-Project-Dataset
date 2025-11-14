@@ -31,17 +31,17 @@ Scrophulariaceae-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariace
 Urtica-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica,NA
 Urticalean Rosids undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosales,Rosales,NA
 Zanthoxylum-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Rutaceae,Zanthoxylum,NA
-Angiospermae undiff. (herbs),Plantae,NA,NA,NA,NA,NA,NA
+Angiospermae undiff. (herbs),Plantae,undif,undif,undif,undif,undif,NA
 Bidens-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Bidens,NA
 Elaeagnus/Shepherdia argentea,Plantae,Tracheophyta,Magnoliopsida,Rosales,Elaeagnaceae,Elaeagnus,NA
 Ostrya-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
-Spermatophyta undiff. (trees/shrubs),Plantae,NA,NA,NA,NA,NA,NA
+Spermatophyta undiff. (trees/shrubs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
 Amorpha-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Amorpha,NA
 Humulus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
 Stachys-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Stachys,NA
 Prunus/Amelanchier,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
 Humulus/Cannabis,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
-Spermatophyta undiff. (trees),Plantae,NA,NA,NA,NA,NA,NA
+Spermatophyta undiff. (trees),Plantae,undiff,undiff,undiff,undiff,undiff,NA
 Juniperus/Thuja,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Juniperus,NA
 cf. Oxyria digyna,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Oxyria,Oxyria digyna
 Ilex/Nemopanthus,Plantae,Tracheophyta,Magnoliopsida,Aquifoliales,Aquifoliaceae,Ilex,NA
@@ -50,8 +50,8 @@ Crataegus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Crataegus,NA
 Potentilla-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Potentilla,NA
 Prunus/Sorbus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
 Pyrus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Pyrus,NA
-Rhamnaceae/Vitaceae undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,NA,NA
-Spermatophyta undiff. (shrubs),Plantae,NA,NA,NA,NA,NA,NA
+Rhamnaceae/Vitaceae undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnaceae,NA
+Spermatophyta undiff. (shrubs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
 Rumex/Oxyria digyna,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
 Anemone-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Anemone,NA
 Liliaceae-type,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Liliaceae,NA
@@ -120,7 +120,7 @@ Sedum-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Sedum,NA
 Ulex-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Ulex,NA
 Asphodelus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asphodelaceae,Asphodelus,NA
 Hornungia-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Hornungia,NA
-Spermatophyta undiff. (deciduous trees),Plantae,NA,NA,NA,NA,Spermatophyta undiff. (deciduous trees),NA
+Spermatophyta undiff. (deciduous trees),Plantae,undiff,undiff,undiff,undiff,undiff,NA
 Artemisia-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia,NA
 Cichorioideae undiff.,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
 Arenaria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Arenaria,NA
@@ -197,7 +197,7 @@ Comarum-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Comarum,NA
 Spergularia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergularia,NA
 Amaranthaceae-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthaceae,NA
 Rumex-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
-Spermatophyta undiff. (cf. upland herbs),Plantae,NA,NA,NA,NA,Spermatophyta undiff. (cf. upland herbs),NA
+Spermatophyta undiff. (cf. upland herbs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
 Thalictrum-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Thalictrum,NA
 Carduus-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Carduus,NA
 Genista-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Genista,NA
@@ -311,7 +311,7 @@ Tsuga-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Tsuga,NA
 Ulmus/Zelkova,Plantae,Tracheophyta,Magnoliopsida,Rosales,Ulmaceae,Ulmus/Zelkova,NA
 Moehringia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Moehringia,NA
 Fagopyrum-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Fagopyrum,NA
-Normapolles,NA,NA,NA,NA,NA,Normapolles,NA
+Normapolles,Plantae,undiff,undiff,undiff,undiff,undiff,NA
 Potentilla/Comarum,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Potentilla/Comarum,NA
 Anemone sect. Pulsatilla-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Anemone,NA
 Cotinus-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Cotinus,NA
@@ -322,7 +322,7 @@ Myrrhis-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Myrrhis,NA
 Parnassia-type,Plantae,Tracheophyta,Magnoliopsida,Celastrales,Parnassiaceae,Parnassia,NA
 Apium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Apium,NA
 Scutellaria-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Scutellaria,NA
-Urticalean Rosids,Plantae,Tracheophyta,Magnoliopsida,Rosales,NA,Urticalean Rosids,NA
+Urticalean Rosids,Plantae,Tracheophyta,Magnoliopsida,Rosales,undiff,undiff,NA
 Phyteuma-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Phyteuma,NA
 Vicia/Lathyrus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia,NA
 Echium-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Echium,NA
@@ -330,8 +330,8 @@ Narcissus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Amaryllidaceae,Narcis
 Homogyne-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Homogyne,NA
 Consolida-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Consolida,NA
 Rhododendron-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Rhododendron,NA
-Spermatophyta undiff. (upland herbs),Plantae,NA,NA,NA,NA,Spermatophyta undiff. (upland herbs),NA
-Hedera-type,Animalia,Cnidaria,Anthozoa,Malacalcyonacea,Alcyoniidae,Hedera,NA
+Spermatophyta undiff. (upland herbs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
+Hedera-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Araliaceae,Hedera,NA
 cf. Acorus,Plantae,Tracheophyta,Liliopsida,Acorales,Acoraceae,Acorus,NA
 cf. Alchemilla,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Alchemilla,NA
 cf. Armeria (type A),Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Armeria,NA
@@ -554,7 +554,7 @@ cf. Sambucus,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Viburnaceae,Sambucus,
 cf. Lamiaceae,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lamiaceae,NA
 Juglans-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Juglans,NA
 Aesculus-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Sapindaceae,Aesculus,NA
-Pastinaca-type,Animalia,Chordata,Elasmobranchii,Myliobatiformes,Dasyatidae,Dasyatis,NA
+Pastinaca-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Pastinaca,NA
 Carlina-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Carlina,NA
 cf. Pterocarya/Juglans,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Pterocarya,NA
 Solenanthus-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Solenanthus,NA
@@ -615,7 +615,7 @@ Ilex-type,Plantae,Tracheophyta,Magnoliopsida,Aquifoliales,Aquifoliaceae,Ilex,NA
 cf. Cupressaceae,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Cupressaceae,NA
 cf. Morus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Moraceae,Morus,NA
 Cercocarpus/Purshia,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Cercocarpus,NA
-Angiospermae undiff. (upland herbs),Plantae,Tracheophyta,NA,NA,NA,Angiospermae undiff. (upland herbs),NA
+Angiospermae undiff. (upland herbs),Plantae,Tracheophyta,undiff,undiff,undiff,undiff,NA
 cf. Bistorta bistortoides,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Bistorta,Bistorta bistortoides
 cf. Ceanothus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus,NA
 Holodiscus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Holodiscus,NA
