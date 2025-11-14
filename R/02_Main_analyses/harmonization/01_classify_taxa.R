@@ -17,18 +17,21 @@ library(taxospace)
 
 #Run first '00_subset_data script' to generate each study dataset
 
-datasubset_all  <- list.files(here("Outputs/Data/p1_datasubset/"), pattern ="[.]rds$", full.names = TRUE) %>% 
+datasubset_all  <- 
+  list.files(here("Outputs/Data/p1_datasubset/"), pattern ="[.]rds$", full.names = TRUE) %>% 
   purrr::map(readr::read_rds)
 
 #Since Fossilpol taxon names needs to translated to Neotoma names, we need to load the taxa reference table
 
-taxa_ref_table <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+taxa_ref_table <-
+  readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
 #----------------------------------------------------------#
 # 2. Select unique taxa from all dataset from each study ------
 #----------------------------------------------------------#
 
-datasubset_all_unique <- datasubset_all %>%
+datasubset_all_unique <-
+  datasubset_all %>%
   bind_rows() %>% 
   distinct(taxa) %>% 
   rename(fossilpol_name = taxa)

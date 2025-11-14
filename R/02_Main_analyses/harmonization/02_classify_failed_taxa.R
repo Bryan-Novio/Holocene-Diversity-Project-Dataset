@@ -18,7 +18,6 @@ library(here)
 classified_taxa <-
   read_rds(here("Data/Processed/Paper_1/classified_taxa_neotoma_p1_all_subset.rds"))
 
-
 #----------------------------------------------------------#
 # 2. Load functions ----
 #----------------------------------------------------------#
@@ -88,20 +87,21 @@ classified_taxa_succeeded <-
 
 # with classification Plantae
 
-classified_taxa_plants <- classified_taxa_succeeded %>%  
+classified_taxa_plants <- 
+  classified_taxa_succeeded %>%  
   filter(rank == "kingdom") %>% 
   filter(name == "Plantae") %>% 
   mutate(is_plant = TRUE) %>% 
   select(neotoma_names, is_plant)
 
 
-write_rds(classified_taxa_succeeded, here("Data/Processed/Data_harmonised/classified_taxa_succeeded.rds"))
-write_rds(classified_taxa_plants, here("Data/Processed/Data_harmonised/classified_taxa_plants.rds"))
-
-
+data_classified_plants_successs <- 
+  classified_taxa_succeeded %>% 
+  left_join(classified_taxa_plants, by = "neotoma_names") %>% 
+  select(neotoma_names, name, rank)
 
 #----------------------------------------------------------#
-# 5. detect of failed taxa ----
+# 5. Detect of failed taxa ----
 #----------------------------------------------------------#  
 
 # 758 failed to be classified and 15 classified as not_plants initially = 773 taxa need manual classification
@@ -120,7 +120,6 @@ not_plants <-
   ) %>% 
   filter(is_plant ==FALSE)
 
-
 # combine failed classification and classified as not_plants
 
 not_plants_to_classify_manual <- 
@@ -128,22 +127,17 @@ not_plants_to_classify_manual <-
   select(neotoma_names)
 
 
-write_csv(not_plants_to_classify_manual, here("Data/Processed/Data_harmonised/taxa_to_classify.csv"))
+write_csv(not_plants_to_classify_manual, here("Data/Processed/Paper_1/taxa_to_classify.csv"))
 
+# load failed taxa manually classified
 
-#----------------------------------------------------------#
-# 5. Manual classification of failed taxa ----
-#----------------------------------------------------------# 
-
-
-
-
-
+not_plants_classified_manually <-
+  read_csv(here("Data/Processed/Paper_1/taxa_to_classify_filled.csv"))
 
 # get col names from not_plants_classified_manually
 
 not_plants_classified_manually_names <- 
-  names((not_plants_classified_manually))
+  names(all_of(not_plants_classified_manually))
 
 # rename ranks as level_ (level_6 = "genus")
 
@@ -160,3 +154,7 @@ not_plants_classified <-
 #----------------------------------------------------------#
 # 6. Save classified taxa files ----
 #----------------------------------------------------------#  
+
+write_csv(data_classified_plants_successs, here("Data/Processed/Paper_1/data_classified_plants_successs.csv"))
+write_csv(not_plants_classified, here("Data/Processed/Paper_1/not_plants_classified.csv"))
+
