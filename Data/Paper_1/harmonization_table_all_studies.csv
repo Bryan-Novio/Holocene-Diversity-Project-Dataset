@@ -423,7 +423,7 @@ Lonicera periclymenum,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliace
 Narthecium ossifragum,Plantae,Tracheophyta,Liliopsida,Dioscoreales,Nartheciaceae,Narthecium,Narthecium ossifragum
 Plantago coronopus,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago,Plantago coronopus
 Plantago lanceolata-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago,NA
-Plantago uniflora,Plantae,Tracheophyta,"Magnoliopsida, Magnoliopsida, Magnoliopsida, Magnoliopsida, Magnoliopsida, Magnoliopsida, Magnoliopsida, Magnoliopsida, Magnoliopsida",Lamiales,Plantaginaceae,Plantago,Plantago uniflora
+Plantago uniflora,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago,Plantago uniflora
 Potentilla undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Potentilla,NA
 Saxifraga,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Saxifraga,NA
 Sedum,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Sedum,NA
@@ -1765,8 +1765,8 @@ Solanum dulcamara/Sedum,Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,
 Thalictrum minus,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Thalictrum,Thalictrum minus
 Valeriana tuberosa,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Valeriana,Valeriana tuberosa
 Aconitum group,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Aconitum,NA
-Anemone pulsatilla,Plantae,"Tracheophyta, Tracheophyta, Tracheophyta, Tracheophyta",Magnoliopsida,Ranunculales,Ranunculaceae,Pulsatilla,Pulsatilla vulgaris
-Anemone pulsatilla group,Plantae,"Tracheophyta, Tracheophyta, Tracheophyta, Tracheophyta",Magnoliopsida,Ranunculales,Ranunculaceae,Pulsatilla,Pulsatilla vulgaris
+Anemone pulsatilla,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Pulsatilla,Pulsatilla vulgaris
+Anemone pulsatilla group,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Pulsatilla,Pulsatilla vulgaris
 Consolida ambigua-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Delphinium,NA
 Frangula alnus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Frangula,NA
 Gratiola,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Gratiola,NA
