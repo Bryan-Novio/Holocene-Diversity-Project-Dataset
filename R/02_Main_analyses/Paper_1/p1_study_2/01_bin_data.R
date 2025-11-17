@@ -45,7 +45,8 @@ source_files <-
 # Bin  data
 
 data_binned <- 
-  data_p1_s2_12k_1k_counts_ages %>% bin_data(1000)
+  data_p1_s2_12k_1k_counts_ages %>% 
+  bin_data(dataset_id,1000)
 
 # Filter out bins with < 400 pollen grains total
 
@@ -65,3 +66,4 @@ data_binned_filtered <-
 #----------------------------------------------------------#
 
 write_rds(data_binned_filtered, here("Data/Paper_1/data_bin/data_study2_binned.rds"))
+

@@ -1,4 +1,4 @@
-bin_data <- function(data_source, bin_size){
+bin_data <- function(data_source, binning_var, bin_size){
   
   assertthat::assert_that(
   is.data.frame(data_source),
@@ -13,7 +13,7 @@ bin_data <- function(data_source, bin_size){
       BIN_fct = as.factor(BIN_chr),
       BIN_int = as.factor(as.numeric(BIN_fct)), # recode BINS to integer, then factor) 
       BIN = BIN_int) %>% 
-    group_by(dataset_id , taxa, BIN, BIN_chr) %>% 
+    group_by({{binning_var}}, taxa, BIN, BIN_chr) %>% 
     summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop")
   
   return(data_binned)
