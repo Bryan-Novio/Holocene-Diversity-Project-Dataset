@@ -46,23 +46,18 @@ source_files <- sapply(
 #----------------------------------------------------------# 
 
 
-data_p1_s2 <- data %>% 
-  filter(region =="Europe") %>%   # sub-setting data to Europe
+data_p1_s4 <- data %>% 
+  filter(region =="Asia") %>%   # sub-setting data to Europe
   relocate(region)
 
-data_p1_s2 %>% filter(between(long, -25,35))                                # 25°W and 35°E long and north of 35°N latitude
-
-data_long <- data_p1_s2 %>% filter(between(long, -25,35))  
-
-data_long %>% filter(lat <= 35)
 
 #####3.1. get pollen counts with ages
 
-data_p1_s2_counts_ages <- data_p1_s2 %>% get_pollen_counts_with_ages() 
+data_p1_s4_counts_ages <- data_p1_s4 %>% get_pollen_counts_with_ages() 
 
-data_p1_s2_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+data_p1_s4_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
 #----------------------------------------------------------#
 # 4. Write the subset data to RDS file
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s2_counts_ages, here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
+write_rds(data_p1_s4_counts_ages, here("Outputs/Data/paper_1_study_4/datasub_p1_s4_counts_ages.rds"))

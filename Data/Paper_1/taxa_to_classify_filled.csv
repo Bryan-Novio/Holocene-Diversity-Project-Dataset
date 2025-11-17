@@ -1,0 +1,774 @@
+neotoma_names,kingdom,phylum,class,order,family,genus,species
+Acalypha-type,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Acalypha,NA
+Ambrosia-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia,Ambrosia
+Arceuthobium/Loranthaceae,Plantae,Tracheophyta,Magnoliopsida,Santalales,Viscaceae,Arceuthobium,NA
+Avena-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Avena,NA
+cf. Araliaceae,Plantae,Tracheophyta,Magnoliopsida,Apiales,Araliaceae,Araliaceae,NA
+cf. Hypericum,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Hypericaceae,Hypericum,NA
+cf. Oxalis,Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Oxalidaceae,Oxalis,NA
+cf. Physalis,Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Physalis,NA
+cf. Verbenaceae,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Verbenaceae,Verbenaceae,NA
+cf. Weinmannia,Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Cunoniaceae,Weinmannia,NA
+Chamaecrista-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Chamaecrista,NA
+Chamaecyparis-type,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Chamaecyparis,NA
+Cichorioideae,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Combretaceae/Melastomataceae undiff.,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Combretaceae,Combretaceae,NA
+Dianthus-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Dianthus,NA
+Engelhardia-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Engelhardia,NA
+Eryngium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Eryngium,NA
+Froelichia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthaceae,NA
+Gomphrena-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Gomphrena,NA
+Larix/Pseudotsuga,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Larix,NA
+Ledum-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Rhododendron,NA
+Ludwigia-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Ludwigia,NA
+Lupinus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus,NA
+mimosoid clade,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Fabaceae,NA
+Ostrya/Carpinus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+Piperaceae-type,Plantae,Tracheophyta,Magnoliopsida,Piperales,Piperaceae,Piperaceae,NA
+Rhexia-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Melastomataceae,Rhexia,NA
+Saxifraga-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Saxifraga,NA
+Scrophulariaceae-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Scrophulariaceae,NA
+Urtica-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica,NA
+Urticalean Rosids undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosales,Rosales,NA
+Zanthoxylum-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Rutaceae,Zanthoxylum,NA
+Angiospermae undiff. (herbs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
+Bidens-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Bidens,NA
+Elaeagnus/Shepherdia argentea,Plantae,Tracheophyta,Magnoliopsida,Rosales,Elaeagnaceae,Elaeagnus,NA
+Ostrya-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+Spermatophyta undiff. (trees/shrubs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
+Amorpha-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Amorpha,NA
+Humulus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
+Stachys-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Stachys,NA
+Prunus/Amelanchier,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
+Humulus/Cannabis,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
+Spermatophyta undiff. (trees),Plantae,undiff,undiff,undiff,undiff,undiff,NA
+Juniperus/Thuja,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Juniperus,NA
+cf. Oxyria digyna,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Oxyria,Oxyria digyna
+Ilex/Nemopanthus,Plantae,Tracheophyta,Magnoliopsida,Aquifoliales,Aquifoliaceae,Ilex,NA
+Juniperus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Juniperus,NA
+Crataegus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Crataegus,NA
+Potentilla-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Potentilla,NA
+Prunus/Sorbus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
+Pyrus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Pyrus,NA
+Rhamnaceae/Vitaceae undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,NA,NA
+Spermatophyta undiff. (shrubs),Plantae,undiff,undiff,undiff,undiff,undiff,NA
+Rumex/Oxyria digyna,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+Anemone-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Anemone,NA
+Liliaceae-type,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Liliaceae,NA
+Rumex/Oxyria,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+Celtis-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Celtis,NA
+Cercocarpus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Cercocarpus,NA
+Prunella-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Prunella,NA
+Rubus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rubus,NA
+Amelanchier-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Amelanchier,NA
+Cannabis-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Cannabis,NA
+cf. Dodecatheon,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Dodecatheon,NA
+Dryas-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Dryas,NA
+Laportea-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Laportea,NA
+Lycopus-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lycopus,NA
+Maclura-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Moraceae,Maclura,NA
+Pilea-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Pilea,NA
+Triticum-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Triticum,NA
+Cannabaceae-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Cannabaceae,NA
+Dipsacoideae,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Caprifoliaceae,NA
+Poaceae (Cerealia-type),Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Poaceae,NA
+Anthemis-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Anthemis,NA
+Aster-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Aster,NA
+Caltha-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Caltha,NA
+Centaurea-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centaurea,NA
+Corylus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Corylus,NA
+Erica-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Erica,NA
+Hypericum-type,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Hypericaceae,Hypericum,NA
+Serratula-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Serratula,NA
+Sinapis-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sinapsis,NA
+Trifolium-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium,NA
+Vicia-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia,NA
+Achillea-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Achillea,NA
+Barbarea-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Barbarea,NA
+Cirsium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium,NA
+Galium-type,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium,NA
+Lamium-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lamium,NA
+Lotus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus,NA
+Mentha-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Mentha,NA
+Petasites-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Petasites,NA
+Ranunculus-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculus,NA
+Secale-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Secale,NA
+Senecio-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio,NA
+Silene-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene,NA
+Silene-type undiff.,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene,NA
+Vaccinium-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Vaccinium,NA
+Cerastium-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Cerastium,NA
+cf. Valeriana,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Valeriana,NA
+Hordeum-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Hordeum,NA
+Lathyrus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lathyrus,NA
+Lonicera-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera,NA
+Oxalis-type,Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Oxalidaceae,Oxalis,NA
+Oxyria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Oxyria,NA
+Stellaria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Stellaria,NA
+Spergula/Spergularia,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergula,NA
+Corylus/Myrica,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Corylus,NA
+Anagallis-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Lysimachia,NA
+Campanula-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Campanula,NA
+Conopodium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Conopodium,NA
+Ononis-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Ononis,NA
+Rhinanthus-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Rhinanthus,NA
+Scrophularia-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Scrophularia,NA
+Betula/Corylus/Myrica,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagales,Fagales,NA
+Fumana-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Fumana,NA
+Listera-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Orchidaceae,Listera,NA
+Sedum-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Sedum,NA
+Ulex-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Ulex,NA
+Asphodelus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asphodelaceae,Asphodelus,NA
+Hornungia-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Hornungia,NA
+Spermatophyta undiff. (deciduous trees),Plantae,undiff,undiff,undiff,undiff,undiff,NA
+Artemisia-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia,NA
+Cichorioideae undiff.,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Arenaria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Arenaria,NA
+Armeria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Armeria,NA
+Geum-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Geum,NA
+Herniaria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Herniaria,NA
+Jasione-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Jasione,NA
+Prunus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
+Sagina-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Sagina,NA
+Scilla-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Scilla,NA
+Spergula-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergula,NA
+Allium-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Amaryllidaceae,Allium,NA
+Malva-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malva,NA
+Berula-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Berula,NA
+Malus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Malus,NA
+Onobrychis-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Onobrychis,NA
+Sorbus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sorbus,NA
+Avena/Triticum-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Poaceae,NA
+Lysimachia-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Lysimachia,NA
+Solidago-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Solidago,NA
+Astragalus/Oxytropis-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Fabaceae,NA
+Capsella-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Capsella,NA
+Carex-type,Plantae,Tracheophyta,Liliopsida,Poales,Cyperaceae,Carex,NA
+Angelica-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Angelica,NA
+Cirsium/Carduus-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium,NA
+Ericaceae-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Ericaceae,NA
+Arctium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Arctium,NA
+Pimpinella-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sanguisorba,NA
+Saussurea-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Saussurea,NA
+Veronica-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Veronica,NA
+Galeopsis-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Galeopsis,NA
+cf. Artemisia,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia,Artemisia
+cf. Brassicaceae,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassicaceae,NA
+cf. Carpinus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Carpinus,NA
+cf. Dryas,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Dryas,NA
+cf. Ephedra fragilis,Plantae,Tracheophyta,Gnetopsida,Ephedrales,Ephedraceae,Ephedra,Ephedra fragilis
+cf. Ilex,Plantae,Tracheophyta,Magnoliopsida,Aquifoliales,Aquifoliaceae,Ilex,NA
+cf. Mercurialis,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Mercurialis,NA
+cf. Prunus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
+cf. Quercus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus,NA
+cf. Ranunculus,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculus,NA
+cf. Taxus,Plantae,Tracheophyta,Pinopsida,Pinales,Taxaceae,Taxus,NA
+cf. Thalictrum,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Thalictrum,NA
+cf. Urtica,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica,NA
+Helianthemum-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Helianthemum,NA
+Ranunculus sect. Batrachium-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculus,NA
+cf. Chrysosplenium,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Chrysosplenium,NA
+cf. Cyperaceae-type,Plantae,Tracheophyta,Liliopsida,Poales,Cyperaceae,Cyperaceae,NA
+cf. Empetrum,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Empetrum,NA
+cf. Larix,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Larix,NA
+cf. Melampyrum,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Melampyrum,NA
+cf. Pedicularis,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Pedicularis,NA
+cf. Saxifraga granulata,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Saxifraga,Saxifraga granulata
+cf. Saxifraga stellaris-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Micranthes,Micranthes stellaris
+cf. Scutellaria,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Scutellaria,NA
+cf. Frangula alnus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Frangula,Frangula alnus
+cf. Lycopsis arvensis,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Lycopsis,Lycopsis arvensis
+cf. Myricaria germanica,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Tamaricaceae,Myricaria,Myricaria germanica
+cf. Gentiana pneumonanthe,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Gentiana,Gentiana pneumonanthe
+Chamaenerion-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Chamaenerion,NA
+Chrysosplenium-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Chrysosplenium,NA
+Cichorieae,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Heracleum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Heracleum,NA
+Peucedanum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Peucedanum,Peucedanum
+Bupleurum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Bupleurum,NA
+Empetrum-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Empetrum,NA
+Gnaphalium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Gnaphalium,NA
+Seseli-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Seseli,NA
+Pedicularis-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Pedicularis,NA
+Veratrum-type,Plantae,Tracheophyta,Liliopsida,Liliales,Melanthiaceae,Veratrum,NA
+Epilobium-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Epilobium,NA
+Aconitum-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Aconitum,NA
+Comarum-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Comarum,NA
+Spergularia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergularia,NA
+Amaranthaceae-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthaceae,NA
+Rumex-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+Spermatophyta undiff. (cf. upland herbs),Plantae,Spermatophyta,Spermatophyta,Spermatophyta,Spermatophyta,Spermatophyta undiff. (cf. upland herbs),NA
+Thalictrum-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Thalictrum,NA
+Carduus-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Carduus,NA
+Genista-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Genista,NA
+Papaver-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Papaver,NA
+Polygonum-type sensu lato,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Polygonum,NA
+Rhamnus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnus,NA
+Vicia/Lathyrus,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia,NA
+Matricaria-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Matricaria,NA
+Pulmonaria-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Pulmonaria,NA
+Succisa-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Succisa,NA
+Cirsium/Carduus,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium,NA
+Alchemilla-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Alchemilla,NA
+cf. Salix herbacea,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Salix,Salix herbacea
+Cytisus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Cytisus,NA
+Hedysarum-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Hedysarum,NA
+Euphrasia-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Euphrasia,NA
+Silenoideae-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Caryophyllaceae,NA
+Alchemilla/Aphanes,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Alchemilla,NA
+Bellis-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Bellis,NA
+cf. Anthericum,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Anthericum,NA
+cf. Cannabis sativa,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Cannabis,Cannabis sativa
+cf. Humulus lupulus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,Humulus lupulus
+cf. Xanthium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Xanthium,NA
+Coronilla-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Coronilla,NA
+Glyceria-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Glyceria,NA
+Taraxacum-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Taraxacum,NA
+Thymus-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Thymus,NA
+Tussilago-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Tussilago,NA
+Astrantia-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Astrantia,NA
+Monotropoideae,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Ericaceae,NA
+cf. Samolus,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Samolus,NA
+Dipsacoideae undiff.,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Caprifoliaceae,NA
+Delphinium-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Delphinium,NA
+Panicum-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Panicum,NA
+Aphanes-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Aphanes,NA
+Ballota-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Ballota,NA
+Conium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Conium,NA
+Daucus-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Daucus,NA
+Dorycnium-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus,NA
+Helleborus-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculaceae,NA
+Rosa-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rosa,NA
+Carpinus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Carpinus,NA
+cf. Herniaria,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Herniaria,NA
+cf. Sagina,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Sagina,NA
+Elymus-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Elymus,NA
+Odontites-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Odontites,NA
+Polygonatum-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Polygonatum,NA
+Astragalus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus,NA
+Digitalis-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Digitalis,NA
+cf. Littorella,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Littorella,NA
+cf. Lobelia,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Lobelia,NA
+cf. Montia,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Montiaceae,NA
+cf. Humulus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
+Anthericum-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Anthericum,NA
+Fritillaria-type,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Fritillaria,NA
+Humulus/Cannabis-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
+Anethum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Anethum,NA
+Filipendula-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Filipendula,NA
+Linaria-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Linaria,NA
+Spiraea-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Spiraea,NA
+Adonis-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Adonis,NA
+Iris-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Iridaceae,Iris,NA
+cf. Xanthium,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Xanthium,NA
+Lithospermum-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Lithospermum,NA
+Pinus subg. Strobus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus,NA
+Viburnum-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Viburnaceae,Viburnum,NA
+Agropyron-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Agropyron,NA
+Arum/Acorus,Plantae,Tracheophyta,Liliopsida,Alismatales,Araceae/Acoraceae,Arum/Acora,NA
+cf. Cannabis,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Cannabis,NA
+cf. Chrysanthemum,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Chrysanthemum,NA
+cf. Sorbus aucuparia,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sorbus,Sorbus aucuparia
+cf. Triticum turgidum subsp. dicoccon,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Triticum,Triticum turgidum
+Dactylis-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Dactylis,NA
+Glechoma-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Glechoma,NA
+Phleum-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Phleum,NA
+Poaceae (Cerealia-type) undiff.,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Poaceae,NA
+Bartsia-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Bartsia,NA
+Hippocrepis-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Hippocrepis,NA
+Cardamine-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Cardamine,NA
+Carthamus-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Carthamus,NA
+Crupina-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Crupina,NA
+Cyperus-type,Plantae,Tracheophyta,Liliopsida,Poales,Cyperaceae,Cyperus,NA
+Gagea/Tulipa,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Gagea/Tulipa,NA
+Ostrya/Carpinus orientalis,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+Paronychia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Paronychia,NA
+Aster/Achillea,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Minuartia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Minuartia,NA
+Convolvulus-type,Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Convolvulus,NA
+Pinus subg. Pinus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus,NA
+Verbascum-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Verbascum,NA
+cf. Polemonium,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Polemonium,NA
+Knautia/Dipsacus,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Knautia,NA
+Aruncus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Aruncus,NA
+Gypsophila-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Gypsophila,NA
+cf. Avena,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Avena,NA
+Hordeum/Secale,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Hordeum,NA
+Androsace-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Androsace,NA
+Bambusa-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Bambusa,NA
+Bruckenthalia-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Erica,NA
+Castanea-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Castanea,NA
+Cedrus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Cedrus,NA
+Coniferae-type,Plantae,Coniferophyta,NA,NA,NA,Coniferae-type,NA
+Geranium-type,Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Geranium,NA
+Juglandaceae-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Juglandaceae,NA
+Larix-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Larix,NA
+Magnolia-type,Plantae,Tracheophyta,Magnoliopsida,Magnoliales,Magnoliaceae,Magnolia,NA
+Myrica-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Myricaceae,Myrica,NA
+Podocarpus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Podocarpaceae,Podocarpus,NA
+Sileneae,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Caryophyllaceae,NA
+Tsuga-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Tsuga,NA
+Ulmus/Zelkova,Plantae,Tracheophyta,Magnoliopsida,Rosales,Ulmaceae,Ulmus/Zelkova,NA
+Moehringia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Moehringia,NA
+Fagopyrum-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Fagopyrum,NA
+Normapolles,undiff,undiff,undiff,undiff,undiff,undiff,NA
+Potentilla/Comarum,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Potentilla/Comarum,NA
+Anemone sect. Pulsatilla-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Anemone,NA
+Cotinus-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Cotinus,NA
+Heliotropium-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Heliotropiaceae,Heliotropium,NA
+Teucrium-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Teucrium,NA
+Carduoideae,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Myrrhis-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Myrrhis,NA
+Parnassia-type,Plantae,Tracheophyta,Magnoliopsida,Celastrales,Parnassiaceae,Parnassia,NA
+Apium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Apium,NA
+Scutellaria-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Scutellaria,NA
+Urticalean Rosids,Plantae,Tracheophyta,Magnoliopsida,Rosales,NA,Urticalean Rosids,NA
+Phyteuma-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Phyteuma,NA
+Vicia/Lathyrus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia,NA
+Echium-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Echium,NA
+Narcissus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Amaryllidaceae,Narcissus,NA
+Homogyne-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Homogyne,NA
+Consolida-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Consolida,NA
+Rhododendron-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Rhododendron,NA
+Spermatophyta undiff. (upland herbs),Plantae,NA,NA,NA,NA,Spermatophyta undiff. (upland herbs),NA
+Hedera-type,Animalia,Cnidaria,Anthozoa,Malacalcyonacea,Alcyoniidae,Hedera,NA
+cf. Acorus,Plantae,Tracheophyta,Liliopsida,Acorales,Acoraceae,Acorus,NA
+cf. Alchemilla,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Alchemilla,NA
+cf. Armeria (type A),Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Armeria,NA
+cf. Cedrus,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Cedrus,NA
+cf. Centaurium,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Centaurium,NA
+cf. Daphne,Plantae,Tracheophyta,Magnoliopsida,Malvales,Thymelaeaceae,Daphne,NA
+cf. Epilobium,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Epilobium,NA
+cf. Euphorbia,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia,NA
+cf. Lonicera,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera,NA
+cf. Myrtus,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Myrtus,NA
+cf. Olea,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Olea,NA
+cf. Persicaria amphibia,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Persicaria,Persicaria amphibia
+cf. Polygonum,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Polygonum,NA
+cf. Succisa,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Succisa,NA
+cf. Viscum,Plantae,Tracheophyta,Magnoliopsida,Santalales,Viscaceae,Viscum,NA
+Ornithogalum-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Ornithogalum,NA
+Agrimonia-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Agrimonia,NA
+Arnica-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Arnica,NA
+cf. Filipendula,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Filipendula,NA
+cf. Sorbus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sorbus,NA
+Ulex/Cytisus sect. Spartopsis,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Ulex,NA
+cf. Ruta,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Rutaceae,Ruta,NA
+cf. Veronica,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Veronica,NA
+Campanula/Jasione,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Campanula,NA
+Rhamnus/Frangula,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnus,NA
+Convallaria-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Convallaria,NA
+Scorzonera-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Scorzonera,NA
+Lobelia-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Lobelia,NA
+Lycopus/Mentha,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lycopus/Mentha,NA
+Narthecium-type,Plantae,Tracheophyta,Liliopsida,Dioscoreales,Nartheciaceae,Narthecium,NA
+Colchicum-type,Plantae,Tracheophyta,Liliopsida,Liliales,Colchicaceae,Colchicum,NA
+Calystegia-type,Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Calystegia,NA
+Sium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Sium,NA
+Brassicaceae-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassicaceae,NA
+cf. Sedum,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Sedum,NA
+Sedum/Rhodiola cf. R. rosea,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Sedum,NA
+Xanthium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Xanthium,NA
+Antennaria-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Antennaria,NA
+Bellidiastrum-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Bellidiastrum,NA
+Chrysanthemum-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Chrysanthemum,NA
+Eupatorium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Eupatorium,NA
+Liliaceae-type undiff.,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Liliaceae,NA
+Polemonium-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Polemonium,NA
+Myricaria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Tamaricaceae,Myricaria,NA
+Chelidonium-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Chelidonium,NA
+Scleranthus-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Scleranthus,NA
+Cichorioideae-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Cardueae,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Avena/Triticum,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Avena/Triticum,NA
+Chaerophyllum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Chaerophyllum,NA
+Gentiana-type,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Gentiana,NA
+Clematis-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Clematis,NA
+Meum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Meum,NA
+Pleurospermum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Pleurospermum,NA
+Falcaria-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Falcaria,NA
+Galanthus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Amaryllidaceae,Galanthus,NA
+Matthiola-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Matthiola,NA
+Brassica-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassica,NA
+Onosma-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Onosma,NA
+Sanguisorba-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sanguisorba,NA
+Scrophularia/Verbascum,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Scrophularia,NA
+Symphytum-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Symphytum,NA
+Thymus/Mentha,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Thymus/Mentha,NA
+Aster/Achillea-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Aster/Achillea,NA
+cf. Digitalis,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Digitalis,NA
+cf. Geum,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Geum,NA
+"Betula/Alnus/Corylus/Myrica (type 114, HdV)",Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae/Myricaceae,Betulaceae/Myricaceae,NA
+cf. Hordeum,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Hordeum,NA
+cf. Juncus,Plantae,Tracheophyta,Liliopsida,Poales,Juncaceae,Juncus,NA
+Ammi-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Ammi,NA
+Gladiolus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Iridaceae,Gladiolus,NA
+Smyrnium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Smyrnium,NA
+Centaurium-type,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Centaurium,NA
+Limonium-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Limonium,NA
+Cynoglossum-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cynoglossum,NA
+Jurinea-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Jurinea,NA
+Lilium-type,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Lilium,NA
+Daphne-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Thymelaeaceae,Daphne,NA
+Humulus/Urtica,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
+Myrtus-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Myrtus,NA
+Hordeum/Triticum-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Hordeum,NA
+Thymus/Mentha-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Thymus/Mentha,NA
+cf. Armeria,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Armeria,NA
+cf. Centaurea nigra-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centaurea,Centaurea nigra
+cf. Platanus,Plantae,Tracheophyta,Magnoliopsida,Proteales,Platanaceae,Platanus,NA
+cf. Sedum-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Sedum,NA
+Gentianella-type,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Gentianella,NA
+Anthemis-type (small),Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Anthemis,NA
+Filago-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Filago,NA
+Halimium/Tuberaria,Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Halimium,NA
+Lavandula-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lavandula,NA
+Reseda/Sesamoides,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Resedaceae,Reseda,NA
+Rhinanthus/Veronica,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Rhinanthus,NA
+Halimium-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Halimium,NA
+cf. Convolvulus,Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Convolvulus,NA
+Humulus/Cannabis sativa,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Humulus,NA
+Knautia-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Knautia,NA
+Muscari-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Muscari,NA
+Paris-type,Plantae,Tracheophyta,Liliopsida,Liliales,Melanthiaceae,Paris,NA
+cf. Trollius europaeus,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Trollius,Trollius europaeus
+Hyacinthoides-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Hyacinthoides,NA
+Gagea-type,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Gagea,NA
+Maianthemum-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Maianthemum,NA
+Urtica/Parietaria,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica/Parietaria,NA
+Vicia-type sensu stricto,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia,NA
+cf. Rhinanthus,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Rhinanthus,NA
+Anchusa-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Anchusa,NA
+cf. Sambucus nigra,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Viburnaceae,Sambucus,Sambucus nigra
+cf. Sambucus racemosa,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Viburnaceae,Sambucus,Sambucus racemosa
+Sambucus-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Viburnaceae,Sambucus,NA
+cf. Cirsium,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium,NA
+cf. Lotus,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus,NA
+cf. Papaver,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Papaver,NA
+cf. Stellaria,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Stellaria,NA
+Pinus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus,NA
+Glaucium-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Glaucium,NA
+Valeriana-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Valeriana,NA
+cf. Fabaceae,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,NA,NA
+cf. Hippophae rhamnoides,Plantae,Tracheophyta,Magnoliopsida,Rosales,Elaeagnaceae,Hippophae,Hippophae rhamnoides
+cf. Saxifraga oppositifolia-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Saxifraga,Saxifraga oppositifolia
+Trollius-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Trollius,NA
+cf. Frangula,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Frangula,NA
+Armeria/Limonium,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Armeria,NA
+Sarcopoterium-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sarcopoterium,NA
+Blackstonia-type,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Blackstonia,NA
+cf. Carya,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Carya,NA
+cf. Phillyrea,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Phillyrea,NA
+cf. Plantago,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago,NA
+cf. Pterocarya fraxinifolia,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Pterocarya,Pterocarya fraxinifolia
+cf. Ranunculaceae,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculaceae,NA
+Dipsacus/Cephalaria,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Dipsacus,NA
+Ligustrum-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Ligustrum,NA
+Ostrya/Carpinus betulus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+Salvia-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Salvia,NA
+Urticaceae/Moraceae,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urticaceae,NA
+Cistus-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Cistus,NA
+Melampyrum-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Melampyrum,NA
+Valerianella-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Valerianella,NA
+Reseda-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Resedaceae,Reseda,NA
+Sanicula-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Sanicula,NA
+cf. Galeopsis,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Galeopsis,NA
+cf. Oxytropis,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Oxytropis,NA
+Festuca-type,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Festuca,NA
+cf. Rhamnus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnus,NA
+Helianthus-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Helianthus,NA
+Solidago-type/Saussurea-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Solidago,NA
+cf. Maianthemum,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Maianthemum,NA
+cf. Limosella aquatica,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Limosella,Limosella aquatica
+cf. Helianthemum,Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Helianthemum,NA
+Carum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Carum,NA
+Draba-type,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Draba,NA
+Foeniculum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Foeniculum,NA
+cf. Androsace,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Androsace,NA
+Senecio/Aster,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio,NA
+Crepis-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Crepis,NA
+Lactuca-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Lactuca,NA
+Myosotis-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Myosotis,NA
+Primula-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Primula,NA
+Agrostemma-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Agrostemma,NA
+Ericoideae,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Ericaceae,NA
+Odontites/Euphrasia,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Odontites,NA
+cf. Pterocarya,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Pterocarya,NA
+cf. Gentianaceae,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Gentianaceae,NA
+Mercurialis-type,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Mercurialis,NA
+Plantago-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago,NA
+Corylus/Myrica undiff.,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Corylus,NA
+Cerinthe-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cerinthe,NA
+Dipsacus-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Dipsacus,NA
+Geum/Potentilla,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Geum,NA
+Juncus/Luzula,Plantae,Tracheophyta,Liliopsida,Poales,Juncaceae,Juncus,NA
+Parietaria-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Parietaria,NA
+Phillyrea-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Phillyrea,NA
+Asparagus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Asparagus,NA
+Daphne/Thymelaea,Plantae,Tracheophyta,Magnoliopsida,Malvales,Thymelaeaceae,Daphne/Thymelaea,NA
+Scabiosa-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Scabiosa,NA
+cf. Juniperus,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Juniperus,NA
+Olea/Phillyrea,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Olea/Phillyrea,NA
+Andromeda-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Andromeda,NA
+Betula/Corylus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Betula/Corylus,NA
+Erodium-type,Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Erodium,NA
+Melilotus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Melilotus,NA
+Ulex/Cytisus sect. Spartopsis-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Ulex,NA
+Aquilegia-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Aquilegia,NA
+Echinophora-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Echinophora,NA
+Circaea-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Circaea,NA
+Lychnis-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene,NA
+Polygala-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Polygalaceae,Polygala,NA
+cf. Cuscuta,Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cuscuta,NA
+Morus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Moraceae,Morus,NA
+cf. Glyceria,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Glyceria,NA
+Pyrola-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Pyrola,NA
+Cucumis-type,Plantae,Tracheophyta,Magnoliopsida,Cucurbitales,Cucurbitaceae,Cucumis,NA
+Cuscuta-type,Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cuscuta,NA
+Cornaceae-type,Plantae,Tracheophyta,Magnoliopsida,Cornales,Cornaceae,Cornaceae,NA
+Echinops-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Echinops,NA
+Olea-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Olea,NA
+Ostrya/Corylus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+Polygonum-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Polygonum,NA
+Salix-type,Plantae,Tracheophyta,Magnoliopsida,Malphigiales,Salicaceae,Salix,NA
+Carya-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Carya,NA
+Haplophyllum-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Rutaceae,Haplophyllum,NA
+Genista/Cytisus,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Genista/Cytisus,NA
+Medicago-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Medicago,NA
+Cytisus/Genista-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Cytisus,NA
+Orlaya-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Orlaya,NA
+Acanthus-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Acanthaceae,Acanthus,NA
+Asphodelus/Asphodeline,Plantae,Tracheophyta,Liliopsida,Asparagales,Asphodelaceae,Asphodelus,NA
+Atropa-type,Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Atropa,NA
+Berberis-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Berberidaceae,Berberis,NA
+Crocus-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Iridaceae,Crocus,NA
+Euphorbia-type,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia,NA
+Hypecoum-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Hypecoum,NA
+Lavatera-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malva,NA
+Ribes-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Grossulariaceae,Ribes,NA
+Salsola-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Salsola,NA
+Astragalus/Oxytropis,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus,NA
+cf. Avena sativa,Plantae,Tracheophyta,Liliopsida,Poales,Poaceae,Avena,Avena sativa
+cf. Peucedanum-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Peucedanum,Peucedanum
+cf. Sambucus,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Viburnaceae,Sambucus,NA
+cf. Lamiaceae,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lamiaceae,NA
+Juglans-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Juglans,NA
+Aesculus-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Sapindaceae,Aesculus,NA
+Pastinaca-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Pastinaca,NA
+Carlina-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Carlina,NA
+cf. Pterocarya/Juglans,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Pterocarya,NA
+Solenanthus-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Solenanthus,NA
+cf. Cornus,Plantae,Tracheophyta,Magnoliopsida,Cornales,Cornaceae,Cornus,NA
+cf. Gentiana,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Gentiana,NA
+cf. Mentha,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Mentha,NA
+cf. Oxyria,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polyganaceae,Oxyria,NA
+cf. Rhus,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Rhus,NA
+Rhamnus/Paliurus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnus,NA
+Solanum-type,Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Solanum,NA
+Tragopogon-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Tragopogon,NA
+Anthriscus-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Anthriscus,NA
+Amygdaloideae,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rosaceae,NA
+Cirsium/Gundelia,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium,NA
+Noaea-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Noaea,NA
+Cassiope-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Cassiope,NA
+cf. Juglans,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Juglans,NA
+cf. Lysimachia,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Lysimachia,NA
+cf. Ostrya/Carpinus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+Rhododendron subsect. Ledum-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Rhododendron,NA
+Thalictrum/Coptis,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Thalictrum,NA
+Ilex/Nemopanthus undiff.,Plantae,Tracheophyta,Magnoliopsida,Aquifoliales,Aquifoliaceae,Ilex,NA
+Mertensia-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Mertensia,NA
+Ceanothus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus,NA
+Pseudotsuga-type,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pseudotsuga,NA
+Coptis-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Coptis,NA
+Rubus-type undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rubus,NA
+Eriogonum-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Eriogonum,NA
+Garrya-type,Plantae,Tracheophyta,Magnoliopsida,Garryales,Garryaceae,Garrya,NA
+Hydrophyllaceae-type,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Hydrophyllaceae,NA
+Thuja-type,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Thuja,NA
+Purshia-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Purshia,NA
+Chenopodium-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Chenopodium,NA
+Celtis/Maclura,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Celtis,NA
+cf. Saxifragaceae,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Saxifragaceae,NA
+Ambrosia/Iva,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia,Ambrosia
+Picea/Pinus undiff.,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Picea,NA
+Cupressaceae/Taxaceae undiff.,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Cupressaceae,NA
+cf. Celtis,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Celtis,NA
+cf. Euphorbiaceae,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbiaceae,NA
+cf. Phlox,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Phlox,NA
+cf. Silene,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene,NA
+Cupressaceae/Taxaceae,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Cupressaceae,NA
+Ambrosia/Iva annua,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia,Ambrosia
+Angiospermae undiff. (hardwood trees),Plantae,Tracheophyta,undiff,undiff,undiff,undiff,NA
+Rhamnaceae/Vitaceae,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnaceae,NA
+Myrica/Comptonia peregrina,Plantae,Tracheophyta,Magnoliopsida,Fagales,Myricaceae,Myrica,NA
+cf. Diapensia lapponica,Plantae,Tracheophyta,Magnoliopsida,Ericales,Diapensiaceae,Diapensia,Diapensia lapponica
+Chrysolepis/Lithocarpus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Chrysolepsis,NA
+Juniperus/Calocedrus,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Juniperus,NA
+cf. Aquilegia,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Aquilegia,NA
+cf. Castanopsis,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Castanopsis,NA
+cf. Collinsia,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Collinsia,NA
+cf. Linanthus,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Linanthus,NA
+cf. Lupinus,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus,NA
+cf. Vitis,Plantae,Tracheophyta,Magnoliopsida,Vitales,Vitaceae,Vitis,NA
+Ilex-type,Plantae,Tracheophyta,Magnoliopsida,Aquifoliales,Aquifoliaceae,Ilex,NA
+cf. Cupressaceae,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Cupressaceae,NA
+cf. Morus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Moraceae,Morus,NA
+Cercocarpus/Purshia,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Cercocarpus,NA
+Angiospermae undiff. (upland herbs),Plantae,Tracheophyta,undiff,undiff,undiff,undiff,NA
+cf. Bistorta bistortoides,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Bistorta,Bistorta bistortoides
+cf. Ceanothus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus,NA
+Holodiscus-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Holodiscus,NA
+Fragaria-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Fragaria,NA
+cf. Myrica,Plantae,Tracheophyta,Magnoliopsida,Fagales,Myricaceae,Myrica,NA
+Tidestromia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Tidestromia,NA
+Chrysolepis-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Chrysolepsis,NA
+Diospyros-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ebenaceae,Diospyros,NA
+Arecaceae-type undiff.,Plantae,Tracheophyta,Liliopsida,Arecales,Arecaceae,Arecaceae,NA
+Eugenia-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myricaceae,Eugenia,NA
+Rhus/Toxicodendron,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Rhus,NA
+Sisyrinchium-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Iridaceae,Sisyrinchium,NA
+Rhododendron subsect. Ledum/Chamaedaphne calyculata,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Rhododendron,NA
+Pinus/Picea,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus/Picea,NA
+Myrica/Comptonia,Plantae,Tracheophyta,Magnoliopsida,Fagales,Myricaceae,Myrica,NA
+cf. Parnassia,Plantae,Tracheophyta,Magnoliopsida,Celastrales,Parnassiaceae,Parnassia,NA
+Pediomelum-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Pediomelum,NA
+Symphoricarpos-type,Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Symphoricarpos,NA
+Chamaesyce-type,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Chamaesyce,NA
+Rhamnus/Vitis,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnus,NA
+Betulaceae/Myricaceae undiff.,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Betulaceae,NA
+cf. Primula,Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Primula,NA
+Picea sect. Eupicea,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Picea,NA
+Betula/Myrica,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae/Myricaceae,Betula/Myrica,NA
+cf. Rubus arcticus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rubus,Rubus arcticus
+Celtis/Maclura-type,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Celtis,NA
+Hippocastanoideae,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Sapindaceae,Sapindaceae,NA
+Rumex/Oxyria digyna undiff.,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+Actaea-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Actaea,NA
+cf. Araceae,Plantae,Tracheophyta,Liliopsida,Alismatales,Araceae,Araceae,NA
+cf. Cephalanthus,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Cephalanthus,NA
+Cupressaceae-type,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Cupressaceae,NA
+Kochia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Kochia,NA
+Momipites/Caryapollenites,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Momipites,NA
+cf. Amelanchier,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Amelanchier,NA
+Rumex-type undiff.,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+cf. Populus,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Populus,NA
+Acer-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Sapindaceae,Acer,NA
+Quercus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus,NA
+Saxifragaceae-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Saxifragaceae,NA
+cf. Rumex,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+cf. Sarcobatus vermiculatus,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Sarcobataceae,Sarcobatus,Sarcobatus vermiculatus
+cf. Liliaceae,Plantae,Tracheophyta,Liliopsida,Liliales,Liliaceae,Liliaceae,NA
+cf. Gilia,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia,NA
+cf. Portulaca,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Portulacaceae,Portulaca,NA
+Cichorium-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cichorium,NA
+Rosaceae/Quercus undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae/Fagaceae,Rosaceae/Fagaceae,NA
+Brassicaceae-type undiff.,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassicaceae,NA
+cf. Limonium,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Limonium,NA
+cf. Castilleja,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja,NA
+Heuchera-type,Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Heuchera,NA
+Prunus-type undiff.,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus,NA
+Sphaeralcea-type,Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Sphaeralcea,NA
+cf. Fraxinus,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Fraxinus,NA
+cf. Phacelia,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia,NA
+Oxytropis-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Oxytropis,NA
+Berlandiera-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Berlandiera,NA
+cf. Bocconia,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Bocconia,NA
+cf. Viola,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Violaceae,Viola,NA
+Meliaceae/Sapotaceae undiff.,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Meliaceae,Meliaceae,NA
+cf. Eriogonum,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Eriogonum,NA
+cf. Phacelia hastata,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia,Phacelia hastata
+Rhus/Toxicodendron cf. T. radicans,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Rhus,NA
+cf. Descurainia,Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Descurainia,NA
+Plantago/Thalictrum,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago,NA
+cf. Ceanothus velutinus,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus,Ceanothus velutinus
+cf. Scrophulariaceae,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Scrophulariaceae,NA
+Combretaceae/Melastomataceae,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Combretaceae,Combretaceae,NA
+Phlox-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Phlox,NA
+Dracocephalum-type,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Dracocephalum,NA
+Araceae-type,Plantae,Tracheophyta,Liliopsida,Alismatales,Araceae,Araceae,NA
+Iva-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Iva,NA
+Parthenocissus-type,Plantae,Tracheophyta,Magnoliopsida,Vitales,Vitaceae,Parthenocissus,NA
+cf. Verbascum,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Verbascum,NA
+Rhododendron subsect. Ledum/Chamaedaphne,Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Rhododendron,NA
+Taxodium-type,Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Taxodium,NA
+Taxus-type,Plantae,Tracheophyta,Pinopsida,Pinales,Taxaceae,Taxus,NA
+cf. Parthenocissus,Plantae,Tracheophyta,Magnoliopsida,Vitales,Vitaceae,Parthenocissus,NA
+Clethra-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Clethraceae,Clethra,NA
+Acacia-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acacia,NA
+Claytonia-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiacea,Claytonia,NA
+Agoseris-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Agoseris,NA
+Ostrya/Carpinus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Ostrya,NA
+cf. Shepherdia,Plantae,Tracheophyta,Magnoliopsida,Rosales,Elaeagnaceae,Shepherdia,NA
+cf. Sanguisorba,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Sanguisorba,NA
+cf. Verbena,Plantae,Tracheophyta,Magnoliopsida,Lamiales,Verbenaceae,Verbena,NA
+Fagus/Nyssa,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Fagus,NA
+Gilia-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia,NA
+Camassia-type,Plantae,Tracheophyta,Liliopsida,Asparagales,Asparagaceae,Camassia,NA
+Lithocarpus-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Lithocarpus,NA
+cf. Campanula,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Campanula,NA
+cf. Mirabilis,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Nyctaginaceae,Mirabilis,NA
+Astragalus/Lupinus,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus/Lupinus,NA
+Ranunculus-type undiff.,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculus,NA
+Celtis/Aphananthe,Plantae,Tracheophyta,Magnoliopsida,Rosales,Cannabaceae,Celtis,NA
+Juglans/Pterocarya,Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Juglans,NA
+Castanea/Castanopsis,Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Castanea,NA
+Betula sect. Apterocaryon-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Betula,NA
+Betula sect. Betula-type,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Betula,NA
+Rumex/Oxyria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+Illecebrum-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Illecebrum,NA
+Rumex subg. Acetosa/Oxyria,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex,NA
+Aphanamixis-type,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Meliaceae,Aphanamixis,NA
+Eurya-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Pentaphylacaceae,Eurya,NA
+Hippocastanoideae undiff.,Plantae,Tracheophyta,Magnoliopsida,Sapindales,Sapindaceae,Sapindaceae,NA
+Lobelioideae,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Campanulaceae,NA
+Schima-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Theaceae,Schima,NA
+Anchusa/Pulmonaria,Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Anchusa,NA
+Anisosciadium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Anisosciadium,NA
+Arctium/Jurinea,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Arctium,NA
+Asperula-type,Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Asperula,NA
+Atractylis-type,Plantee,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Atractylis,NA
+Atriplex-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Atriplex,NA
+Beta-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Beta,NA
+Bunium-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Bunium,NA
+Ceratocephala-type,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ceratocephala,NA
+cf. Abies,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Abies,NA
+cf. Acantholimon,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Acantholimon,NA
+cf. Aconitum,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Aconitum,NA
+cf. Adonis,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Adonis,NA
+cf. Astragalus-type,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus,NA
+cf. Caucalis,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Caucalis,NA
+cf. Loranthaceae,Plantae,Tracheophyta,Magnoliopsida,Santalales,Loranthaceae,Loranthaceae,NA
+cf. Papaveraceae,Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Papaveraceae,NA
+cf. Thymelaeaceae,Plantae,Tracheophyta,Magnoliopsida,Malvales,Thymelaeaceae,Thymelaeaceae,NA
+Ferula-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Ferula,NA
+Halothamnus-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Halothamnus,NA
+Hammada-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Hammada,NA
+Hedysarum/Ebenus,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Hedysarum,NA
+Inula-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Inula,NA
+Legousia-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Legousia,NA
+Onopordum-type,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Onopordum,NA
+Turgenia-type,Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Turgenia,NA
+cf. Rhamnaceae,Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnaceae,NA
+Paronychia/Herniaria-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Paronychia,NA
+Linum-type,Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Linaceae,Linum,NA
+Lythrum-type,Plantae,Tracheophyta,Magnoliopsida,Myrtales,Lythraceae,Lythrum,NA
+Styrax-type,Plantae,Tracheophyta,Magnoliopsida,Ericales,Styracaceae,Styrax,NA
+Bistorta-type,Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Bistorta,NA
+cf. Genista,Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Genista,NA
+Betula/Carpinus,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Betula/Carpinus,NA
+Asteroideae undiff.,Plantae,Tracheophyta,Mangnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Asteroideae,Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Poaceae (Cerealia),Plantae,Tracheophyta,Liliopsida,Poales,Gramineae,Gramineae,NA
+Poaceae (Cerealia) undiff.,Plantae,Tracheophyta,Liliopsida,Poales,Gramineae,Gramineae,NA
+Hystrix,Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus,NA
+Anthemideae,Plantae,Tracheophyta,Mangnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Asteroideae pro parte,Plantae,Tracheophyta,Mangnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Coniferae undiff.,Plantae,Tracheophyta,Pinopsida,Pinales,Pinales,Pinales,NA
+Asteroideae (coarse spine),Plantae,Tracheophyta,Mangnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Asteroideae (large),Plantae,Tracheophyta,Mangnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Pinus subsect. Cembroides,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus,NA
+Asteroideae (high spine),Plantae,Tracheophyta,Mangnoliopsida,Asterales,Asteraceae,Asteraceae,NA
+Coniferae,Plantae,Tracheophyta,Pinopsida,Pinales,Pinales,Pinales,NA
+Picea sect. Omorika,Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Picea,NA
+Betula sect. Costatae,Plantae,Tracheophyta,Magnoliopsida,Fagales,Betulaceae,Betula,NA
