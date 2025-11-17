@@ -36,7 +36,8 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <- 
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -46,18 +47,24 @@ source_files <- sapply(
 #----------------------------------------------------------# 
 
 
-data_p1_s4 <- data %>% 
+data_p1_s4 <- 
+  data %>% 
   filter(region =="Asia") %>%   # sub-setting data to Europe
   relocate(region)
 
 
 #####3.1. get pollen counts with ages
 
-data_p1_s4_counts_ages <- data_p1_s4 %>% get_pollen_counts_with_ages() 
+data_p1_s4_counts_ages <- 
+  data_p1_s4 %>%
+  get_pollen_counts_with_ages() 
 
-data_p1_s4_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+data_p1_s4_counts_ages %>% 
+  arrange(desc(age)) %>% 
+  head(10) # max. age
+
 #----------------------------------------------------------#
 # 4. Write the subset data to RDS file
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s4_counts_ages, here("Outputs/Data/paper_1_study_4/datasub_p1_s4_counts_ages.rds"))
+write_rds(data_p1_s4_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s4_counts_ages.rds"))

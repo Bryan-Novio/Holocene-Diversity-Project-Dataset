@@ -1,20 +1,26 @@
 #----------------------------------------------------------#
+#               Holocene Diversity Project
+#
+#            Paper01| Method 2: Simova et al
+#
 #
 #                          2023
 # North America, site-based richness (dataset_id,age,
 # 1000 bins - rarefy 400
 #
-#                 ----  BINNING  ----
+#                  ----RAREFACTION  ----
 #----------------------------------------------------------#
 
 library(tidyverse)
 library(here)
+library(vegan)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------#
 
-data_p1_s2_12k_1k_counts_ages <- read_rds(here("Outputs/Data/paper_1_study_2/data_p1_s2_12k_1k_counts_ages.rds"))
+data_study2_harmonised <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study2_harmonised.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -31,33 +37,36 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <- 
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
-)
-
-#----------------------------------------------------------#
-# 3. Bin data at different taxo rank --
-#----------------------------------------------------------#
-
-# Bin  data
-
-data_binned <- data_p1_s2_12k_1k_counts_ages %>% bin_data(1000)
-
-# Filter out bins with < 400 pollen grains total
-
-data_binned_400 <- select_only_bins_with_specific_pollen_grain_sum(data_binned, 400)
-
-# Filter out cores with < 11 bins
-
-data_binned_filtered <-
-  select_cores_with_specific_number_of_bins(
-    data_binned_400,
-    n_bins = 11
   )
 
 #----------------------------------------------------------#
-# 5. Write the binned and prepared_data to RDS files
+# 3. Rarefy data  at different taxo rank ------------------
 #----------------------------------------------------------#
 
-write_rds(data_binned_filtered, here("Outputs/Data/paper_1_study_2/data_binned_filtered.rds"))
+data_to_rarefy <- 
+  data_study2_harmonised %>%
+  select(dataset_id, age, taxon_name, pollen_counts) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  )  %>% 
+  pivot_wider(
+    names_from = taxon_name,
+    values_from = pollen_counts
+  )
+  
+set.seed(1234)
+
+rarefied_data <-
+  rarefy_all_samples(
+    data_source = data_to_rarefy,
+    n_grains = 400
+    )
+  
+#----------------------------------------------------------#
+# 4. Write the rarefied data to an RDS file----------------
+#----------------------------------------------------------#
+
+write_rds(rarefied_data, here("Data/Paper_1/data_rarefy/data_study2_rarefied.rds"))

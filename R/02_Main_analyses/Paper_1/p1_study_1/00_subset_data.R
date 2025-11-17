@@ -14,7 +14,6 @@
 library(tidyverse)
 library(here)
 
-
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
@@ -47,7 +46,8 @@ source_files <- sapply(
 #----------------------------------------------------------# 
 # subset pollen data to 25°W and 35°E longitude and north of 35°N latitude
 
-data_p1_s1 <- data %>% filter(long >= -25 & long <= 35,lat >= 35) 
+data_p1_s1 <- data %>% 
+  filter(long >= -25 & long <= 35,lat >= 35) 
 
 min(data_p1_s1$lat) #min lat
 max(data_p1_s1$lat) # max lat
@@ -87,27 +87,55 @@ data_p1_s1_sub_region %>%
   coord_quickmap(xlim = c(-25,35), ylim = c(35,75))
 
 
-data_p1_s1_sub_region %>% count(subregion)# check subregions
+data_p1_s1_sub_region %>%
+  count(subregion)# check subregions
 
 
-data_p1_s1_sub_region %>% filter(subregion == "Alps") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
-data_p1_s1_sub_region %>% filter(subregion == "Boreal") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
-data_p1_s1_sub_region %>% filter(subregion == "Meridional/Submeridional") %>% unnest(levels) %>% relocate(age,sample_id) %>% distinct(country)
-data_p1_s1_sub_region %>% filter(subregion == "Temperate Continental") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
-data_p1_s1_sub_region %>% filter(subregion == "Temperate Oceanic") %>% unnest(levels) %>% relocate(age,country) %>% distinct(country)
+data_p1_s1_sub_region %>% 
+  filter(subregion == "Alps") %>% 
+  unnest(levels) %>% 
+  relocate(age,country) %>%
+  distinct(country)
+
+data_p1_s1_sub_region %>% 
+  filter(subregion == "Boreal") %>%
+  unnest(levels) %>%
+  relocate(age,country) %>% 
+  distinct(country)
+
+data_p1_s1_sub_region %>% 
+  filter(subregion == "Meridional/Submeridional") %>% 
+  unnest(levels) %>%
+  relocate(age,sample_id) %>%
+  distinct(country)
+
+data_p1_s1_sub_region %>%
+  filter(subregion == "Temperate Continental") %>%
+  unnest(levels) %>%
+  relocate(age,country) %>%
+  distinct(country)
+
+data_p1_s1_sub_region %>%
+  filter(subregion == "Temperate Oceanic") %>%
+  unnest(levels) %>%
+  relocate(age,country) %>%
+  distinct(country)
 
 #----------------------------------------------------------#
 # 5. Get pollen counts with ages
 #----------------------------------------------------------# 
 
-data_p1_s1_subregion_counts_ages <- data_p1_s1_sub_region %>% 
+data_p1_s1_subregion_counts_ages <- 
+  data_p1_s1_sub_region %>% 
   get_pollen_counts_with_ages() 
 
-data_p1_s1_subregion_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
+data_p1_s1_subregion_counts_ages %>% 
+  arrange(desc(age)) %>%
+  head(10) # max. age
 
 
 #----------------------------------------------------------#
 # 6. Write the subset data to RDS file
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s1_subregion_counts_ages, here("Outputs/Data/paper_1_study_1/datasub_p1_s1_counts_ages.rds"))
+write_rds(data_p1_s1_subregion_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))

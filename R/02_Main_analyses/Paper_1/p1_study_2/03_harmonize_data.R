@@ -14,19 +14,19 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------#
 
-data_only_woody <- read_csv(
-  here("Data/Processed/Other/data_only_woody.csv")
+data_only_woody <- 
+  read_csv(
+  here("Data/Paper_1/data_supplementary/data_only_woody.csv")
 ) # 196 distinct pollen_type
 
 harmonisation_table <- 
-  readr::read_rds(  
-  here::here("Data/Processed/Data_harmonised/harmonization_table_all_studies.rds")
+  readr::read_csv(  
+  here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
 ) %>% 
   rename(taxon_name = neotoma_names)
 
@@ -45,23 +45,23 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <- 
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
 
-
 # 3. Test {harmonize_taxa} at different taxo rank --
 #----------------------------------------------------------#
 
-data_only_woody_renamed <- data_only_woody %>% 
+data_only_woody_renamed <- 
+  data_only_woody %>% 
   rename(taxon_name = taxa, pollen_counts = summed_pollen_count, age = BIN) %>% 
   dplyr::group_by(dataset_id, age, taxon_name ) %>%
   dplyr::summarize(
     pollen_counts = sum(pollen_counts),
     .groups = "drop"
   )
-
 
 # Harmonize taxa at different taxonomic levels
 
@@ -75,6 +75,6 @@ data_study2_harmonised <-
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
 
-write_rds(data_study2_harmonised, here("Outputs/Data/paper_1_study_2/data_study2_harmonised.rds"))
+write_rds(data_study2_harmonised, here("Data/Paper_1/data_harmonize/data_study2_harmonised.rds"))
 
 #----------------------------------------------------------#

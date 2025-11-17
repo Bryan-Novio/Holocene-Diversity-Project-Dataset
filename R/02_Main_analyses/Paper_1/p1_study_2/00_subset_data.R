@@ -50,13 +50,15 @@ source_files <- sapply(
 
 # .  3.1.1. Sub-setting data to North America
 
-data_p1_s2 <- data %>%
+data_p1_s2 <- 
+  data %>%
   filter(region == "North America") %>%
   relocate(region)
 
 # 3.1.2. Only include cores that span at least 12k years (long cores)
 
-data_p1_s2_12k <- data_p1_s2 %>%
+data_p1_s2_12k <- 
+  data_p1_s2 %>%
   dplyr::mutate(
     age_span = age_max - age_min
   ) %>%
@@ -68,15 +70,17 @@ data_p1_s2_12k <- data_p1_s2 %>%
 
 # 3.1.3. Filter out all samples younger than 1000 years (young samples)
 
-data_p1_s2_12k_1k <- data_p1_s2_12k %>% filter(age_min >= 1000)
+data_p1_s2_12k_1k <- 
+  data_p1_s2_12k %>% filter(age_min >= 1000)
 
 ##### 3.2. get pollen counts with ages
 
-data_p1_s2_12k_1k_counts_ages <- data_p1_s2_12k_1k %>%
+data_p1_s2_12k_1k_counts_ages <- 
+  data_p1_s2_12k_1k %>%
   get_pollen_counts_with_ages()
 
 #----------------------------------------------------------#
 # 4. Write the subset data to RDS file
 #----------------------------------------------------------#
 
-write_rds(data_p1_s2_12k_1k_counts_ages, here("Outputs/Data/paper_1_study_2/datasub_p1_s2_counts_ages.rds"))
+write_rds(data_p1_s2_12k_1k_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s2_counts_ages.rds"))
