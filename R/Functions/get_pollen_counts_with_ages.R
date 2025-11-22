@@ -1,14 +1,19 @@
-get_pollen_counts_with_ages <- function(data_compilation) {    # function to obtain pollen counts with corresponding ages
-  assertthat::assert_that(
-  is.data.frame(data_compilation),
-  msg = "data_compilation has to be data.frame"
-  )
+get_pollen_counts <- function(data_compilation) {   # function to obtain pollen counts
   
-  data_pollen <- get_pollen_counts(data_compilation)
+  assert_that(is.data.frame(data_compilation), 
+              msg = "`data_compilation` must be a data frame or tibble.")
   
-  data_ages <- get_pollen_ages(data_compilation)
+  assert_that(all(c("dataset_id", "raw_counts") %in% colnames(data_compilation)),
+              msg = "`data_compilation` must contain columns: 'dataset_id' and 'raw_counts'.")
   
-  inner_join(data_pollen, data_ages,
-             by = c("dataset_id", 'sample_id'))
+  res <-
+    data_compilation %>% 
+    select(dataset_id, raw_counts) %>% 
+    unnest(raw_counts) %>% 
+    pivot_longer(
+      cols = !c(dataset_id,sample_id),
+      names_to = "taxa", values_to = "pollen_counts",
+      values_drop_na = TRUE)
   
+  return(res)
 }

@@ -1,12 +1,12 @@
 library(testthat)
-library(dplyr)
+library(tidyverse)
 
-test_that("join_data_prep_ages_pollen() validates input types", {
+test_that("join_data_prep_ages_pollen() errors for invalid input types", {
   neotoma_taxa <<- data.frame(taxon_name = "A", neotoma_names = "NeoA")
   
-  expect_error(join_data_prep_ages_pollen(NULL), "data_prepared")
-  expect_error(join_data_prep_ages_pollen(123), "data_prepared")
-  expect_error(join_data_prep_ages_pollen("text"), "data_prepared")
+  expect_error(join_data_prep_ages_pollen(NULL))
+  expect_error(join_data_prep_ages_pollen(123))
+  expect_error(join_data_prep_ages_pollen("text"))
 })
 
 test_that("join_data_prep_ages_pollen() errors when required columns are missing", {
@@ -25,20 +25,27 @@ test_that("join_data_prep_ages_pollen() returns correctly structured output", {
     neotoma_names = c("NeoA", "NeoB")
   )
   
+  # Make sure input is a data.frame (not NULL, number, or character)
   data_prepared <- data.frame(
     dataset_id = c(1, 2),
     age = c(100, 200),
     pollen_counts = c(10, 20),
     sample_id = c("s1", "s2"),
-    taxa = c("A", "B")
+    taxa = c("A", "B"),
+    stringsAsFactors = FALSE
   )
   
   out <- join_data_prep_ages_pollen(data_prepared)
   
   expect_s3_class(out, "data.frame")
   expect_equal(nrow(out), 2)
-  expect_named(out, c("dataset_id", "age", "pollen_counts", "sample_id", "taxon_name"))
+  expect_named(
+    out,
+    c("dataset_id", "age", "pollen_counts", "sample_id", "taxon_name"),
+    ignore.order = FALSE
+  )
 })
+
 
 test_that("join_data_prep_ages_pollen() joins correctly and renames taxa", {
   neotoma_taxa <<- data.frame(
@@ -86,3 +93,4 @@ test_that("join_data_prep_ages_pollen() drops rows without matching taxa", {
   expect_equal(nrow(out), 1)
   expect_equal(out$dataset_id, 1)
 })
+

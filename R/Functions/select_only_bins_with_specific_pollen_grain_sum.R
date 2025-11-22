@@ -5,6 +5,11 @@ select_only_bins_with_specific_pollen_grain_sum <-
       is.data.frame(data_input),
       msg = "data_input has to be a data.frame"
     )
+    
+    assertthat::assert_that(
+      is.numeric(n_grains) && length(n_grains) == 1 && !is.na(n_grains),
+      msg = "n_grains has to be a single numeric value"
+    )
   
     data_valid_BINS <- data_input %>%
       dplyr::group_by(BIN) %>%

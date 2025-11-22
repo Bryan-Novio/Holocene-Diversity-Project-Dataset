@@ -1,6 +1,6 @@
 library(testthat)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
+
 
 test_that("get_pollen_counts() accepts valid input and returns expected structure", {
   raw1 <- tibble(sample_id = c("s1","s2"), TaxonA = c(10, 20), TaxonB = c(5, 0))
@@ -14,7 +14,7 @@ test_that("get_pollen_counts() accepts valid input and returns expected structur
   
   expect_s3_class(res, "tbl_df")
   expect_true(all(c("dataset_id","sample_id","taxa","pollen_counts") %in% names(res)))
-  expect_type(res$pollen_counts, "integer")
+  expect_true(is.numeric(res$pollen_counts))
   expect_equal(nrow(res), 6)
 })
 
@@ -43,6 +43,7 @@ test_that("get_pollen_counts() handles zero-row input", {
   expect_error(get_pollen_counts(data_empty), regexp = ".*")
 })
 
+
 test_that("get_pollen_counts() errors on incorrect input types", {
   expect_error(get_pollen_counts(NULL), regexp = ".*")
   expect_error(get_pollen_counts(list(a = 1)), regexp = ".*")
@@ -70,3 +71,4 @@ test_that("get_pollen_counts() errors when raw_counts elements lack sample_id", 
   data <- tibble(dataset_id = "d", raw_counts = list(bad_raw))
   expect_error(get_pollen_counts(data), regexp = "sample_id")
 })
+

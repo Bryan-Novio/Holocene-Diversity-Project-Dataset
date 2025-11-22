@@ -1,5 +1,11 @@
 get_pollen_counts <- function(data_compilation) {   # function to obtain pollen counts
   
+  assert_that(
+    is.data.frame(data_compilation),
+    all(c("dataset_id", "raw_counts") %in% colnames(data_compilation)),
+    msg = "Input data_compilation must be a data frame containing 'dataset_id' and 'raw_counts' columns"
+  )
+  
   res <-
     data_compilation %>% 
     select(dataset_id, raw_counts) %>% 

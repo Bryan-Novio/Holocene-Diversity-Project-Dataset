@@ -1,5 +1,5 @@
 library(testthat)
-library(dplyr)
+library(tidyverse)
 
 test_that("prepare_data_for_richness_estimation() validates input types", {
   expect_error(prepare_data_for_richness_estimation(1, "binned"), "data_source")

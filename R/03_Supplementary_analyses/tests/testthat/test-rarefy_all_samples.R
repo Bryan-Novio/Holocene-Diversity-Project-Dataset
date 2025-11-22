@@ -1,8 +1,5 @@
 library(testthat)
-library(dplyr)
-library(tidyr)
-library(tibble)
-library(stringr)
+library(tidyverse)
 library(vegan)
 
 test_that("rarefy_all_samples() validates input types", {
@@ -74,4 +71,5 @@ test_that("rarefy_all_samples() errors if n_grains exceeds total counts", {
   expect_error(rarefy_all_samples(df, n_grains = 10))
 })
 
-test_that("rarefy_all_samples() works wi_
+
+

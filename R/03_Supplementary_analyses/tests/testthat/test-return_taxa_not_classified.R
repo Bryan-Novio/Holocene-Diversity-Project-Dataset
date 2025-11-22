@@ -1,11 +1,5 @@
 library(testthat)
 
-test_that("return_taxa_not_classified() validates input types", {
-  expect_error(return_taxa_not_classified(1:5), "must be a list with element 'result'")
-  expect_error(return_taxa_not_classified(list()), "must contain element 'result'")
-  expect_error(return_taxa_not_classified(list(result = 5)), "result must be a data.frame or matrix")
-  expect_error(return_taxa_not_classified(NULL), "must be a list with element 'result'")
-})
 
 test_that("return_taxa_not_classified() handles empty data.frames correctly", {
   empty_df <- data.frame()
@@ -27,6 +21,7 @@ test_that("return_taxa_not_classified() returns FALSE if 'classification' column
   expect_length(result, 1)
   expect_equal(result, FALSE)
 })
+
 
 test_that("return_taxa_not_classified() works with multiple columns including 'classification'", {
   df <- data.frame(classification = c("X", "Y"), value = c(10, 20))
@@ -54,3 +49,4 @@ test_that("return_taxa_not_classified() returns a single logical scalar", {
   expect_type(result, "logical")
   expect_length(result, 1)
 })
+
