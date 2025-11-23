@@ -18,7 +18,7 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_2/rarefied_data_study_2.rds"))
+rarefied_data <- read_rds(here("Data/Paper_1/data_rarefy/data_study2_rarefied.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -44,7 +44,20 @@ source_files <- sapply(
 # 3. Estimate richness  at different taxo rank ------------
 #----------------------------------------------------------# 
 
-richness <- rarefied_data %>% 
+## Prepare data for richness_estimation
+
+data_prepared_richness_estimation <- 
+  rarefied_data  %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","BIN")) %>% 
+  pivot_longer(cols = Alnus:Maclura, 
+               names_to = "taxa", values_to = "summed_pollen_count") %>% 
+  prepare_data_for_richness_estimation(type = "binned")
+
+
+## Estimate richness
+
+richness <- 
+  data_prepared_richness_estimation %>% 
   estimate_richness() %>% 
   mutate(age = as.numeric(age))
 
@@ -54,4 +67,4 @@ summary(richness)
 # 4. Write the richness data to an RDS file ---------------
 #----------------------------------------------------------#
 
-write_rds(richness, here("Outputs/Data/paper_1_study_2/richness_data_study_2.rds"))
+write_csv(richness, here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))

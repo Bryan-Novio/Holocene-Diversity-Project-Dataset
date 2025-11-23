@@ -6,12 +6,6 @@ bin_data <- function(data_source, binning_var, bin_size){
     msg = "data_source has to be a data.frame"
   )
   
-  # Assert binning_var exists in the data frame
-  assertthat::assert_that(
-    rlang::as_string(rlang::enquo(binning_var)) %in% colnames(data_source),
-    msg = "binning_var must be a column in data_source"
-  )
-  
   # Assert bin_size is numeric and positive
   assertthat::assert_that(
     is.numeric(bin_size) && length(bin_size) == 1 && bin_size > 0,

@@ -30,7 +30,8 @@ rarefy_all_samples <- function(data_source, n_grains) {
     dplyr::mutate(
       dataset_id = stringr::str_subset(dataset_id_age, "__", negate = TRUE),
       age = stringr::str_remove(dataset_id_age, ".*__")
-    )
+    ) %>% 
+    select(-c(dataset_id, age))
   
   return(results)
 }

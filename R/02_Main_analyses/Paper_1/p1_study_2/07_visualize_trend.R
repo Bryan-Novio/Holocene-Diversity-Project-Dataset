@@ -16,16 +16,17 @@ library(tidyverse)
 library(here)
 library(mgcv)
 library(itsadug)
-library(ggplotify)
+library(gratia)
+library(tidygam)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness <- read_rds(here("Outputs/Data/paper_1_study_2/richness_data_study_2.rds"))
-richness_re <- read_rds(here("Outputs/Data/paper_1_study_2/richness_data_study_2_re.rds"))
-model_1_s2 <- read_rds(here("Outputs/Data/paper_1_study_2/model_1_s2.rds"))
-model_2_s2 <- read_rds(here("Outputs/Data/paper_1_study_2/model_2_s2.rds"))
+data_richness <- read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
+model1 <- read_rds(here("Data/Paper_1/data_model/study2_model1.rds"))
+model2 <-read_rds(here("Data/Paper_1/data_model/study2_model2.rds"))
+model3 <-read_rds(here("Data/Paper_1/data_model/study2_model3.rds"))
 
 #----------------------------------------------------------#
 # 2. Visualize trends 
@@ -33,96 +34,44 @@ model_2_s2 <- read_rds(here("Outputs/Data/paper_1_study_2/model_2_s2.rds"))
 
 #2.1. using actual data 
 
-## without RE
-
-richness %>%
-  ggplot(aes(x = age, y = richness)) +
-  geom_smooth(aes(group=1), method = "gam", formula = y ~ s(x) ) +
-  scale_x_reverse() +
-  geom_vline(xintercept = 9800, color = 'red') +
-  theme_classic()
-
-## with RE (geom_smooth does not allow RE in gam model from mgcv) (not working)
-
-dataset_id <-  factor(richness$dataset_id)
-
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point() +
-  geom_smooth(method = "gam", formula = y ~ s(x) + s(dataset_id, bs="re")) +
-  scale_x_reverse() +
-  geom_vline(xintercept = 9800, color = 'red') +
-  theme_classic()
-
 ## use plot_smooth from 'itsadug' package (use base R for plotting)
 
-itsadug::plot_smooth(model_1, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
-itsadug::plot_smooth(model_2_s2, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
-
-##reverse x-axis 
-
-p <- ggplotify::as.ggplot(
-  function() {
-    # Plot the smooth term
-    p <- plot_smooth(model_1_s2, view = 'age', rm.ranef = TRUE, rug = FALSE)
-    
-    # Add the scale_x_reverse() layer to the ggplot object 'p'
-    p  + scale_x_reverse() 
-  }
+model1_plot <- itsadug::plot_smooth(
+  x = model1,
+  view = "age",
+  rug = TRUE,
+  rm.ranef = FALSE
 )
 
-p 
+model2_plot <- itsadug::plot_smooth(
+  x = model2,
+  view = "age",
+  rug = TRUE,
+  rm.ranef = FALSE
+)
+
+model3_plot <- itsadug::plot_smooth(
+  x = model3,
+  view = "age",
+  rug = TRUE,
+  rm.ranef = FALSE
+  
+)
+
+## plot the ‘partial effects’ of each smooth term
+
+gratia::draw(model1)
+gratia::draw(model2)
+gratia::draw(model3)
+
 
 #2.2. using predicted data (-- fit the GAM with mgcv and plot its predictions)
 
+#model1
 
-# model_1_s2
+# option1
 
-newdata <- data.frame(age = seq(from = min(richness$age), to = max(richness$age), length.out = 100),
-                      dataset_id = factor(1001))
-
-predictions <- predict(model_1_s2, newdata = newdata, se.fit = TRUE, exclude = "s(dataset_id)")
-
-newdata$fit <- predictions$fit 
-newdata$se <- predictions$se.fit
+preds_1 <- tidygam::predict_gam(model1, length_out = 50)
+plot(preds_1, "age", "dataset_id")
 
 
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point(alpha = 0.5) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
-
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
-
-# model_2_s2
-
-newdata <- data.frame(age = seq(from = min(richness$age), to = max(richness$age), length.out = 100),
-                      dataset_id = factor(1001))
-
-predictions <- predict(model_2_s2, newdata = newdata, se.fit = TRUE, exclude = "s(dataset_id)")
-
-newdata$fit <- predictions$fit 
-newdata$se <- predictions$se.fit
-
-
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point(alpha = 0.5) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
- 
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
