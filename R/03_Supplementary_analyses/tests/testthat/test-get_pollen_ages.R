@@ -31,7 +31,7 @@ test_that("get_pollen_ages() returns a data.frame with expected columns", {
   df <- data.frame(
     dataset_id = c(1001, 1002),
     levels = I(list(
-      data.frame(sample_id = c("a", "b"), age = c(10, 20)),
+      data.frame(sample_id = c("21011", "21012"), age = c(10, 20)),
       data.frame(sample_id = "c", age = 30)
     ))
   )
@@ -57,12 +57,12 @@ test_that("get_pollen_ages() correctly unnests levels", {
     age = c(5, 15)
   )
   
-  expect_equal(out, expected)
+  expect_equal(as.data.frame(out), expected)
 })
 
 test_that("get_pollen_ages() handles zero-row levels", {
   df <- data.frame(
-    dataset_id = 1,
+    dataset_id = 1001,
     levels = I(list(data.frame(sample_id = character(), age = numeric())))
   )
   

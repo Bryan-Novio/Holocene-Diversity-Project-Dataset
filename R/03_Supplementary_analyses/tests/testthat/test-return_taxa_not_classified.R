@@ -1,5 +1,6 @@
+library(tidyverse)
 library(testthat)
-
+library(assertthat)
 
 test_that("return_taxa_not_classified() handles empty data.frames correctly", {
   empty_df <- data.frame()
@@ -15,7 +16,7 @@ test_that("return_taxa_not_classified() returns TRUE if 'classification' column 
 })
 
 test_that("return_taxa_not_classified() returns FALSE if 'classification' column is present", {
-  df <- data.frame(classification = c("A", "B", "C"))
+  df <- data.frame(classification = c("abies", "alnus", "acer"))
   result <- return_taxa_not_classified(list(result = df))
   expect_type(result, "logical")
   expect_length(result, 1)
@@ -24,7 +25,7 @@ test_that("return_taxa_not_classified() returns FALSE if 'classification' column
 
 
 test_that("return_taxa_not_classified() works with multiple columns including 'classification'", {
-  df <- data.frame(classification = c("X", "Y"), value = c(10, 20))
+  df <- data.frame(classification = c("abies", "alnus"), value = c(10, 20))
   result <- return_taxa_not_classified(list(result = df))
   expect_equal(result, FALSE)
 })

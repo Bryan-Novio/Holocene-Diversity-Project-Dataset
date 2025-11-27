@@ -1,5 +1,6 @@
 library(testthat)
 library(tidyverse)
+library(assertthat)
 
 test_that("select_only_bins_with_specific_pollen_grain_sum() validates input types", {
   df <- data.frame(BIN = c(1,1,2), summed_pollen_count = c(5,10,2))

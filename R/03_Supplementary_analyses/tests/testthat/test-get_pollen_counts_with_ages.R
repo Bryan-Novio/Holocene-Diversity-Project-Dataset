@@ -1,6 +1,6 @@
 library(testthat)
 library(tidyverse)
-
+library(assertthat)
 
 test_that("get_pollen_counts() accepts valid input data frame", {
   raw <- tibble(
@@ -65,7 +65,7 @@ test_that("get_pollen_counts() errors on invalid types for data_compilation", {
   expect_error(get_pollen_counts(NULL))
   expect_error(get_pollen_counts(123))
   expect_error(get_pollen_counts("not a df"))
-  expect_error(get_pollen_counts(list(a = 1)))
+  expect_error(get_pollen_counts(list(a = 1)), "data frame or tibble") 
 })
 
 test_that("get_pollen_counts() errors when raw_counts is not a list of data frames", {
@@ -73,13 +73,13 @@ test_that("get_pollen_counts() errors when raw_counts is not a list of data fram
     dataset_id = 1001,
     raw_counts = 5
   )
-  expect_error(get_pollen_counts(data_1))
+  expect_error(get_pollen_counts(data_1), "Column `sample_id` doesn't exist") 
   
   data_2 <- tibble(
     dataset_id = 1001,
     raw_counts = list(5)
   )
-  expect_error(get_pollen_counts(data_2))
+  expect_error(get_pollen_counts(data_2), "Column `sample_id` doesn't exist") 
 })
 
 test_that("get_pollen_counts() handles empty raw_counts data frames", {
@@ -93,4 +93,3 @@ test_that("get_pollen_counts() handles empty raw_counts data frames", {
   expect_equal(nrow(res), 0)
   expect_equal(colnames(res), c("dataset_id", "sample_id", "taxa", "pollen_counts"))
 })
-

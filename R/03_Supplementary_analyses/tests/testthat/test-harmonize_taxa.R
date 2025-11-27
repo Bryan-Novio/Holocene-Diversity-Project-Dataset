@@ -8,9 +8,9 @@ test_that("harmonize_taxa() validates input classes", {
   )
   
   data_clean <- data.frame(
-    dataset_id = 1,
+    dataset_id = 1001,
     age = 100,
-    taxon_name = "A",
+    taxon_name = "abies",
     pollen_counts = 5
   )
   
@@ -35,7 +35,7 @@ test_that("harmonize_taxa() requires specific columns in data_to_harmonize", {
 
 test_that("harmonize_taxa() errors when harmonisation table lacks taxon names", {
   df <- data.frame(
-    dataset_id = c(1,1),
+    dataset_id = c(15081,15081),
     age = c(10,10),
     taxon_name = c("abies","alnus"),
     pollen_counts = c(2,3)
@@ -132,7 +132,6 @@ test_that("harmonize_taxa() handles duplicated harmonisation table entries", {
     7
   )
 })
-
 
 
 test_that("harmonize_taxa() works with single-row input", {

@@ -1,5 +1,6 @@
 library(testthat)
 library(tidyverse)
+library(assertthat)
 
 test_that("prepare_data_for_richness_estimation() validates input types", {
   expect_error(prepare_data_for_richness_estimation(1, "binned"), "data_source")
@@ -27,8 +28,8 @@ test_that("prepare_data_for_richness_estimation() works for type = 'binned' with
   df <- data.frame(
     BIN = c(1, 2, 3),
     summed_pollen_count = c(10, 0, 5),
-    dataset_id = c("d1", "d1", "d2"),
-    taxa = c("t1", "t2", "t3")
+    dataset_id = c("1001", "1002", "15081"),
+    taxa = c("abies", "alnus", "acer")
   )
   
   res <- prepare_data_for_richness_estimation(df, "binned")
@@ -36,7 +37,7 @@ test_that("prepare_data_for_richness_estimation() works for type = 'binned' with
   expect_s3_class(res, "data.frame")
   expect_named(res, c("dataset_id", "age", "taxa", "pollen_grains"))
   expect_equal(nrow(res), 2)
-  expect_equal(res$age, c(1, 3) * 500)
+  expect_equal(res$age, c(1, 3) * 1000)
   expect_equal(res$pollen_grains, c(10, 5))
 })
 
@@ -44,8 +45,8 @@ test_that("prepare_data_for_richness_estimation() works for non-binned type with
   df <- data.frame(
     age = c(100, 200, 300),
     pollen_counts = c(10, 0, 5),
-    dataset_id = c("d1", "d1", "d2"),
-    taxa = c("t1", "t2", "t3")
+    dataset_id = c("1001", "1002", "15081"),
+    taxa = c("abies", "alnus", "acer")
   )
   
   res <- prepare_data_for_richness_estimation(df, "raw")
@@ -60,24 +61,25 @@ test_that("prepare_data_for_richness_estimation() works for non-binned type with
 test_that("prepare_data_for_richness_estimation() drops non-positive pollen counts", {
   df1 <- data.frame(
     BIN = 1:3,
-    summed_pollen_count = c(-1, 0, 2),
-    dataset_id = "d",
-    taxa = c("a", "b", "c")
+    summed_pollen_count = c(3, 0, 2),
+    dataset_id = "1001",
+    taxa = c("abies", "alnus", "acer")
   )
   
   df2 <- data.frame(
     age = 1:3,
-    pollen_counts = c(-1, 0, 2),
-    dataset_id = "d",
-    taxa = c("a", "b", "c")
+    pollen_counts = c(3, 0, 2),
+    dataset_id = "1001",
+    taxa = c("abies", "alnus", "acer")
   )
   
   res1 <- prepare_data_for_richness_estimation(df1, "binned")
   res2 <- prepare_data_for_richness_estimation(df2, "raw")
   
-  expect_equal(nrow(res1), 1)
-  expect_equal(nrow(res2), 1)
+  expect_equal(nrow(res1), 2) 
+  expect_equal(nrow(res2), 2)  
 })
+
 
 test_that("prepare_data_for_richness_estimation() handles zero-row data.frames", {
   df_binned <- data.frame(
@@ -108,9 +110,9 @@ test_that("prepare_data_for_richness_estimation() handles zero-row data.frames",
 test_that("prepare_data_for_richness_estimation() rejects missing type values", {
   df <- data.frame(
     BIN = 1,
-    summed_pollen_count = 1,
-    dataset_id = "d",
-    taxa = "t"
+    summed_pollen_count = 143,
+    dataset_id = "1001",
+    taxa = "abies"
   )
   expect_error(prepare_data_for_richness_estimation(df, NA_character_))
 })

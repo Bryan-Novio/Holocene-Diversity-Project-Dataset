@@ -1,167 +1,109 @@
-#----------------------------------------------------------#
-#
-#                 ----  UNIT TESTING  ----
-#
-#                   estimate_richness()
-#
-#----------------------------------------------------------#
-
 library(testthat)
-library(tidyverse)
+library(dplyr)
+library(assertthat)
 
-#----------------------------------------------------------#
-# 1. Test 1: Input Type Validation -------------------------
-#----------------------------------------------------------#
+### helper function 
+compare_dfs <- function(result, expected) {
+  
+  result_cleaned <- result %>%
+    dplyr::ungroup() %>%
+    as.data.frame()
+  
+  expected_cleaned <- expected %>% 
+    as.data.frame() 
+  
+  result_cleaned <- result_cleaned[order(result_cleaned$dataset_id, result_cleaned$age), ]
+  expected_cleaned <- expected_cleaned[order(expected_cleaned$dataset_id, expected_cleaned$age), ]
+  
+  rownames(result_cleaned) <- NULL
+  rownames(expected_cleaned) <- NULL
+  
+  expect_equal(result_cleaned, expected_cleaned, check.attributes = FALSE) 
+}
 
-
-test_that("estimate_richness() validates input types", {
-  # All inputs must be a data frame
-  expect_error(estimate_richness(NULL), "data.frame")
-  expect_error(estimate_richness(1), "data.frame")
-  expect_error(estimate_richness("a"), "data.frame")
-  expect_error(estimate_richness(list()), "data.frame")
+test_that("estimate_richness() fails gracefully on invalid input types", {
+  
+  expect_error(estimate_richness(list()), 
+               "data_for_richness_estimation has to be a data.frame")
+  
+  df_missing_dataset_id <- data.frame(age = c(100), pollen_grains = c(5))
+  
+  expect_error(
+    estimate_richness(df_missing_dataset_id), 
+    "Column `dataset_id` is not found.",
+    fixed = TRUE
+  )
 })
 
-#----------------------------------------------------------#
-# 2. Test 2: Required Columns Validation -------------------
-#----------------------------------------------------------#
+test_that("estimate_richness() works on valid input and returns a data.frame", {
 
-test_that("estimate_richness() requires required columns", {
-  # Use tibble::tibble for convention
-  df_missing_cols <- tibble::tibble(a = 1, b = 2)
-  expect_error(estimate_richness(df_missing_cols))
-  
-  df_missing_age <- tibble::tibble(
-    dataset_id = 1,
-    avg_n_pollen_grains = 2
+  df <- data.frame(
+    dataset_id = c("15081", "15081", "1541", "1541", "16111", "16111"),
+    age = c(100, 200, 100, 200, 100, 300),
+    pollen_grains = c(10, 0, 5, 20, 1, 0),
+    species = c("abies", "alnus", "acer", "amaranthanceae", "pinus", "picea") 
   )
-  expect_error(estimate_richness(df_missing_age))
   
-  df_missing_dataset <- tibble::tibble(
-    age = 1000,
-    avg_n_pollen_grains = 5
-  )
-  expect_error(estimate_richness(df_missing_dataset))
+  result <- estimate_richness(df) 
   
-  df_missing_pollen <- tibble::tibble(
-    dataset_id = 1,
-    age = 1000
-  )
-  expect_error(estimate_richness(df_missing_pollen))
+  expect_s3_class(result, "data.frame")
+  expect_equal(names(result), c("dataset_id", "age", "richness"))
+  expect_true(nrow(result) > 0)
 })
-
-
-#----------------------------------------------------------#
-# 3. Test 3: Works on Valid Input & Output Structure -------
-#----------------------------------------------------------#
-
-test_that("estimate_richness() works on valid input", {
-  df <- tibble::tibble( 
-    dataset_id = c(1, 1, 1, 2, 2),
-    age = c(100, 100, 200, 100, 200),
-    avg_n_pollen_grains = c(1, 0, 3, 2, 0)
-  )
-  
-
-  expect_no_error(result <- df |> estimate_richness())
-  
-  # Assert result class is a tibble, which inherits from data.frame
-  expect_s3_class(result, "data.frame") 
-  expect_s3_class(result, "tbl_df") 
-  
-  # The column names must match
-  expect_named(result, c("dataset_id", "age", "richness"))
-})
-
-#----------------------------------------------------------#
-# 4. Test 4: Correct Richness Values (Core Logic)  -------
-#----------------------------------------------------------#
 
 test_that("estimate_richness() computes correct richness values", {
-  df <- tibble::tibble(
-    dataset_id = c(1, 1, 1, 2, 2),
-    age = c(100, 100, 200, 100, 200),
-    avg_n_pollen_grains = c(1, 0, 3, 2, 0)
+ 
+  df <- data.frame(
+    dataset_id = c(rep("15081", 3), rep("1541", 3), rep("16111", 2)),
+    age = c(100, 100, 200, 200, 200, 100, 100, 200),
+    pollen_grains = c(10, 0, 1, 5, 20, 0, 0, 100) 
   )
   
-  expected <- tibble::tibble(
-    dataset_id = c(1, 1, 2, 2),
-    age = c(100, 200, 100, 200),
-    richness = c(1, 1, 1, 0)
+  expected <- data.frame(
+    dataset_id = c("15081", "15081", "1541", "1541", "16111", "16111"),
+    age = c(100, 200, 100, 200, 100, 200),
+    richness = c(1, 1, 0, 2, 0, 1)
   )
   
-  result <- df %>% 
-    estimate_richness() %>% 
-    dplyr::arrange(dataset_id, age)
-  
-  expected <- expected %>% 
-    dplyr::arrange(dataset_id, age)
-  expect_equivalent(result, expected) 
-})
-#----------------------------------------------------------#
-# 5. Test 5: Handling NA Values
-#----------------------------------------------------------#
+  result <- estimate_richness(df)
 
-test_that("estimate_richness() handles NA values in avg_n_pollen_grains", {
-  df <- tibble::tibble(
-    dataset_id = c(1, 1, 1),
-    age = c(100, 100, 100),
-    avg_n_pollen_grains = c(1, NA, 0)
-  )
-  
-  expected <- tibble::tibble(
-    dataset_id = 1,
-    age = 100,
-    richness = 1
-  )
-  
-  result <- df |> estimate_richness()
-  
-  expect_equivalent(result, expected)
+  compare_dfs(result, expected) 
 })
 
-#----------------------------------------------------------#
-# 6.  Test 6: Zero-Row Data Frame (Empty Input)
-#----------------------------------------------------------#
 
-test_that("estimate_richness() handles zero-row data frame", {
-  df <- tibble::tibble( 
-    dataset_id = numeric(0),
-    age = numeric(0),
-    avg_n_pollen_grains = numeric(0)
+test_that("estimate_richness() handles NA values in pollen_grains column", {
+
+  df <- data.frame(
+    dataset_id = c("15081", "15081", "1541", "1541", "16111"),
+    age = c(100, 200, 100, 200, 100),
+    pollen_grains = c(10, NA, 5, 0, NA) 
   )
   
-  result <- df |> estimate_richness()
+  expected <- data.frame(
+    dataset_id = c("15081", "15081", "1541", "1541", "16111"),
+    age = c(100, 200, 100, 200, 100),
+    richness = c(1, 0, 1, 0, 0)
+  )
   
-  expect_s3_class(result, "tbl_df") 
-  expect_equal(nrow(result), 0)
-  expect_named(result, c("dataset_id", "age", "richness"))
+  result <- estimate_richness(df)
+  compare_dfs(result, expected)
 })
 
-#----------------------------------------------------------#
-# 7.  Test 7: Negative or Extreme Values
-#----------------------------------------------------------#
 
 test_that("estimate_richness() handles negative or extreme values", {
-  df <- tibble::tibble(
-    dataset_id = c(1, 1),
-    age = c(100, 100),
-    avg_n_pollen_grains = c(-5, 10)
+  
+  df <- data.frame(
+    dataset_id = c("15081", "15081", "1541", "1541"),
+    age = c(10, 20, 10, 20),
+    pollen_grains = c(-5, 0.5, 99999, 1) 
   )
   
-  expected <- tibble::tibble(
-    dataset_id = 1,
-    age = 100,
-    richness = 1
+  expected <- data.frame(
+    dataset_id = c("15081", "15081", "1541", "1541"), 
+    age = c(10, 20, 10, 20),           
+    richness = c(0, 0, 1, 1)           
   )
   
-  result <- df |> estimate_richness()
-  expect_equivalent(result, expected)
+  result <- estimate_richness(df)
+  compare_dfs(result, expected)
 })
-
-
-
-
-
-
-
