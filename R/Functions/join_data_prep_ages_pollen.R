@@ -1,8 +1,8 @@
 
-join_data_prep_ages_pollen <- function(data_prepared) {   # function to join prepared data with neotoma to rename taxa column & join with ages and pollen abundance
+join_data_prep_ages_pollen <- function(data_prepared) {
   assertthat::assert_that(
-  as.data.frame(data_prepared),
-  msg = "data_prepared has to be a data.frame"
+    is.data.frame(data_prepared),
+    msg = "data_prepared has to be a data.frame"
   )
   
   data_prepared %>%

@@ -19,7 +19,7 @@ harmonize_taxa <- function(data_to_harmonize, harmonisation_table, level) {
     dplyr::distinct()
     
   taxa_input <- 
-    data_only_woody_renamed %>% 
+    data_to_harmonize  %>% 
     dplyr::distinct(taxon_name) %>% 
     dplyr::mutate(
       present_in_data = TRUE

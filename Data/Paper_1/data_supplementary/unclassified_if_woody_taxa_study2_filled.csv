@@ -1,0 +1,228 @@
+taxa,woodiness,"total_plant_height $\textgreater$ 1.5m (T/F, woody only)",native
+Acalypha-type,non-woody,n/a,n/a
+Aconitum,non-woody,n/a,n/a
+Allium,non-woody,n/a,n/a
+Amaranthaceae,non-woody,n/a,n/a
+Amaranthaceae undiff,non-woody,n/a,n/a
+Ambrosia,non-woody,n/a,n/a
+Ambrosia-type,non-woody,n/a,n/a
+Anacardiaceae undiff,woody,T,yes
+Anemone canadensis-type,non-woody,n/a,n/a
+Anemone-type,non-woody,n/a,n/a
+Angiospermae undiff (herbs),non-woody,n/a,n/a
+Apiaceae,non-woody,n/a,n/a
+Apocynum,non-woody,n/a,n/a
+Arceuthobium,woody,F,yes
+Arceuthobium/Loranthaceae,woody,F,yes
+Artemisia,woody,F,yes
+Asteraceae undiff,non-woody,n/a,n/a
+Asteroideae,non-woody,n/a,n/a
+Asteroideae undiff,non-woody,n/a,n/a
+Astragalus,non-woody,n/a,n/a
+Avena-type,non-woody,n/a,n/a
+Berberidaceae,woody,T,yes
+Beta vulgaris-type,non-woody,n/a,n/a
+Betulaceae undiff,woody,T,yes
+Bistorta bistortoides,non-woody,n/a,n/a
+Bistorta officinalis,non-woody,n/a,n/a
+Bistorta vivipara,non-woody,n/a,n/a
+Boraginaceae,non-woody,n/a,n/a
+Brassica,non-woody,n/a,n/a
+Brassicaceae,non-woody,n/a,n/a
+Brassicaceae undiff,non-woody,n/a,n/a
+Bromeliaceae,non-woody,n/a,n/a
+Bursera,woody,T,no
+Byrsonima,woody,T,no
+Cactaceae,woody,F,yes
+Campanulaceae,non-woody,n/a,n/a
+Cannabis-type,non-woody,n/a,n/a
+Caprifoliaceae sensu lato,woody,T,yes
+Caprifoliaceae sensu lato undiff,woody,T,yes
+Caryophyllaceae,non-woody,n/a,n/a
+Cedrus,woody,T,no
+Celtis-type,woody,T,yes
+Araliaceae,woody,T,yes
+Dodecatheon,non-woody,n/a,n/a
+Hypericum,woody,T,yes
+Oxalis,non-woody,n/a,n/a
+Oxyria digyna,non-woody,n/a,n/a
+Physalis,non-woody,n/a,n/a
+Verbenaceae,woody,T,yes
+Weinmannia,woody,T,no
+Chamaecrista,woody,F,yes
+Chamaecrista fasciculata-type,woody,F,yes
+Chamaecrista-type,woody,F,yes
+Chamaecyparis-type,woody,T,yes
+Cichorioideae,non-woody,n/a,n/a
+Cirsium,non-woody,n/a,n/a
+Cistaceae,woody,F,no
+Claytonia,non-woody,n/a,n/a
+Combretaceae/Melastomataceae undiff,woody,T,no
+Cupressaceae,woody,T,yes
+Cupressaceae undiff,woody,T,yes
+Cyclachaena xanthiifolia,non-woody,n/a,n/a
+Cyclachaena xanthiifolia-type,non-woody,n/a,n/a
+Cyperaceae,non-woody,n/a,n/a
+Dalea,woody,F,yes
+Dalea candida-type,woody,F,yes
+Dalea purpurea,woody,F,yes
+Dalea undiff,woody,F,yes
+Dianthus-type,non-woody,n/a,n/a
+Diapensia,woody,F,yes
+Dryas,woody,F,yes
+Dryas-type,woody,F,yes
+Elaeagnaceae undiff,woody,T,yes
+Empetrum,woody,F,yes
+Engelhardia-type,woody,T,no
+Epilobium,non-woody,n/a,n/a
+Ericaceae,woody,T,yes
+Ericales,woody,T,yes
+Eriogonum,non-woody,n/a,n/a
+Eryngium-type,non-woody,n/a,n/a
+Euphorbia,non-woody,n/a,n/a
+Euphorbiaceae,woody,T,yes
+Fabaceae,non-woody,n/a,n/a
+Fabaceae undiff,non-woody,n/a,n/a
+Froelichia-type,non-woody,n/a,n/a
+Galium,non-woody,n/a,n/a
+Gentiana,non-woody,n/a,n/a
+Gentiana andrewsii-type,non-woody,n/a,n/a
+Gentianaceae undiff,non-woody,n/a,n/a
+Gomphrena-type,non-woody,n/a,n/a
+Hedyosmum,woody,T,no
+Hedysarum,non-woody,n/a,n/a
+Humulus,non-woody,n/a,n/a
+Humulus/Cannabis,non-woody,n/a,n/a
+Humulus-type,non-woody,n/a,n/a
+Hydrophyllum,non-woody,n/a,n/a
+Hypoxis,non-woody,n/a,n/a
+Impatiens,non-woody,n/a,n/a
+Iva annua-type,non-woody,n/a,n/a
+Iva frutescens-type,woody,T,yes
+Koenigia islandica,non-woody,n/a,n/a
+Lamiaceae,non-woody,n/a,n/a
+Lamiaceae undiff,non-woody,n/a,n/a
+Lamium,non-woody,n/a,n/a
+Laportea-type,non-woody,n/a,n/a
+Larix/Pseudotsuga,woody,T,yes
+Lechea,non-woody,n/a,n/a
+Ledum-type,woody,F,yes
+Liliaceae,non-woody,n/a,n/a
+Liliaceae undiff,non-woody,n/a,n/a
+Lilium philadelphicum-type,non-woody,n/a,n/a
+Linnaea borealis,woody,F,yes
+Lonicera,non-woody,T,yes
+Ludwigia-type,non-woody,n/a,n/a
+Lupinus-type,non-woody,n/a,n/a
+Lycopus-type,non-woody,n/a,n/a
+Lysimachia thyrsiflora,non-woody,n/a,n/a
+Lythrum,non-woody,n/a,n/a
+Maclura-type,woody,T,yes
+Malvaceae,non-woody,n/a,n/a
+Malvaceae sensu stricto,non-woody,n/a,n/a
+Micranthes hieraciifolia,non-woody,n/a,n/a
+mimosoid clade,woody,T,no
+Moraceae undiff,woody,T,yes
+Myrtaceae undiff,woody,T,no
+Onagraceae,non-woody,n/a,n/a
+Opuntia,woody,F,yes
+Orchidaceae,non-woody,n/a,n/a
+Oxyria digyna,non-woody,n/a,n/a
+Oxytropis,non-woody,n/a,n/a
+Oxytropis maydelliana-type,non-woody,n/a,n/a
+Parietaria,non-woody,n/a,n/a
+Paronychia americana,non-woody,n/a,n/a
+Paronychia chartacea,non-woody,n/a,n/a
+Parthenocissus,non-woody,T,yes
+Pedicularis,non-woody,n/a,n/a
+Pedicularis langsdorffii,non-woody,n/a,n/a
+Pedicularis verticillata,non-woody,n/a,n/a
+Penstemon,non-woody,n/a,n/a
+Persicaria amphibia,non-woody,n/a,n/a
+Persicaria lapathifolia-type,non-woody,n/a,n/a
+Phlox,non-woody,n/a,n/a
+Phoradendron,woody,F,yes
+Pilea-type,non-woody,n/a,n/a
+Pinaceae,woody,T,yes
+Pinaceae (vesiculate) undiff,woody,T,yes
+Pinaceae undiff,woody,T,yes
+Piperaceae-type,woody,F,no
+Plantaginaceae undiff,non-woody,n/a,n/a
+Plantago,non-woody,n/a,n/a
+Plantago major,non-woody,n/a,n/a
+Poaceae,non-woody,n/a,n/a
+Poaceae undiff,non-woody,n/a,n/a
+Podocarpus,woody,T,no
+Polemoniaceae undiff,non-woody,n/a,n/a
+Polemonium,non-woody,n/a,n/a
+Polygalaceae,woody,T,yes
+Polygonaceae undiff,non-woody,n/a,n/a
+Polygonum,non-woody,n/a,n/a
+Polygonum aviculare-type,non-woody,n/a,n/a
+Polygonum delopyrum-type,non-woody,n/a,n/a
+Polygonum fimbriatum-type,non-woody,n/a,n/a
+Polygonum polygamum-type,non-woody,n/a,n/a
+Polygonum sensu lato undiff,non-woody,n/a,n/a
+Polygonum tenue-type,non-woody,n/a,n/a
+Portulacaceae,non-woody,n/a,n/a
+Potentilla,non-woody,n/a,n/a
+Primulaceae,non-woody,n/a,n/a
+Prunella-type,non-woody,n/a,n/a
+Prunus/Amelanchier,woody,T,yes
+Ranunculaceae (tricolpate),non-woody,n/a,n/a
+Ranunculaceae undiff,non-woody,n/a,n/a
+Ranunculus,non-woody,n/a,n/a
+Rhamnaceae,woody,T,yes
+Rhamnaceae undiff,woody,T,yes
+Rhexia-type,non-woody,n/a,n/a
+Rosaceae,woody,T,yes
+Rosaceae undiff,woody,T,yes
+Rubiaceae undiff,woody,T,yes
+Rubus,woody,T,yes
+Rubus arcticus,woody,F,yes
+Rubus chamaemorus,woody,F,yes
+Rubus-type,woody,T,yes
+Rumex,non-woody,n/a,n/a
+Rumex/Oxyria digyna,non-woody,n/a,n/a
+Rutaceae undiff,woody,T,yes
+Sabal,woody,T,yes
+Salsola,non-woody,n/a,n/a
+Sanguisorba,non-woody,n/a,n/a
+Saussurea,non-woody,n/a,n/a
+Saxifraga cernua,non-woody,n/a,n/a
+Saxifraga cernua-type,non-woody,n/a,n/a
+Saxifraga oppositifolia-type,non-woody,n/a,n/a
+Saxifraga tricuspidata,non-woody,n/a,n/a
+Saxifragaceae,non-woody,n/a,n/a
+Saxifragaceae undiff,non-woody,n/a,n/a
+Saxifraga-type,non-woody,n/a,n/a
+Scrophulariaceae,non-woody,n/a,n/a
+Scrophulariaceae-type,non-woody,n/a,n/a
+Sisyrinchium,non-woody,n/a,n/a
+Solanaceae,woody,T,yes
+Solanaceae undiff,woody,T,yes
+Solanum rostratum,non-woody,n/a,n/a
+Spermatophyta undiff (trees),woody,F,yes
+Spermatophyta undiff (trees/shrubs),woody,T,yes
+Sphaeralcea,non-woody,n/a,n/a
+Stachys-type,non-woody,n/a,n/a
+Thalictrum,non-woody,n/a,n/a
+Tidestromia,non-woody,n/a,n/a
+Tillandsia,non-woody,n/a,n/a
+Trema,woody,T,no
+Trifolium repens-type,non-woody,n/a,n/a
+Triticum-type,non-woody,n/a,n/a
+Trixis,woody,F,no
+Urtica,non-woody,n/a,n/a
+Urticaceae undiff,non-woody,n/a,n/a
+Urticalean Rosids undiff,woody,T,yes
+Urtica-type,non-woody,n/a,n/a
+Valeriana,non-woody,n/a,n/a
+Viscaceae sensu stricto,woody,F,yes
+Vitis,non-woody,T,yes
+Xanthium,non-woody,n/a,n/a
+Ximenia,woody,T,no
+Xyris,non-woody,n/a,n/a
+Zanthoxylum-type,woody,T,yes
+Zea mays,non-woody,n/a,n/a
+Zigadenus,non-woody,n/a,n/a

@@ -1,0 +1,97 @@
+#----------------------------------------------------------#
+#               Holocene Diversity Project
+#
+#            Paper01| Method 1: Giesecke et al
+#
+#     
+#                          2019
+# Europe, site-based richness (dataset_id,age), 1000 bins - 
+# rarefy 500 
+# 
+#               ----HARMONIZATION ----
+#----------------------------------------------------------#
+
+library(tidyverse)
+library(here)
+
+#----------------------------------------------------------#
+# 1. Load data set -----------------------------------------
+#----------------------------------------------------------# 
+
+pollen_data_s1 <-  
+  read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
+
+harmonisation_table <- 
+  readr::read_csv(  
+    here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
+  ) %>% 
+  rename(taxon_name = neotoma_names)
+
+neotoma_taxa <- 
+  readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+
+#----------------------------------------------------------#
+# 2. Load functions ---------------------------------------
+#----------------------------------------------------------#
+
+# Get a vector of general functions
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
+
+# Load the function into the global environment
+
+source_files <- 
+  sapply(
+  paste0("R/Functions/", fun_list, sep = ""),
+  source
+)
+
+#----------------------------------------------------------#
+# 3. Test {harmonize_taxa} at different taxo rank --
+#----------------------------------------------------------# 
+
+#Rename taxa with neotoma name
+
+pollen_data_s1_renamed <- 
+  pollen_data_s1 %>% 
+  inner_join(neotoma_taxa, by = "taxon_name") %>% 
+  select(neotoma_names,dataset_id,pollen_counts,age,subregion) %>% 
+  rename(taxon_name = neotoma_names)
+  
+
+# Harmonize taxa at different taxonomic levels
+
+data_study1_harmonised <-
+  harmonize_taxa(
+    data_to_harmonize = pollen_data_s1_renamed  ,
+    harmonisation_table = harmonisation_table,
+    level = "level_6"
+  ) 
+
+dataset_id_subregion <- 
+  pollen_data_s1_renamed %>%
+    select(dataset_id, subregion) %>%
+    distinct()
+
+data_study1_harmonised_subregion <- 
+  data_study1_harmonised %>% 
+  inner_join(dataset_id_subregion, by = c("dataset_id", "subregion")) %>% 
+  rename(taxa = taxon_name)
+
+data_study1_harmonised_subregion_renamed <- 
+  data_study1_harmonised_subregion %>% 
+  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
+  select(taxon_name,dataset_id,pollen_counts,age,subregion) %>% 
+  rename(taxa = taxon_name)
+  
+#----------------------------------------------------------#
+# Write the harmonized data to RDS files
+
+write_rds(data_study1_harmonised_subregion_renamed, here("Data/Paper_1/data_harmonize/data_study1_harmonised.rds"))
+
+#----------------------------------------------------------#
