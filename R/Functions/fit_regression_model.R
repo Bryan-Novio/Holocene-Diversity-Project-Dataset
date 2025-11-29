@@ -6,7 +6,10 @@ fit_regression_model <- function(
   error_family = stats::gaussian(),
   ...
 ) {
-  # Assertions
+  require(mgcv)
+  require(stringr)
+  require(assertthat)
+
   assertthat::assert_that(
     is.data.frame(data_source),
     msg = "data_source must be a data.frame"
