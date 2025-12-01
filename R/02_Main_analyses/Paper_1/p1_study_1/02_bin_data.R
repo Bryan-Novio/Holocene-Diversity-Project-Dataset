@@ -47,7 +47,7 @@ source_files <- sapply(
 
 data_binned <-
   data_study1_harmonised  %>% 
-  bin_data(dataset_id, 1000)
+  bin_data(subregion, 1000)
 
 #----------------------------------------------------------#
 # Write the binned and prepared_data to RDS files
