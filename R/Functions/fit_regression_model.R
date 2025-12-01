@@ -1,7 +1,7 @@
 fit_regression_model <- function(
   data_source,
   y_var, time_var, group_var,
-  random = c("intercept", "slope", "both"),
+  random = c("intercept", "slope"),
   sel_k,
   error_family = stats::gaussian(),
   ...
@@ -45,7 +45,7 @@ fit_regression_model <- function(
 
   random <-
     match.arg(random,
-      choices = c("intercept", "slope", "both")
+      choices = c("intercept", "slope")
     )
 
   assertthat::assert_that(
@@ -65,19 +65,14 @@ fit_regression_model <- function(
     switch(random,
       "intercept" =
         stringr::str_glue(
-          "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'tp') + s({group_var}, bs = 're')"
+          "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'cr') + s({group_var}, bs = 're')"
         ),
       "slope" =
         stringr::str_glue(
-          "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'tp') + s({time_var}, by = {group_var}, k = {sel_k}, bs = 'fs')"
-        ),
-      "both" =
-        stringr::str_glue(
-          "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'tp') + s({time_var}, by = {group_var}, k = {sel_k}, bs = 'fs') + s({group_var}, bs = 're') "
+          "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'cr') + s({time_var}, {group_var}, k = {sel_k}, bs = 'fs', xt = list(bs = 'cr'))"
         )
     ) |>
     as.formula()
-
 
   mod <-
     mgcv::bam(
