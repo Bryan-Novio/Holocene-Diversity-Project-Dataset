@@ -2,7 +2,7 @@ extract_factor_levels <- function(model, sel_term) {
   require(dplyr)
   require(stringr)
   require(assertthat)
-  require(broom)
+  require(insight)
 
   assertthat::assert_that(
     inherits(
@@ -18,25 +18,35 @@ extract_factor_levels <- function(model, sel_term) {
     msg = "`sel_term` must be a single character string."
   )
 
-  vec_levels <-
+  data_predictors <-
     model |>
-    broom::tidy() |>
-    dplyr::filter(
-      stringr::str_detect(
-        term,
-        paste0(":", sel_term)
-      )
-    ) |>
-    dplyr::mutate(
-      level = stringr::str_extract(
-        term,
-        paste0(":", sel_term, "(.*)")
-      ) |>
-        stringr::str_remove(
-          paste0(":", sel_term)
-        )
-    ) |>
-    dplyr::pull(level)
+    insight::get_predictors() |>
+    dplyr::select(
+      dplyr::starts_with(sel_term)
+    )
+
+  assertthat::assert_that(
+    ncol(data_predictors) > 0,
+    msg = paste0(
+      "No predictor variables found for term '",
+      sel_term,
+      "'. Please ensure 'sel_term' matches a single factor variable in the model."
+    )
+  )
+
+  assertthat::assert_that(
+    ncol(data_predictors) < 2,
+    msg = paste0(
+      "Multiple predictor variables found for term '",
+      sel_term,
+      "'. Please ensure 'sel_term' matches a single factor variable in the model."
+    )
+  )
+
+  vec_levels <-
+    data_predictors %>%
+    dplyr::distinct() |>
+    dplyr::pull()
 
   assertthat::assert_that(
     length(vec_levels) >= 1,
