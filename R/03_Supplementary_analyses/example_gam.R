@@ -1,7 +1,7 @@
 #----------------------------------------------------------#
 #
 #
-#         The Holocene Diversity Project
+#           The Holocene Diversity Project
 #
 #           Example of GAM model fitting
 #
@@ -169,7 +169,7 @@ data_pred_general <-
   )
 
 #----------------------------------------------------------#
-# 4. Visualization -----
+# 5. Visualization -----
 #----------------------------------------------------------#
 
 p0 +

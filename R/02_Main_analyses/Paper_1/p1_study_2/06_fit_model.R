@@ -10,77 +10,209 @@
 #
 #               ---- MODEL FITTING ----
 #----------------------------------------------------------#
+# 1. Setup -----
+#----------------------------------------------------------#
 
 library(tidyverse)
 library(here)
 library(mgcv)
-library(gratia)
+
+# Load the function into the global environment
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
+
+source_files <-
+  sapply(
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
 #----------------------------------------------------------#
-# 1. Load data set -----------------------------------------
+# 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness <- read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
+richness_data <- 
+  read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
 
-#----------------------------------------------------------#
-# 2. Fit rarefied richness and age to a model --
-#----------------------------------------------------------# 
-
-richness %>%                                   # some exploratory data analysis
-  ggplot(aes(x = richness, breaks = 20)) +
-  geom_histogram()
-
-ggplot(richness, aes(x=age, y=richness)) +
-  geom_line(size = 0.3) +
-  geom_smooth(method = "loess")
-
-# 2.1. Fit the model - dataset_id as random factor, age(time) as smoothing term
-
-richness_fct <- richness %>%                 # convert dataset_id as factor variable
+#  Convert dataset_id as random factor
+richness_data <-
+  richness_data %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-
-model1 <- gam(richness ~ s(age) + s(dataset_id, bs="re"), data = richness_fct)  # gaussian (normal dist. of residuals)
-
-model2 <- gam(richness ~ s(age) + s(dataset_id, bs="re"), data = richness_fct, family = poisson(link = "log"))
-
-model3 <- bam(richness ~ s(age) + s(dataset_id, bs="re"), data = richness_fct, family = poisson())
-
-
-# 2.2. model summary
-
-summary(model1)
-summary(model2)
-summary(model3)
-
-## run some basic model checks, including checking
-## smoothing basis dimensions.
-
-mgcv::gam.check(model1,pch=19,cex=.8)
-mgcv::gam.check(model2,pch=19,cex=.8)
-mgcv::gam.check(model3,pch=19,cex=.8)
-
-# plot model diagnostics 
-
-gratia::appraise(model1)  
-gratia::appraise(model2)
-gratia::appraise(model3)
-
-## show partial residuals
-
-plot(model1,pages=1,residuals=TRUE) 
-plot(model2,pages=1,residuals=TRUE) 
-plot(model3,pages=1,residuals=TRUE) 
-
-## `with intercept' CI
-plot(model1,pages=1,seWithMean=TRUE) 
-plot(model2,pages=1,seWithMean=TRUE) 
-plot(model3,pages=1,seWithMean=TRUE) 
+p1 <-
+  ggplot2::ggplot(
+    richness_data,
+    ggplot2::aes(x = age, y = richness, color = dataset_id)
+  ) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line(
+    linetype = "dashed",
+    alpha = 0.5
+  ) +
+  ggplot2::labs(
+    title = "Pollen Richness vs. Age (cal. yrs. BP) ",
+    y = "Pollen Richness", x = "Age"
+  )
 
 #----------------------------------------------------------#
-# 3. Save model as RDS files --
+# 3. Model fitting -----
+#----------------------------------------------------------#
+
+## 3.1. Parallel processing -----
+sel_cluster_type <-
+  ifelse(
+    .Platform["OS.type"] == "unix",
+    "FORK",
+    "PSOCK"
+  )
+
+n_available_cores <-
+  parallelly::availableCores() - 1
+
+# number of cores to use cannot be more than number of random effect levels
+n_cores_to_use <-
+  richness_data %>%
+  dplyr::distinct(dataset_id) %>%
+  nrow() %>%
+  {
+    . - 1
+  } %>%
+  min(., n_available_cores)
+
+cl <-
+  parallel::makeCluster(
+    n_cores_to_use,
+    type = sel_cluster_type
+  )
+
+## 3.2. Fit model -----
+
+set.seed(19900723)
+gam_1 <-
+  fit_regression_model(
+    data_source = richness_data,
+    y_var = "richness",
+    time_var = "age",
+    group_var = "dataset_id",
+    random = "both",
+    sel_k = 14, #lowered from 25
+    error_family = stats::poisson(link = "log"),
+    cluster = cl,
+    control = mgcv::gam.control(
+      trace = TRUE,
+      maxit = 500
+    )
+  )
+
+## 3.3. Stop cluster -----
+parallel::stopCluster(cl)
+
+
+#----------------------------------------------------------#
+# 4. Model prediction -----
+#----------------------------------------------------------#
+
+data_dummy_full <-
+  tidyr::expand_grid(
+    dataset_id = unique(richness_data$dataset_id),
+    age = seq(
+      min(richness_data$age),
+      max(richness_data$age),
+      length.out = 100
+    )
+  )
+
+data_dummy_general <-
+  tidyr::expand_grid(
+    age = seq(
+      min(richness_data$age),
+      max(richness_data$age),
+      length.out = 100
+    )
+  )
+
+data_pred_full <-
+  predict_model(
+    model = gam_1,
+    newdata = data_dummy_full,
+    type = "response"
+  ) %>%
+  as.data.frame() %>%
+  tibble::as_tibble() %>%
+  dplyr::relocate(
+    estimate, dataset_id, age,
+    .before = dplyr::everything()
+  )
+
+data_pred_general <-
+  predict_model(
+    model = gam_1,
+    newdata = data_dummy_general,
+    type = "response",
+    exclude_terms = "dataset_id"
+  ) %>%
+  as.data.frame() %>%
+  tibble::as_tibble() %>%
+  dplyr::mutate(
+    dataset_id = NA_character_
+  ) %>%
+  dplyr::relocate(
+    estimate,age,
+    .before = dplyr::everything()
+  )
+
+#----------------------------------------------------------#
+# 5. Visualization -----
+#----------------------------------------------------------#
+
+# gam by dataset_id
+p1 +
+  ggplot2::geom_ribbon(
+    data = data_pred_general,
+    ggplot2::aes(
+      x = age,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high
+    ),
+    alpha = 0.2
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_general,
+    ggplot2::aes(x = age, y = estimate),
+    linewidth = 2
+  ) +
+  ggplot2::geom_ribbon(
+    data = data_pred_full,
+    ggplot2::aes(
+      x = age,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high,
+      fill = dataset_id
+    ),
+    alpha = 0.1
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_full,
+    ggplot2::aes(x = age, y = estimate, color = dataset_id),
+    linewidth = 1
+  ) +
+  ggplot2::theme(
+    legend.position = "none"
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(0, max(richness_data$richness) + 5)
+  )
+
+#----------------------------------------------------------#
+# 6. Save model as RDS files --
 #----------------------------------------------------------# 
 
-write_rds(model1,here("Data/Paper_1/data_model/study2_model1.rds"))
-write_rds(model2,here("Data/Paper_1/data_model/study2_model2.rds"))
-write_rds(model3,here("Data/Paper_1/data_model/study2_model3.rds"))
+write_rds(gam_1,here("Data/Paper_1/data_model/gam_1.rds"))
+

@@ -18,8 +18,9 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- read_rds(here("Outputs/Data/paper_1_study_1/rarefied_data_study_1.rds"))
-rarefied_data_genus <- read_rds(here("Outputs/Data/paper_1_study_1/rarefied_data_genus_s1.rds"))
+rarefied_data1 <- 
+  read_rds(here("Data/Paper_1/data_rarefy/data_study1_rarefied.rds"))
+
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -41,20 +42,30 @@ source_files <- sapply(
 )
 
 #----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank --
+# 3. Estimate richness  at different taxo rank ------------
 #----------------------------------------------------------# 
 
-data_richness <- purrr::map(rarefied_data, ~ estimate_richness(.x)) %>% 
-            purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
+## 3.1. Prepare data for richness_estimation
 
-data_richness_genus <- rarefied_data_genus %>% 
+data_prepared_richness_estimation <- 
+  rarefied_data1  %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", 
+                       names = c("dataset_id","BIN")) %>% 
+  pivot_longer(cols = Acer:Noaea, 
+               names_to = "taxa", values_to = "summed_pollen_count") %>% 
+  prepare_data_for_richness_estimation(type = "binned")
+
+
+## 3.2. Estimate richness
+richness <- 
+  data_prepared_richness_estimation %>% 
   estimate_richness() %>% 
-  dplyr::mutate(age = as.numeric(age))
+  mutate(age = as.numeric(age))
+
+summary(richness)
 
 #----------------------------------------------------------#
-# Write the richness data to an RDS file
-
-write_rds(data_richness, here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
-write_rds(data_richness_genus, here("Outputs/Data/paper_1_study_1/richness_data_genus_s1.rds"))
-
+# 4. Write the richness data to an RDS file ---------------
 #----------------------------------------------------------#
+
+write_csv(richness, here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))

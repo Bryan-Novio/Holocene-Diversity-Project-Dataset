@@ -14,20 +14,25 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-pollen_data_s3_eu <-  read_rds(here("Outputs/Data/paper_1_study_3/datasub_p1_s3_eu_counts_ages.rds"))
-pollen_data_s3_na <-  read_rds(here("Outputs/Data/paper_1_study_3/datasub_p1_s3_na_counts_ages.rds"))
+pollen_data_s3_eu <-  
+  read_rds(here("Data/Paper_1/data_subset/datasub_p1_s3_EU_counts_ages.rds"))
 
-harmonization_table_eu  <- read_csv(here("Data/Input/Harmonisation_tables/s3_EU_harmonization_table.csv"), show_col_types = FALSE)
-harmonization_table_na  <- read_csv(here("Data/Input/Harmonisation_tables/s3_EU_harmonization_table.csv"), show_col_types = FALSE)
+pollen_data_s3_na <- 
+  read_rds(here("Data/Paper_1/data_subset/datasub_p1_s3_NA_counts_ages.rds"))
 
-neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+harmonisation_table <- 
+  readr::read_csv(  
+    here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
+  ) %>% 
+  rename(taxon_name = neotoma_names)
 
+neotoma_taxa <- 
+  readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -44,7 +49,8 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <-
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -53,19 +59,43 @@ source_files <- sapply(
 # 3. Test {harmonize_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
-taxa_level <- c("level_5", "level_6", "level_7") 
-taxa_name <- c("family", "genus", "species")
+data_to_harmonize <- 
+  pollen_data_s3_eu %>% 
+  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
+  select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
+  rename(taxon_name = neotoma_names)
+
+data_to_harmonize2 <- 
+  pollen_data_s3_na %>% 
+  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
+  select(dataset_id, sample_id,  age, neotoma_names, pollen_counts) %>% 
+  rename(taxon_name = neotoma_names)
 
 # Harmonize taxa at different taxonomic levels
 
-harmonized_data_study_3_eu <- harmonize_taxa_taxa_s3_01(pollen_data_s3_eu, neotoma_taxa, harmonization_table_eu) 
-
-harmonized_data_study_3_na <- harmonize_taxa_taxa_s3_01(pollen_data_s3_na, neotoma_taxa, harmonization_table_na) 
+data_study3_harmonised_eu <-
+  harmonize_taxa(
+    data_to_harmonize = data_to_harmonize,
+    harmonisation_table = harmonisation_table,
+    level = "level_6") %>% 
+  inner_join(neotoma_taxa, join_by(taxon_name == neotoma_names)) %>% 
+  select(taxon_name.y,dataset_id, pollen_counts,age) %>% 
+  rename(taxa = taxon_name.y)
   
-#----------------------------------------------------------#
-# Write the harmonized data to RDS files
 
-write_rds(harmonized_data_study_3_eu, here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_eu.rds"))
-write_rds(harmonized_data_study_3_na, here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_na.rds"))
+data_study3_harmonised_na <-
+  harmonize_taxa(
+    data_to_harmonize = data_to_harmonize2,
+    harmonisation_table = harmonisation_table,
+    level = "level_6") %>% 
+  inner_join(neotoma_taxa, join_by(taxon_name == neotoma_names)) %>% 
+  select(taxon_name.y,dataset_id,pollen_counts,age) %>% 
+  rename(taxa = taxon_name.y)
 
 #----------------------------------------------------------#
+# 1. Write the harmonized data to RDS files ----------------
+#----------------------------------------------------------# 
+
+write_rds(data_study3_harmonised_eu, here("Data/Paper_1/data_harmonize/data_study3_harmonised_eu.rds"))
+
+write_rds(data_study3_harmonised_na, here("Data/Paper_1/data_harmonize/data_study3_harmonised_na.rds"))

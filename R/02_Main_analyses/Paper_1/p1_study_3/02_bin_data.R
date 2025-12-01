@@ -14,15 +14,16 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-harmonized_data_study_3_eu <- read_rds(here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_eu.rds"))
+data_study3_harmonised_eu <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_eu.rds"))
 
-harmonized_data_study_3_na <- read_rds(here("Outputs/Data/paper_1_study_3/harmonized_data_study_3_na.rds"))
+data_study3_harmonised_na <-
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_na.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -48,28 +49,17 @@ source_files <- sapply(
 # 3. Bin data  at different taxo rank --
 #----------------------------------------------------------# 
 
+data_binned <-
+  data_study3_harmonised_eu  %>% 
+  bin_data(dataset_id, 500)
 
-# Bin  data 
-
-binned_data_eu <-  bin_data(harmonized_data_study_3_eu, 500)
-binned_data_na <-  bin_data(harmonized_data_study_3_na, 500)
-
-# Prepare data for richness estimation
-
-prepared_data_for_richness_estimation_eu <- binned_data_eu %>% 
-  prepare_data_for_richness_estimation("binned") %>%
-   dplyr::mutate(sample_id = paste0(dataset_id, "-", age))
-
-prepared_data_for_richness_estimation_na <- binned_data_na %>% 
-  prepare_data_for_richness_estimation("binned") %>%
-  dplyr::mutate(sample_id = paste0(dataset_id, "-", age))
+data_binned_2 <-
+  data_study3_harmonised_na  %>% 
+  bin_data(dataset_id, 500)
 
 #----------------------------------------------------------#
-# Write the binned and prepared_data to RDS files
+# 4. Write the binned and prepared_data to RDS files
+#----------------------------------------------------------# 
 
-write_rds(binned_data_eu, here("Outputs/Data/paper_1_study_3/binned_data_study_eu.rds"))
-write_rds(binned_data_na, here("Outputs/Data/paper_1_study_3/binned_data_study_na.rds"))
-
-write_rds(prepared_data_for_richness_estimation_eu, here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3_eu.rds"))
-write_rds(prepared_data_for_richness_estimation_na, here("Outputs/Data/paper_1_study_3/prepared_data_for_richness_estimation_study_3_na.rds"))
-
+write_rds(data_binned, here("Data/Paper_1/data_bin/data_study3_binned_eu.rds"))
+write_rds(data_binned_2, here("Data/Paper_1/data_bin/data_study3_binned_na.rds"))

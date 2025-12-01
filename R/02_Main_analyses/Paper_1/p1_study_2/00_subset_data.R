@@ -20,7 +20,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------#
 
-data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
+data <- 
+  read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -37,7 +38,8 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <- 
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -71,7 +73,7 @@ data_p1_s2_12k <-
 # 3.1.3. Filter out all samples younger than 1000 years (young samples)
 
 data_p1_s2_12k_1k <- 
-  data_p1_s2_12k %>% filter(age_min >= 1000)
+  data_p1_s2_12k %>% filter(age_min <= 1000)
 
 ##### 3.2. get pollen counts with ages
 

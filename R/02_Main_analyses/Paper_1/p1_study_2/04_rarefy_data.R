@@ -49,7 +49,6 @@ source_files <-
 
 data_to_rarefy <- 
   data_study2_harmonised %>%
-  select(dataset_id, age, taxon_name, pollen_counts) %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
   )  %>% 
   pivot_wider(
@@ -58,7 +57,6 @@ data_to_rarefy <-
   )
   
 set.seed(1234)
-
 rarefied_data <-
   rarefy_all_samples(
     data_source = data_to_rarefy,

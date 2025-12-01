@@ -15,12 +15,14 @@
 
 library(tidyverse)
 library(here)
+library(assertthat)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
+data <-
+  read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -54,10 +56,14 @@ data_p1_s3_EU  <-
   filter(long >= -25 & long <= 35,lat >= 35) %>%  
   relocate(region)
 
+data_p1_s3_EU %>% distinct(dataset_id)
+
 data_p1_s3_NA <- 
   data %>% 
   filter(region =="North America") %>%  
   relocate(region)
+
+data_p1_s3_NA %>% distinct(dataset_id)
   
 #####3.1. get pollen counts with ages
 
@@ -70,11 +76,11 @@ data_p1_s3_NA_counts_ages <-
   get_pollen_counts_with_ages() 
 
 
-data_p1_s3_eu_counts_ages %>% 
+data_p1_s3_EU_counts_ages %>% 
   arrange(desc(age)) %>% 
   head(10) # max. age
 
-data_p1_s3_na_counts_ages %>% 
+data_p1_s3_EU_counts_ages %>% 
   arrange(desc(age)) %>%
   head(10) # max. age
 
@@ -83,5 +89,4 @@ data_p1_s3_na_counts_ages %>%
 #----------------------------------------------------------# 
 
 write_rds(data_p1_s3_EU_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s3_EU_counts_ages.rds"))
-
 write_rds(data_p1_s3_NA_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s3_NA_counts_ages.rds"))

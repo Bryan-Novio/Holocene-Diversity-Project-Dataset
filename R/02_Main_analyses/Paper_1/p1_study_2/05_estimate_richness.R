@@ -18,7 +18,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data <- read_rds(here("Data/Paper_1/data_rarefy/data_study2_rarefied.rds"))
+rarefied_data <-
+  read_rds(here("Data/Paper_1/data_rarefy/data_study2_rarefied.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -44,18 +45,18 @@ source_files <- sapply(
 # 3. Estimate richness  at different taxo rank ------------
 #----------------------------------------------------------# 
 
-## Prepare data for richness_estimation
+## 3.1. Prepare data for richness_estimation
 
 data_prepared_richness_estimation <- 
   rarefied_data  %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","BIN")) %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", 
+   names = c("dataset_id","BIN")) %>% 
   pivot_longer(cols = Alnus:Maclura, 
-               names_to = "taxa", values_to = "summed_pollen_count") %>% 
+  names_to = "taxa", values_to = "summed_pollen_count") %>% 
   prepare_data_for_richness_estimation(type = "binned")
 
 
-## Estimate richness
-
+## 3.2. Estimate richness
 richness <- 
   data_prepared_richness_estimation %>% 
   estimate_richness() %>% 

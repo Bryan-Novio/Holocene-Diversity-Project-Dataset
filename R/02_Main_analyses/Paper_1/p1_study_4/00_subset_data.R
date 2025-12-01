@@ -18,7 +18,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-data <- read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
+data <- 
+  read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
 
 
 #----------------------------------------------------------#
@@ -49,7 +50,7 @@ source_files <-
 
 data_p1_s4 <- 
   data %>% 
-  filter(region =="Asia") %>%   # sub-setting data to Europe
+  filter(region =="Asia") %>% 
   relocate(region)
 
 

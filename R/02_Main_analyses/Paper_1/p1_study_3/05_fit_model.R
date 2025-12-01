@@ -11,79 +11,218 @@
 #
 #                 ---- MODEL FITTING ----
 #----------------------------------------------------------#
+# 1. Setup -----
+#----------------------------------------------------------#
 
 library(tidyverse)
 library(here)
 library(mgcv)
+library(mvgam)
+
+# Load the function into the global environment
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
+
+source_files <-
+  sapply(
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
 #----------------------------------------------------------#
-# 1. Load data set -----------------------------------------
+# 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_eu <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu.rds"))
-richness_na <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_na.rds"))
+richness_data_eu <- 
+  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_eu.csv"))
 
+richness_data_na <- 
+  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_na.csv"))
 
-richness_eu_fct <- richness_eu %>%                 # convert dataset_id as factor variable
+#  Convert dataset_id as random factor
+richness_data_eu <-
+  richness_data_eu %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-richness_na_fct <- richness_na %>%                 
+richness_data_eu %>% distinct(dataset_id)
+richness_data_na <-
+  richness_data_na %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-
-richness_eu_12k <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu_12k.rds"))
-richness_na_12k <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_na_12k.rds"))
-                                                    
-richness_eu_12k_fct <- richness_eu_12k %>%                 # convert dataset_id as factor variable   
-  mutate(dataset_id = as_factor(dataset_id))                                                 
-
-richness_na_12k_fct <- richness_na_12k %>%                 
-  mutate(dataset_id = as_factor(dataset_id)) 
-
-#----------------------------------------------------------#
-# 2. Fit rarefied richness and age to BAM model --
-#----------------------------------------------------------# 
-
-model_eu <- bam(richness ~ s(age, bs = 'fs', k=10) +
-               s(dataset_id, bs = 're'), method = 'fREML', discrete = TRUE, family = gaussian(),
-             data = richness_eu_fct)
-
-model_na <- bam(richness ~ s(age, bs = 'fs', k=10) +
-              s(dataset_id, bs = 're'), method = 'fREML', discrete = TRUE, family = gaussian(),
-             data = richness_na_fct)
-
-
-model_eu_12k <- bam(richness ~ s(age, bs = 'fs', k=10) +
-                  s(dataset_id, bs = 're'), method = 'fREML', discrete = TRUE, family = gaussian(),
-                data = richness_eu_12k_fct)
-
-model_na_12k <- bam(richness ~ s(age, bs = 'fs', k=10) +
-                  s(dataset_id, bs = 're'), method = 'fREML', discrete = TRUE, family = gaussian(),
-                data = richness_na_12k_fct)
-
-
-summary(model_eu)
-summary(model_na)
-
-summary(model_eu_12k)
-summary(model_na_12k)
-
-
-plot.gam(model_eu)
-plot.gam(model_na)
-
-plot.gam(model_eu_12k)
-plot.gam(model_na_12k)
-
+p2 <-
+  ggplot2::ggplot(
+    richness_data_eu,
+    ggplot2::aes(x = age, y = richness)
+  ) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line(
+    linetype = "solid",
+    alpha = 0.5
+  ) +
+  ggplot2::labs(
+    title = "Pollen Richness vs. Age (cal. yrs. BP) ",
+    y = "Pollen Richness", x = "Age"
+  )
 
 #----------------------------------------------------------#
-# 3. Save model as RDS files --
+# 3. Model fitting -----
+#----------------------------------------------------------#
+
+## 3.1. Parallel processing -----
+sel_cluster_type <-
+  ifelse(
+    .Platform["OS.type"] == "unix",
+    "FORK",
+    "PSOCK"
+  )
+
+n_available_cores <-
+  parallelly::availableCores() - 1
+
+# number of cores to use cannot be more than number of random effect levels
+n_cores_to_use <-
+  richness_data_eu %>%
+  dplyr::distinct(dataset_id) %>%
+  nrow() %>%
+  {
+    . - 1
+  } %>%
+  min(., n_available_cores)
+
+cl <-
+  parallel::makeCluster(
+    n_cores_to_use,
+    type = sel_cluster_type
+  )
+
+## 3.2. Fit model -----
+
+set.seed(19900723)
+gam_2 <-
+  fit_regression_model(
+    data = richness_data_eu,
+    y_var = "richness",
+    time_var = "age",
+    group_var = "dataset_id",
+    random = "both",
+    sel_k = 14, #lowered from 25
+    error_family = stats::poisson(link = "log"),
+    cluster = cl,
+    control = mgcv::gam.control(
+      trace = TRUE,
+      maxit = 500
+    )
+  )
+
+## 3.3. Stop cluster -----
+parallel::stopCluster(cl)
+
+
+#----------------------------------------------------------#
+# 4. Model prediction -----
+#----------------------------------------------------------#
+
+data_dummy_full <-
+  tidyr::expand_grid(
+    dataset_id = unique(richness_data$dataset_id),
+    age = seq(
+      min(richness_data$age),
+      max(richness_data$age),
+      length.out = 100
+    )
+  )
+
+data_dummy_general <-
+  tidyr::expand_grid(
+    age = seq(
+      min(richness_data$age),
+      max(richness_data$age),
+      length.out = 100
+    )
+  )
+
+data_pred_full <-
+  predict_model(
+    model = gam_1,
+    newdata = data_dummy_full,
+    type = "response"
+  ) %>%
+  as.data.frame() %>%
+  tibble::as_tibble() %>%
+  dplyr::relocate(
+    estimate, dataset_id, age,
+    .before = dplyr::everything()
+  )
+
+data_pred_general <-
+  predict_model(
+    model = gam_1,
+    newdata = data_dummy_general,
+    type = "response",
+    exclude_terms = "dataset_id"
+  ) %>%
+  as.data.frame() %>%
+  tibble::as_tibble() %>%
+  dplyr::mutate(
+    dataset_id = NA_character_
+  ) %>%
+  dplyr::relocate(
+    estimate,age,
+    .before = dplyr::everything()
+  )
+
+#----------------------------------------------------------#
+# 5. Visualization -----
+#----------------------------------------------------------#
+
+# gam by dataset_id
+p0 +
+  ggplot2::geom_ribbon(
+    data = data_pred_general,
+    ggplot2::aes(
+      x = age,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high
+    ),
+    alpha = 0.2
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_general,
+    ggplot2::aes(x = age, y = estimate),
+    linewidth = 2
+  ) +
+  ggplot2::geom_ribbon(
+    data = data_pred_full,
+    ggplot2::aes(
+      x = age,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high,
+      fill = dataset_id
+    ),
+    alpha = 0.1
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_full,
+    ggplot2::aes(x = age, y = estimate, color = dataset_id),
+    linewidth = 1
+  ) +
+  ggplot2::theme(
+    legend.position = "none"
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(0, max(richness_data$richness) + 5)
+  )
+
+#----------------------------------------------------------#
+# 6. Save model as RDS files --
 #----------------------------------------------------------# 
 
-model_eu_s3 <- write_rds(model_eu,here("Outputs/Data/paper_1_study_3/model_eu_s3.rds"))
-model_na_s3 <- write_rds(model_na,here("Outputs/Data/paper_1_study_2/model_na_s3.rds"))
-
-model_eu_12k_s3 <- write_rds(model_eu_12k,here("Outputs/Data/paper_1_study_3/model_eu_12k_s3.rds"))
-model_na_12k_s3 <- write_rds(model_na_12k,here("Outputs/Data/paper_1_study_3/model_na_12k_s3.rds"))
-
+write_rds(gam_1,here("Data/Paper_1/data_model/gam_1.rds"))
 

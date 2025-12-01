@@ -19,9 +19,12 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-prepared_data_for_richness_estimation <- read_rds(here("Outputs/Data/paper_1_study_1/prepared_data_for_richness_estimation_study_1.rds"))
-prepared_data_for_richness_estimation_genus <- read_rds(here("Outputs/Data/paper_1_study_1/prepared_data_for_richness_estimation_genus_s1.rds"))
-prepared_data_for_richness_estimation_genus %>% arrange(desc(age)) %>% head(10) 
+data_study1_binned <- 
+  read_rds(here("Data/Paper_1/data_bin/data_study1_binned.rds"))
+
+neotoma_taxa <- 
+  readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -38,7 +41,8 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <-
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -47,22 +51,31 @@ source_files <- sapply(
 # 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-# all taxa levels
-
-rarefied_data <- purrr::map(prepared_data_for_richness_estimation, ~ rarefy_all_samples_iter(
-  data_source =.,n_grains = 500, n_iter = 10)) %>% 
-  purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
-
 # at genus level only
 
-rarefied_data_genus <- prepared_data_for_richness_estimation_genus %>% 
-  rarefy_all_samples_iter(n_grains = 500, n_iter = 10) %>% 
-  separate_wider_delim(sample_id, "-", names = c("sample_id","age"))
+data_to_rarefy1 <- 
+  data_study1_binned  %>%
+  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
+  select(dataset_id,neotoma_names, BIN, summed_pollen_count) %>% 
+  rename(taxon_name = neotoma_names, age = BIN, pollen_counts = summed_pollen_count) %>% 
+  mutate(age = as.double(age)) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  )  %>% 
+  pivot_wider(
+    names_from = taxon_name,
+    values_from = pollen_counts
+  )
+
+set.seed(1234)
+
+rarefied_data1 <-
+  rarefy_all_samples(
+    data_source = data_to_rarefy1,
+    n_grains = 500
+  )
 
 #----------------------------------------------------------#
-# Write the rarefied data to an RDS file
+# 4. Write the rarefied data to an RDS file
+#----------------------------------------------------------# 
 
-
-write_rds(rarefied_data, here("Outputs/Data/paper_1_study_1/rarefied_data_study_1.rds"))
-write_rds(rarefied_data_genus, here("Outputs/Data/paper_1_study_1/rarefied_data_genus_s1.rds"))
-#----------------------------------------------------------#
+write_rds(rarefied_data1, here("Data/Paper_1/data_rarefy/data_study1_rarefied.rds"))

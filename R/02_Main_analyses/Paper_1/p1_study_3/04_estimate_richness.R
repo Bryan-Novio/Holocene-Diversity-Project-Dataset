@@ -14,21 +14,22 @@
 
 library(tidyverse)
 library(here)
-library(dplyr)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data_eu <- read_rds(here("Outputs/Data/paper_1_study_3/rarefied_data_study_3_eu.rds"))
-rarefied_data_na <- read_rds(here("Outputs/Data/paper_1_study_3/rarefied_data_study_3_na.rds"))
+rarefied_data_eu <- 
+  read_rds(here("Data/Paper_1/data_rarefy/data_study3_rarefied_eu.rds"))
+
+rarefied_data_na <- 
+  read_rds(here("Data/Paper_1/data_rarefy/data_study3_rarefied_na.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
 
 # Get a vector of general functions
-
 fun_list <-
   list.files(
     path = "R/Functions/",
@@ -37,37 +38,53 @@ fun_list <-
   )
 
 # Load the function into the global environment
-
-source_files <- sapply(
+source_files <-
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
 
 #----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank -- at 12 cal yr bp (based on Gordon et al)
+# 3. Estimate richness  at different taxo rank -- at 12 cal yr bp 
 #----------------------------------------------------------# 
 
-richness_eu <- rarefied_data_eu %>% 
-            estimate_richness() %>% 
-            dplyr::mutate(age = as.numeric(age))
+#3.1 Format rarefied data 
+data_prepared_richness_estimation_eu <- 
+  rarefied_data_eu %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", 
+                       names = c("dataset_id","BIN")) %>% 
+  pivot_longer(cols = Acer:Noaea, 
+               names_to = "taxa", values_to = "summed_pollen_count") %>% 
+  prepare_data_for_richness_estimation(type = "binned")
 
-richness_eu_12k <- richness_eu %>% filter(age <= 12000)
+data_prepared_richness_estimation_na <- 
+  rarefied_data_na %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", 
+                       names = c("dataset_id","BIN")) %>% 
+  pivot_longer(cols = Abies:Ononis, 
+               names_to = "taxa", values_to = "summed_pollen_count") %>% 
+  prepare_data_for_richness_estimation(type = "binned")
 
+#3.2. Estimate richness
+richness_eu <- 
+  data_prepared_richness_estimation_eu %>% 
+  estimate_richness() %>% 
+  mutate(age = as.numeric(age)) %>% 
+  mutate(dataset_id = as_factor(dataset_id))
 
+summary(richness_eu)
 
-richness_na <- rarefied_data_na %>% 
-            estimate_richness() %>% 
-            dplyr::mutate(age = as.numeric(age))
+richness_na <- 
+  data_prepared_richness_estimation_na %>% 
+  estimate_richness() %>% 
+  mutate(age = as.numeric(age)) %>% 
+  mutate(dataset_id = as_factor(dataset_id))
 
-richness_na_12k <- richness_na %>% filter(age <= 12000)
+summary(richness_na)
 
 #----------------------------------------------------------#
-# Write the richness data to an RDS file
+# 4. Write the richness data to an RDS file
+#----------------------------------------------------------# 
 
-write_rds(richness_eu_12k, here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu_12k.rds"))
-write_rds(richness_na_12k, here("Outputs/Data/paper_1_study_3/richness_data_study_3_na_12k.rds"))
-
-write_rds(richness_eu, here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu.rds"))
-write_rds(richness_na, here("Outputs/Data/paper_1_study_3/richness_data_study_3_na.rds"))
-
-#----------------------------------------------------------#
+write_csv(richness_eu, here("Data/Paper_1/data_estimate_richness/study3_richness_eu.csv"))
+write_csv(richness_na, here("Data/Paper_1/data_estimate_richness/study3_richness_na.csv"))
