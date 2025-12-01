@@ -37,4 +37,7 @@ Outputs/Meta_and_references/reproducibility_bundle.zip
 .quarto
 Rplot.png
 Data/Paper_1/data_subset/*.rds
-Data/Paper_1/data_harmonize/data_study1_harmonised.rds
+Data/Paper_1/data_harmonize/*.rds
+Data/Paper_1/data_rarefy/*.rds
+Data/Paper_1/data_bin/*.rds
+Data/Paper_1/data_model/*.rds
