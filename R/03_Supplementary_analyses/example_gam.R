@@ -59,6 +59,9 @@ p0 <-
   ggplot2::labs(
     title = "Example time series data from the portal dataset",
     y = "Number of captures"
+  ) +
+  ggplot2::theme(
+    legend.position = "none"
   )
 
 #----------------------------------------------------------#
@@ -66,13 +69,6 @@ p0 <-
 #----------------------------------------------------------#
 
 ## 3.1. Parallel processing -----
-sel_cluster_type <-
-  ifelse(
-    .Platform["OS.type"] == "unix",
-    "FORK",
-    "PSOCK"
-  )
-
 n_available_cores <-
   parallelly::availableCores() - 1
 
@@ -86,33 +82,26 @@ n_cores_to_use <-
   } %>%
   min(., n_available_cores)
 
-cl <-
-  parallel::makeCluster(
-    n_cores_to_use,
-    type = sel_cluster_type
-  )
 
 ## 3.2. Fit model -----
 
 set.seed(19900723)
 mod_1 <-
   fit_regression_model(
-    data = data_example,
+    data_source = data_example,
     y_var = "captures",
     time_var = "time",
     group_var = "series",
-    random = "both",
-    sel_k = 25,
+    random = "slope",
+    sel_k = 10,
     error_family = stats::poisson(link = "log"),
-    cluster = cl,
+    nthreads = n_cores_to_use,
+    discrete = TRUE,
     control = mgcv::gam.control(
       trace = TRUE,
       maxit = 500
     )
   )
-
-## 3.3. Stop cluster -----
-parallel::stopCluster(cl)
 
 
 #----------------------------------------------------------#
@@ -124,7 +113,7 @@ data_dummy_full <-
     time = seq(
       min(data_example$time),
       max(data_example$time),
-      length.out = 100
+      length.out = 10
     )
   )
 
@@ -133,7 +122,7 @@ data_dummy_general <-
     time = seq(
       min(data_example$time),
       max(data_example$time),
-      length.out = 100
+      length.out = 10
     )
   )
 
@@ -172,22 +161,9 @@ data_pred_general <-
 # 5. Visualization -----
 #----------------------------------------------------------#
 
+# 4.1. Plot predictions for individual series-----
 p0 +
-  ggplot2::geom_ribbon(
-    data = data_pred_general,
-    ggplot2::aes(
-      x = time,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high
-    ),
-    alpha = 0.2
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_general,
-    ggplot2::aes(x = time, y = estimate),
-    linewidth = 2
-  ) +
+  ggplot2::facet_wrap(~series) +
   ggplot2::geom_ribbon(
     data = data_pred_full,
     ggplot2::aes(
@@ -202,6 +178,30 @@ p0 +
   ggplot2::geom_line(
     data = data_pred_full,
     ggplot2::aes(x = time, y = estimate, color = series),
+    linewidth = 1
+  ) +
+  ggplot2::theme(
+    legend.position = "none"
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(0, max(data_example$captures) + 5)
+  )
+
+# 4.2. Plot general trend-----
+p0 +
+  ggplot2::geom_ribbon(
+    data = data_pred_general,
+    ggplot2::aes(
+      x = time,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high
+    ),
+    alpha = 0.1
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_general,
+    ggplot2::aes(x = time, y = estimate),
     linewidth = 1
   ) +
   ggplot2::theme(

@@ -6,7 +6,6 @@ testthat::test_that("fit_regression_model() validates data_source type and requi
       dataset_id = rep(letters[1:2], length.out = 10) |>
         as.factor()
     )
-
   testthat::expect_no_error(
     fit_regression_model(
       data_source = df_valid,
@@ -17,18 +16,18 @@ testthat::test_that("fit_regression_model() validates data_source type and requi
     )
   )
 
-  df_extra <-
+  df_valid_extra <-
     data.frame(
       richness = rnorm(10),
       age = 1:10,
       dataset_id = rep(letters[1:2], length.out = 10) |>
         as.factor(),
-      extra = rnorm(10)
+      extra_var = rnorm(10)
     )
 
   testthat::expect_no_error(
     fit_regression_model(
-      data_source = df_extra,
+      data_source = df_valid_extra,
       y_var = "richness",
       time_var = "age",
       group_var = "dataset_id",
@@ -36,15 +35,13 @@ testthat::test_that("fit_regression_model() validates data_source type and requi
     )
   )
 
-  df_missing <-
-    data.frame(
-      richness = rnorm(10),
-      age = 1:10
-    )
+  df_valid_missing <-
+    df_valid %>%
+    dplyr::select(-richness)
 
   testthat::expect_error(
     fit_regression_model(
-      data_source = df_missing,
+      data_source = df_valid_missing,
       y_var = "richness",
       time_var = "age",
       group_var = "dataset_id",
@@ -172,25 +169,16 @@ testthat::test_that("fit_regression_model() validates random argument", {
     )
   )
 
-  testthat::expect_no_error(
-    fit_regression_model(
-      data_source = df,
-      y_var = "richness",
-      time_var = "age",
-      group_var = "dataset_id",
-      random = "slope",
-      sel_k = 5
-    )
-  )
-
-  testthat::expect_no_error(
-    fit_regression_model(
-      data_source = df,
-      y_var = "richness",
-      time_var = "age",
-      group_var = "dataset_id",
-      random = "both",
-      sel_k = 5
+  suppressWarnings(
+    testthat::expect_no_error(
+      fit_regression_model(
+        data_source = df,
+        y_var = "richness",
+        time_var = "age",
+        group_var = "dataset_id",
+        random = "slope",
+        sel_k = 5
+      )
     )
   )
 
@@ -203,7 +191,7 @@ testthat::test_that("fit_regression_model() validates random argument", {
       random = "something_else",
       sel_k = 5
     ),
-    "one of"
+    "one of"  
   )
 })
 
@@ -372,36 +360,28 @@ testthat::test_that("fit_regression_model() builds correct formulas for differen
       sel_k = 4
     )
 
-  mod_slope <- fit_regression_model(
-    data_source = df,
-    y_var = "richness",
-    time_var = "age",
-    group_var = "dataset_id",
-    random = "slope",
-    sel_k = 4
-  )
-
-  mod_both <- fit_regression_model(
-    data_source = df,
-    y_var = "richness",
-    time_var = "age",
-    group_var = "dataset_id",
-    random = "both",
-    sel_k = 4
+  suppressWarnings(
+    mod_slope <-
+      fit_regression_model(
+        data_source = df,
+        y_var = "richness",
+        time_var = "age",
+        group_var = "dataset_id",
+        random = "slope",
+        sel_k = 4
+      )
   )
 
   f_intercept <- stats::formula(mod_intercept)
   f_slope <- stats::formula(mod_slope)
-  f_both <- stats::formula(mod_both)
 
   rhs_intercept <- as.character(f_intercept)[3]
   rhs_slope <- as.character(f_slope)[3]
-  rhs_both <- as.character(f_both)[3]
 
   testthat::expect_true(
     stringr::str_detect(
       rhs_intercept,
-      stringr::fixed("s(age, k = 4, bs = \"tp\")")
+      stringr::fixed("s(age, k = 4, bs = \"cr\")")
     )
   )
   expect_true(
@@ -420,37 +400,19 @@ testthat::test_that("fit_regression_model() builds correct formulas for differen
   expect_true(
     stringr::str_detect(
       rhs_slope,
-      stringr::regex("s\\(age, k = 4, bs = \"tp\"\\)")
+      stringr::regex("s\\(age, k = 4, bs = \"cr\"\\)")
     )
   )
   expect_true(
     stringr::str_detect(
       rhs_slope,
-      stringr::regex("s\\(age, by = dataset_id, k = 4, bs = \"fs\"\\)")
-    )
-  )
-  expect_false(
-    stringr::str_detect(
-      rhs_slope,
-      stringr::regex("s\\(dataset_id, bs = \"re\"\\)")
+      stringr::regex("s\\(age, dataset_id, k = 4, bs = \"fs\", xt = list\\(bs = \"cr\"\\)\\)")
     )
   )
 
-  expect_true(
+  expect_false(
     stringr::str_detect(
-      rhs_both,
-      stringr::regex("s\\(age, k = 4, bs = \"tp\"\\)")
-    )
-  )
-  expect_true(
-    stringr::str_detect(
-      rhs_both,
-      stringr::regex("s\\(age, by = dataset_id, k = 4, bs = \"fs\"\\)")
-    )
-  )
-  expect_true(
-    stringr::str_detect(
-      rhs_both,
+      rhs_slope,
       stringr::regex("s\\(dataset_id, bs = \"re\"\\)")
     )
   )
@@ -464,15 +426,17 @@ test_that("fit_regression_model() handles simple edge cases sensibly", {
       dataset_id = factor(rep("A", 10))
     )
 
-  mod_single_group <-
-    fit_regression_model(
-      data_source = df_single_group,
-      y_var = "richness",
-      time_var = "age",
-      group_var = "dataset_id",
-      random = "slope",
-      sel_k = 3
-    )
+  suppressWarnings(
+    mod_single_group <-
+      fit_regression_model(
+        data_source = df_single_group,
+        y_var = "richness",
+        time_var = "age",
+        group_var = "dataset_id",
+        random = "slope",
+        sel_k = 3
+      )
+  )
 
   expect_s3_class(mod_single_group, "gam")
 

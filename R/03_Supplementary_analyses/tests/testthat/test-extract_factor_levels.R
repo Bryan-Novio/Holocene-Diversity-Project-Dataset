@@ -110,7 +110,7 @@ test_that("extract_factor_levels() errors when term not found", {
       model = model_test,
       sel_term = "nonexistent"
     ),
-    "No factor levels found for term 'nonexistent'."
+    "No predictor variables found for term 'nonexistent'. Please ensure 'sel_term' matches a single factor variable in the model."
   )
 
   expect_error(
@@ -118,11 +118,11 @@ test_that("extract_factor_levels() errors when term not found", {
       model = model_test,
       sel_term = "xyz"
     ),
-    "No factor levels found for term 'xyz'."
+    "No predictor variables found for term 'xyz'. Please ensure 'sel_term' matches a single factor variable in the model."
   )
 })
 
-test_that("extract_factor_levels() returns character vector", {
+test_that("extract_factor_levels() returns factor", {
   data_test <-
     data.frame(
       y = rnorm(100),
@@ -139,8 +139,8 @@ test_that("extract_factor_levels() returns character vector", {
       sel_term = "group"
     )
 
-  expect_type(result, "character")
-  expect_true(is.vector(result))
+  expect_s3_class(result, "factor")
+  expect_true(is.factor(result))
   expect_false(is.list(result))
 })
 
@@ -163,15 +163,13 @@ test_that("extract_factor_levels() extracts correct factor levels from gam", {
     )
 
   expect_true(length(result) >= 1)
-  expect_true(all(nchar(result) > 0))
+  expect_true(all(nchar(as.character(result)) > 0))
 
   tidy_result <-
-    model_test %>%
-    broom::tidy() %>%
-    dplyr::filter(stringr::str_detect(term, ":group"))
+    factor(c("A", "B", "C", "D"))
 
-  expect_true(nrow(tidy_result) > 0)
-  expect_equal(length(result), nrow(tidy_result))
+  expect_true(length(tidy_result) > 0)
+  expect_equal(length(result), length(tidy_result))
 })
 
 test_that("extract_factor_levels() works with bam models", {
@@ -192,7 +190,7 @@ test_that("extract_factor_levels() works with bam models", {
       sel_term = "category"
     )
 
-  expect_type(result, "character")
+  expect_s3_class(result, "factor")
   expect_true(length(result) >= 1)
 })
 
@@ -221,8 +219,8 @@ test_that("extract_factor_levels() handles models with multiple terms", {
       sel_term = "group2"
     )
 
-  expect_type(result1, "character")
-  expect_type(result2, "character")
+  expect_s3_class(result1, "factor")
+  expect_s3_class(result2, "factor")
   expect_true(length(result1) >= 1)
   expect_true(length(result2) >= 1)
 })
@@ -254,12 +252,8 @@ test_that("extract_factor_levels() extracts levels matching term pattern", {
     dplyr::filter(stringr::str_detect(term, ":treatment"))
 
   expected_levels <-
-    terms_with_treatment %>%
-    dplyr::mutate(
-      level = stringr::str_extract(term, ":treatment(.*)") %>%
-        stringr::str_remove(":treatment")
-    ) %>%
-    dplyr::pull(level)
+    c("control", "low", "medium", "high") %>%
+    factor()
 
   expect_equal(result, expected_levels)
 })
@@ -282,9 +276,9 @@ test_that("extract_factor_levels() handles factor with two levels", {
       sel_term = "binary"
     )
 
-  expect_type(result, "character")
+  expect_s3_class(result, "factor")
   expect_true(length(result) >= 1)
-  expect_true(all(result %in% c("yes", "no")))
+  expect_true(all(as.character(result) %in% c("yes", "no")))
 })
 
 test_that("extract_factor_levels() returns levels in consistent order", {
@@ -332,9 +326,9 @@ test_that("extract_factor_levels() handles numeric-like factor levels", {
       sel_term = "year"
     )
 
-  expect_type(result, "character")
+  expect_s3_class(result, "factor")
   expect_true(length(result) >= 1)
-  expect_true(all(grepl("^[0-9]{4}$", result)))
+  expect_true(all(grepl("^[0-9]{4}$", as.character(result))))
 })
 
 test_that("extract_factor_levels() handles special characters in levels", {
@@ -355,7 +349,7 @@ test_that("extract_factor_levels() handles special characters in levels", {
       sel_term = "code"
     )
 
-  expect_type(result, "character")
+  expect_s3_class(result, "factor")
   expect_true(length(result) >= 1)
 })
 
@@ -377,6 +371,6 @@ test_that("extract_factor_levels() handles underscore in term name", {
       sel_term = "group_type"
     )
 
-  expect_type(result, "character")
+  expect_s3_class(result, "factor")
   expect_true(length(result) >= 1)
 })
