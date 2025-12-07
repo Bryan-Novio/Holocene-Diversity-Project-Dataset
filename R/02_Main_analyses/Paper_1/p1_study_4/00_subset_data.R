@@ -58,7 +58,13 @@ data_p1_s4 <-
 
 data_p1_s4_counts_ages <- 
   data_p1_s4 %>%
-  get_pollen_counts_with_ages() 
+  get_pollen_counts_with_ages() %>% 
+  filter(age<= 12000)
+
+max(data_p1_s4_counts_ages$age)
+
+data_p1_s4_counts_ages %>% 
+  distinct(dataset_id)
 
 data_p1_s4_counts_ages %>% 
   arrange(desc(age)) %>% 

@@ -49,24 +49,39 @@ richness_data_eu <-
   richness_data_eu %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-richness_data_eu %>% distinct(dataset_id)
+min(richness_data_eu$age)
+
 richness_data_na <-
   richness_data_na %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
+
+n_datasets <- length(unique(richness_data_eu$dataset_id))
+my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_datasets))
+
 p2 <-
   ggplot2::ggplot(
     richness_data_eu,
-    ggplot2::aes(x = age, y = richness)
+    ggplot2::aes(x = age, y = richness, color = dataset_id)
   ) +
   ggplot2::geom_point() +
   ggplot2::geom_line(
-    linetype = "solid",
+    linetype = "dashed",
     alpha = 0.5
   ) +
   ggplot2::labs(
-    title = "Pollen Richness vs. Age (cal. yrs. BP) ",
     y = "Pollen Richness", x = "Age"
+  ) +
+  ggplot2::scale_color_manual(values = my_palette) +
+  ggplot2::theme_classic(
+    
+  )+
+  ggplot2::theme(legend.position = "none",
+                 plot.title = element_text(color = "#2a707f"),
+                 axis.title = element_text(color = "#2a707f"),
+                 axis.text  = element_text(color = "#2a707f"),
+                 axis.ticks = element_line(color = "#2a707f"),
+                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
   )
 
 #----------------------------------------------------------#
@@ -74,19 +89,13 @@ p2 <-
 #----------------------------------------------------------#
 
 ## 3.1. Parallel processing -----
-sel_cluster_type <-
-  ifelse(
-    .Platform["OS.type"] == "unix",
-    "FORK",
-    "PSOCK"
-  )
 
 n_available_cores <-
   parallelly::availableCores() - 1
 
 # number of cores to use cannot be more than number of random effect levels
 n_cores_to_use <-
-  richness_data_eu %>%
+  richness_data_na %>%
   dplyr::distinct(dataset_id) %>%
   nrow() %>%
   {
@@ -94,61 +103,57 @@ n_cores_to_use <-
   } %>%
   min(., n_available_cores)
 
-cl <-
-  parallel::makeCluster(
-    n_cores_to_use,
-    type = sel_cluster_type
-  )
-
 ## 3.2. Fit model -----
 
 set.seed(19900723)
 gam_2 <-
   fit_regression_model(
-    data = richness_data_eu,
+    data = richness_data_na,
     y_var = "richness",
     time_var = "age",
     group_var = "dataset_id",
-    random = "both",
-    sel_k = 14, #lowered from 25
+    random = "slope",
+    sel_k = 20, 
     error_family = stats::poisson(link = "log"),
-    cluster = cl,
+    nthreads = n_cores_to_use,
+    discrete = TRUE,
     control = mgcv::gam.control(
       trace = TRUE,
       maxit = 500
     )
   )
 
-## 3.3. Stop cluster -----
-parallel::stopCluster(cl)
+## 3.3. Save model as RDS files --
 
-
+write_rds(gam_2,here("Data/Paper_1/data_model/gam_2_na.rds"))
+gam_2_eu <- read_rds(here("Data/Paper_1/data_model/gam_2_eu.rds"))
+gam_2_na <- read_rds(here("Data/Paper_1/data_model/gam_2_na.rds"))
 #----------------------------------------------------------#
 # 4. Model prediction -----
 #----------------------------------------------------------#
 
 data_dummy_full <-
   tidyr::expand_grid(
-    dataset_id = unique(richness_data$dataset_id),
+    dataset_id = unique(richness_data_eu$dataset_id),
     age = seq(
-      min(richness_data$age),
-      max(richness_data$age),
-      length.out = 100
+      min(richness_data_na$age),
+      max(richness_data_na$age),
+      length.out = 10
     )
   )
 
 data_dummy_general <-
   tidyr::expand_grid(
     age = seq(
-      min(richness_data$age),
-      max(richness_data$age),
-      length.out = 100
+      min(richness_data_eu$age),
+      max(richness_data_eu$age),
+      length.out = 10
     )
   )
 
 data_pred_full <-
   predict_model(
-    model = gam_1,
+    model = gam_2_eu,
     newdata = data_dummy_full,
     type = "response"
   ) %>%
@@ -161,7 +166,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_1,
+    model = gam_2_eu,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -177,26 +182,12 @@ data_pred_general <-
   )
 
 #----------------------------------------------------------#
-# 5. Visualization -----
+# 4. Visualization -----
 #----------------------------------------------------------#
 
-# gam by dataset_id
-p0 +
-  ggplot2::geom_ribbon(
-    data = data_pred_general,
-    ggplot2::aes(
-      x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high
-    ),
-    alpha = 0.2
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_general,
-    ggplot2::aes(x = age, y = estimate),
-    linewidth = 2
-  ) +
+#  4.1. Plot predictions for individual series-----
+p2 +
+  ggplot2::facet_wrap(~ dataset_id) +
   ggplot2::geom_ribbon(
     data = data_pred_full,
     ggplot2::aes(
@@ -210,19 +201,52 @@ p0 +
   ) +
   ggplot2::geom_line(
     data = data_pred_full,
-    ggplot2::aes(x = age, y = estimate, color = dataset_id),
+    ggplot2::aes(x = age, y = estimate,color = dataset_id),
     linewidth = 1
+  ) +
+  ggplot2::theme(legend.position = "none",
+                 axis.text  = element_text(size = 5),
+                 strip.text = element_text(
+                   size = 6,
+                   color = "#2a707f"
+                 ),
+                 strip.background = element_rect(
+                   color = "#2a707f",
+                   fill = NA,
+                   linewidth = 0.3
+                 )
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(0, max(richness_data_eu$richness) + 5)
+  )
+
+# 4.2. Plot general trend-----
+p2 +
+  ggplot2::geom_ribbon(
+    data = data_pred_general,
+    ggplot2::aes(
+      x = age,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high
+    ),
+    fill = "#2a707f",
+    alpha = 0.1
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_general,
+    ggplot2::aes(x = age, y = estimate),
+    linewidth = 1,
+    color = "#2a707f"
   ) +
   ggplot2::theme(
     legend.position = "none"
   ) +
   ggplot2::coord_cartesian(
-    ylim = c(0, max(richness_data$richness) + 5)
+    ylim = c(17.5, 27.5) ,
+    xlim = c(12000,0)
+  )+
+  ggplot2::scale_x_reverse(
+    limits = c(12000, 0),
+    breaks = seq(0, 12000, by = 4000)
   )
-
-#----------------------------------------------------------#
-# 6. Save model as RDS files --
-#----------------------------------------------------------# 
-
-write_rds(gam_1,here("Data/Paper_1/data_model/gam_1.rds"))
-

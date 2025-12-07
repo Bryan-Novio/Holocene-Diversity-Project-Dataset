@@ -20,11 +20,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-data_study3_harmonised_eu <- 
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_eu.rds"))
-
-data_study3_harmonised_na <-
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_na.rds"))
+data_study4_harmonised <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study4_harmonised.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -50,11 +47,8 @@ source_files <- sapply(
 # 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-data_to_rarefy_eu <- 
-  data_study3_harmonised_eu %>% 
-  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
-  select(dataset_id,age, neotoma_names,pollen_counts) %>% 
-  rename(taxon_name = neotoma_names) %>% 
+data_to_rarefy_4 <- 
+  data_study4_harmonised %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
   )  %>% 
   pivot_wider(
@@ -64,36 +58,15 @@ data_to_rarefy_eu <-
 
 set.seed(1234)
 
-rarefied_data_eu <-
+rarefied_data_4 <-
   rarefy_all_samples(
-    data_source = data_to_rarefy_eu,
+    data_source = data_to_rarefy_4,
     n_grains = 300
   )
-
-data_to_rarefy_na <- 
-  data_study3_harmonised_na %>% 
-  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
-  select(dataset_id,age, neotoma_names,pollen_counts) %>% 
-  rename(taxon_name = neotoma_names) %>% 
-  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
-  )  %>% 
-  pivot_wider(
-    names_from = taxon_name,
-    values_from = pollen_counts
-  )
-
-set.seed(1234)
-
-rarefied_data_na <-
-  rarefy_all_samples(
-    data_source = data_to_rarefy_na,
-    n_grains = 300
-  )
-
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file
 #----------------------------------------------------------# 
 
-write_rds(rarefied_data_eu, here("Data/Paper_1/data_rarefy/data_study4_rarefied_eu.rds"))
-write_rds(rarefied_data_na, here("Data/Paper_1/data_rarefy/data_study4_rarefied_na.rds"))
+write_rds(rarefied_data_4, here("Data/Paper_1/data_rarefy/data_study4_rarefied.rds"))
+
