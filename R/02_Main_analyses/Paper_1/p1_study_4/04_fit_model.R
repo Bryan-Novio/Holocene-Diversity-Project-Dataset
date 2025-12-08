@@ -117,8 +117,10 @@ gam_3 <-
 
 ## 3.3. Save model as RDS files --
 
-write_rds(gam_3,here("Data/Paper_1/data_model/gam_3.rds"))
+gam_3 <- read_rds(here("Data/Paper_1/data_model/gam_3.rds"))
 
+gam.check(gam_3)
+AIC(gam_3)
 #----------------------------------------------------------#
 # 4. Model prediction -----
 #----------------------------------------------------------#

@@ -128,6 +128,13 @@ gam_2 <-
 write_rds(gam_2,here("Data/Paper_1/data_model/gam_2_na.rds"))
 gam_2_eu <- read_rds(here("Data/Paper_1/data_model/gam_2_eu.rds"))
 gam_2_na <- read_rds(here("Data/Paper_1/data_model/gam_2_na.rds"))
+
+gam.check(gam_2_eu)
+gam.check(gam_2_na)
+
+AIC(gam_2_eu)
+AIC(gam_2_na)
+
 #----------------------------------------------------------#
 # 4. Model prediction -----
 #----------------------------------------------------------#
