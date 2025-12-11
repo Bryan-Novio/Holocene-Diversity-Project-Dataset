@@ -67,6 +67,8 @@ data_binned_filtered <-
     n_bins = 11
   )
 
+data_binned_filtered %>% distinct(dataset_id)
+
 #----------------------------------------------------------#
 # 5. Write the binned and prepared_data to RDS files
 #----------------------------------------------------------#

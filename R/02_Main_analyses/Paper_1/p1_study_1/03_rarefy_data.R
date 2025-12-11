@@ -19,6 +19,9 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
+data_study1_harmonised <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study1_harmonised.rds"))
+
 data_study1_binned <- 
   read_rds(here("Data/Paper_1/data_bin/data_study1_binned.rds"))
 
@@ -56,7 +59,7 @@ source_files <-
 data_to_rarefy1 <- 
   data_study1_binned  %>%
   inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
-  select(dataset_id,neotoma_names, BIN, summed_pollen_count) %>% 
+  select(subregion,neotoma_names, BIN, summed_pollen_count) %>% 
   rename(taxon_name = neotoma_names, age = BIN, pollen_counts = summed_pollen_count) %>% 
   mutate(age = as.double(age)) %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
@@ -66,11 +69,25 @@ data_to_rarefy1 <-
     values_from = pollen_counts
   )
 
+
+id <- 
+  data_study1_harmonised %>% 
+  distinct(dataset_id,subregion) # get dataset_id
+
+data_to_rarefy1_id <-           # attach dataset_id
+  data_to_rarefy1 %>% 
+  inner_join(id, by = "subregion") %>% 
+  relocate(dataset_id) %>% 
+  mutate(dataset_id = as.double(dataset_id)) %>% 
+  select(-subregion)
+
+
+
 set.seed(1234)
 
 rarefied_data1 <-
   rarefy_all_samples(
-    data_source = data_to_rarefy1,
+    data_source = data_to_rarefy1_id,
     n_grains = 500
   )
 

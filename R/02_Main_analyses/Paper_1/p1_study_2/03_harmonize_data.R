@@ -26,8 +26,8 @@ data_only_woody <-
 
 harmonisation_table <- 
   readr::read_csv(  
-  here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
-) %>% 
+    here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
+  ) %>% 
   rename(taxon_name = neotoma_names)
 
 #----------------------------------------------------------#
@@ -71,6 +71,8 @@ data_study2_harmonised <-
     harmonisation_table = harmonisation_table,
     level = "level_6"
   )
+
+data_study2_harmonised %>% distinct(dataset_id)
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files

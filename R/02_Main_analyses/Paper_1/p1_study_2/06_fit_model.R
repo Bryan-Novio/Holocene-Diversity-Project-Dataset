@@ -16,6 +16,9 @@
 library(tidyverse)
 library(here)
 library(mgcv)
+library(mvgam)
+library(scales)
+
 
 # Load the function into the global environment
 
@@ -39,37 +42,41 @@ source_files <-
 richness_data <- 
   read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
 
+hist(richness_data$richness)
+
 #  Convert dataset_id as random factor
 richness_data <-
   richness_data %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
+
+n_datasets <- length(unique(richness_data$dataset_id))
+my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_datasets))
+
 p1 <-
   ggplot2::ggplot(
     richness_data,
-    ggplot2::aes(x = age, y = richness, color = dataset_id)
-  ) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line(
-    linetype = "dashed",
-    alpha = 0.5
+    ggplot2::aes(x = age, y = richness)
   ) +
   ggplot2::labs(
-    title = "Pollen Richness vs. Age (cal. yrs. BP) ",
-    y = "Pollen Richness", x = "Age"
-  )
+    y = "Pollen Richness", x = "Age (cal yr BP)"
+  )+
+  ggplot2::theme_classic(
+    
+  )+
+  ggplot2::theme(legend.position = "none",
+                 plot.title = element_text(color = "#2a707f"),
+                 axis.title = element_text(color = "#2a707f", size = 18),
+                 axis.text  = element_text(color = "#2a707f", size = 18),
+                 axis.ticks = element_line(color = "#2a707f"),
+                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
+                 )
 
 #----------------------------------------------------------#
 # 3. Model fitting -----
 #----------------------------------------------------------#
 
 ## 3.1. Parallel processing -----
-sel_cluster_type <-
-  ifelse(
-    .Platform["OS.type"] == "unix",
-    "FORK",
-    "PSOCK"
-  )
 
 n_available_cores <-
   parallelly::availableCores() - 1
@@ -84,11 +91,6 @@ n_cores_to_use <-
   } %>%
   min(., n_available_cores)
 
-cl <-
-  parallel::makeCluster(
-    n_cores_to_use,
-    type = sel_cluster_type
-  )
 
 ## 3.2. Fit model -----
 
@@ -99,19 +101,28 @@ gam_1 <-
     y_var = "richness",
     time_var = "age",
     group_var = "dataset_id",
-    random = "both",
-    sel_k = 14, #lowered from 25
+    random = "slope",
+    sel_k = 10, 
     error_family = stats::poisson(link = "log"),
-    cluster = cl,
+    nthreads = n_cores_to_use,
+    discrete = TRUE,
     control = mgcv::gam.control(
       trace = TRUE,
       maxit = 500
     )
   )
 
-## 3.3. Stop cluster -----
-parallel::stopCluster(cl)
 
+
+## 3.3. Save model as RDS files --
+
+write_rds(gam_1,here("Data/Paper_1/data_model/gam_1_na.rds"))
+
+gam_1 <- read_rds(here("Data/Paper_1/data_model/gam_1_na.rds"))
+
+summary(gam_1)
+gam.check(gam_1)
+AIC(gam_1)
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
@@ -123,7 +134,7 @@ data_dummy_full <-
     age = seq(
       min(richness_data$age),
       max(richness_data$age),
-      length.out = 100
+      length.out = 10
     )
   )
 
@@ -132,7 +143,7 @@ data_dummy_general <-
     age = seq(
       min(richness_data$age),
       max(richness_data$age),
-      length.out = 100
+      length.out = 10
     )
   )
 
@@ -166,27 +177,14 @@ data_pred_general <-
     .before = dplyr::everything()
   )
 
+
 #----------------------------------------------------------#
 # 5. Visualization -----
 #----------------------------------------------------------#
 
-# gam by dataset_id
+#  4.1. Plot predictions for individual series-----
 p1 +
-  ggplot2::geom_ribbon(
-    data = data_pred_general,
-    ggplot2::aes(
-      x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high
-    ),
-    alpha = 0.2
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_general,
-    ggplot2::aes(x = age, y = estimate),
-    linewidth = 2
-  ) +
+  ggplot2::facet_wrap(~ dataset_id) +
   ggplot2::geom_ribbon(
     data = data_pred_full,
     ggplot2::aes(
@@ -200,19 +198,51 @@ p1 +
   ) +
   ggplot2::geom_line(
     data = data_pred_full,
-    ggplot2::aes(x = age, y = estimate, color = dataset_id),
+    ggplot2::aes(x = age, y = estimate,color = dataset_id),
     linewidth = 1
   ) +
-  ggplot2::theme(
-    legend.position = "none"
+  ggplot2::theme(legend.position = "none",
+                 axis.text  = element_text(size = 5),
+                 strip.text = element_text(
+                   size = 6,
+                   color = "#2a707f"
+                 ),
+                 strip.background = element_rect(
+                   color = "#2a707f",
+                   fill = NA,
+                   linewidth = 0.3
+                 )
   ) +
   ggplot2::coord_cartesian(
     ylim = c(0, max(richness_data$richness) + 5)
   )
 
-#----------------------------------------------------------#
-# 6. Save model as RDS files --
-#----------------------------------------------------------# 
+# 4.2. Plot general trend-----
+p1 +
+  ggplot2::geom_ribbon(
+    data = data_pred_general,
+    ggplot2::aes(
+      x = age,
+      y = estimate,
+      ymin = conf_low,
+      ymax = conf_high
+      ),
+      fill = "#2a707f",
+      alpha = 0.1
+  ) +
+  ggplot2::geom_line(
+    data = data_pred_general,
+    ggplot2::aes(x = age, y = estimate),
+    linewidth = 2,
+    color = "#2a707f"
+  ) +
+  ggplot2::theme(
+    legend.position = "none"
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(6,16)
+  ) +
+  ggplot2::scale_x_reverse()
+  
 
-write_rds(gam_1,here("Data/Paper_1/data_model/gam_1.rds"))
 

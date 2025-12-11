@@ -70,7 +70,8 @@ richness_eu <-
   data_prepared_richness_estimation_eu %>% 
   estimate_richness() %>% 
   mutate(age = as.numeric(age)) %>% 
-  mutate(dataset_id = as_factor(dataset_id))
+  mutate(dataset_id = as_factor(dataset_id)) %>% 
+  filter(age <= 12000)
 
 summary(richness_eu)
 
@@ -78,7 +79,8 @@ richness_na <-
   data_prepared_richness_estimation_na %>% 
   estimate_richness() %>% 
   mutate(age = as.numeric(age)) %>% 
-  mutate(dataset_id = as_factor(dataset_id))
+  mutate(dataset_id = as_factor(dataset_id)) %>% 
+  filter(age <= 12000)
 
 summary(richness_na)
 

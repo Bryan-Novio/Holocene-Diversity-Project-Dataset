@@ -14,153 +14,85 @@
 
 library(tidyverse)
 library(here)
-library(ggplot2)
-library(ggpubr)
-library(mgcv)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness <- read_rds(here("Outputs/Data/paper_1_study_1/richness_data_study_1.rds"))
+richness <-
+  read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
+
+data_p1_s1_counts_ages_subregion <- 
+  read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
 
 #----------------------------------------------------------#
 # 2. Visualize trends --
 #----------------------------------------------------------# 
 
-# 2.1. GLM model:
+data_subregion <- 
+  data_p1_s1_counts_ages_subregion %>%
+  distinct(subregion, dataset_id) %>% 
+  mutate(dataset_id = as.double(dataset_id))
 
-model_gen_glm <- glm(richness ~ age, data = richness$species)
-model_gen_glm <- glm(richness ~ age, data = richness$genus)
-model_gen_glm <- glm(richness ~ age, data = richness$species)
+richness_subregion <-
+  left_join(richness, data_subregion, by ="dataset_id") 
 
-###### family
+# compute median richness
 
-
-## 2.1.1. Data frame for predictions
-
-new_data <- with(richness$family, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# 2.1.2. Predict the values and standard errors on the response scale
-
-predictions <- predict(model_gen_glm, new_data, se.fit = TRUE, type = "response")
-
-# 2.1.3. Add predictions and confidence intervals to the new data frame
-
-new_data$fit <- predictions$fit
-new_data$lwr <- predictions$fit - 1.96 * predictions$se.fit
-new_data$upr <- predictions$fit + 1.96 * predictions$se.fit
-
-# 2.1.4. Plot the results using ggplot2
-
-ggplot(new_data, aes(x = age, y = fit)) +
-  geom_point(data = richness$family, aes(y = richness), alpha = 0.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
-  geom_line(color = "blue", linewidth = 1) +
-  labs(
-    x = "Age",
-    y = "Predicted Richness"
+median_richness_data <-
+  richness_subregion  %>%
+  group_by(age, subregion) %>%
+  summarise(
+    median_richness = median(richness, na.rm = TRUE),
+    .groups = "drop"
   )
 
-
-###### genus
-
-## 2.1.1. Data frame for predictions
-
-new_data <- with(richness$genus, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# 2.1.2. Predict the values and standard errors on the response scale
-
-predictions <- predict(model_gen_glm, new_data, se.fit = TRUE, type = "response")
-
-# 2.1.3. Add predictions and confidence intervals to the new data frame
-
-new_data$fit <- predictions$fit
-new_data$lwr <- predictions$fit - 1.96 * predictions$se.fit
-new_data$upr <- predictions$fit + 1.96 * predictions$se.fit
-
-# 2.1.4. Plot the results using ggplot2
-
-ggplot(new_data, aes(x = age, y = fit)) +
-  geom_point(data = richness$genus, aes(y = richness), alpha = 0.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
-  geom_line(color = "blue", linewidth = 1) +
-  labs(
-    x = "Age",
-    y = "Predicted Richness"
-  )
-
-###### species
+median_richness_15k <-
+  median_richness_data %>% filter(age <= 15000)
 
 
-## 2.1.1. Data frame for predictions
+## same
 
-new_data <- with(richness$species, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# 2.1.2. Predict the values and standard errors on the response scale
-
-predictions <- predict(model_gen_glm, new_data, se.fit = TRUE, type = "response")
-
-# 2.1.3. Add predictions and confidence intervals to the new data frame
-
-new_data$fit <- predictions$fit
-new_data$lwr <- predictions$fit - 1.96 * predictions$se.fit
-new_data$upr <- predictions$fit + 1.96 * predictions$se.fit
-
-# 2.1.4. Plot the results using ggplot2
-
-ggplot(new_data, aes(x = age, y = fit)) +
-  geom_point(data = richness$species, aes(y = richness), alpha = 0.5) +
-  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "blue", alpha = 0.2) +
-  geom_line(color = "blue", linewidth = 1) +
-  labs(
-    x = "Age",
-    y = "Predicted Richness"
-  )
-
-
-# 2.2. GAM model:
-
-
-# Assuming your model is already run
- model_gam_identity <- gam(richness ~ s(age), data = richness$genus, family = gaussian(link = "identity"))
-
-# Create a data frame for predictions
-new_data <- with(richness$genus, data.frame(age = seq(min(age), max(age), length.out = 200)))
-
-# Predict the smooth term
-# Use type = "lpmatrix" to get the design matrix for the smooth term
-# This allows you to reconstruct the effect with standard errors
-lp_matrix <- predict(model_gam_identity, new_data, type = "lpmatrix")
-smooth_effect <- lp_matrix %*% coef(model_gam_identity)      
-smooth_se <- sqrt(rowSums((lp_matrix %*% vcov(model_gam_identity)) * lp_matrix))
-
-# Construct the data frame for plotting
-plot_data <- data.frame(
-  age = new_data$age,
-  fit = smooth_effect + coef(model_gam_identity)["(Intercept)"],
-  lwr = smooth_effect + coef(model_gam_identity)["(Intercept)"] - 1.96 * smooth_se,
-  upr = smooth_effect + coef(model_gam_identity)["(Intercept)"] + 1.96 * smooth_se
-)
-
-# Plot the results using ggplot2
-ggplot(plot_data, aes(x = age, y = fit)) +
-  # Add confidence interval ribbon
-  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.2) +
-  # Add smooth line
-  geom_line() +
-  # Add raw data points
-  geom_point(data = richness$genus, aes(x = age, y = richness)) +
-  # Add labels and title
-  labs(
-    title = "GAM Partial Effects Plot for 'age'",
-    y = "Predicted Richness",
-    x = "Age"
+ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)) +
+  geom_line(linewidth = 1) +
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
   ) +
-  # Apply a clean theme
-  theme_minimal()
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
-
-
-
+ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)) +
+  annotate("rect", xmin = Inf, xmax = 11500, ymin = -Inf, ymax = Inf, fill = "green", alpha = 0.2) +
+  annotate("rect", xmin = 11500, xmax = 8500, ymin = -Inf, ymax = Inf, fill = "lightgreen", alpha = 0.2) +
+  annotate("rect", xmin = 8500, xmax = 4500, ymin = -Inf, ymax = Inf, fill = "lightyellow", alpha = 0.2) +
+  annotate("rect", xmin = 4500, xmax = 0, ymin = -Inf, ymax = Inf, fill = "orange", alpha = 0.2) +
+  geom_line(size = 1) +
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
+  ) +
+  scale_y_continuous(breaks = c(0, 20, 25, 30)) +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(y = expression(Median~site~richness~(ET[500]))) +
+  labs(x = "Age in years ago")
