@@ -61,25 +61,18 @@ my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_da
 
 p2 <-
   ggplot2::ggplot(
-    richness_data_eu,
-    ggplot2::aes(x = age, y = richness, color = dataset_id)
-  ) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line(
-    linetype = "dashed",
-    alpha = 0.5
+    richness_data_na,
+    ggplot2::aes(x = age, y = richness)
   ) +
   ggplot2::labs(
-    y = "Pollen Richness", x = "Age"
-  ) +
-  ggplot2::scale_color_manual(values = my_palette) +
+    y = "Pollen Richness", x = "Age") +
   ggplot2::theme_classic(
     
   )+
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f"),
-                 axis.text  = element_text(color = "#2a707f"),
+                 axis.title = element_text(color = "#2a707f", size = 18),
+                 axis.text  = element_text(color = "#2a707f", size = 18),
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
   )
@@ -129,6 +122,9 @@ write_rds(gam_2,here("Data/Paper_1/data_model/gam_2_na.rds"))
 gam_2_eu <- read_rds(here("Data/Paper_1/data_model/gam_2_eu.rds"))
 gam_2_na <- read_rds(here("Data/Paper_1/data_model/gam_2_na.rds"))
 
+summary(gam_2_eu)
+summary(gam_2_na)
+
 gam.check(gam_2_eu)
 gam.check(gam_2_na)
 
@@ -152,8 +148,8 @@ data_dummy_full <-
 data_dummy_general <-
   tidyr::expand_grid(
     age = seq(
-      min(richness_data_eu$age),
-      max(richness_data_eu$age),
+      min(richness_data_na$age),
+      max(richness_data_na$age),
       length.out = 10
     )
   )
@@ -173,7 +169,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_2_eu,
+    model = gam_2_na,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -243,14 +239,14 @@ p2 +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
-    linewidth = 1,
+    linewidth = 3,
     color = "#2a707f"
   ) +
   ggplot2::theme(
     legend.position = "none"
   ) +
   ggplot2::coord_cartesian(
-    ylim = c(17.5, 27.5) ,
+    ylim = c(15, 17) ,
     xlim = c(12000,0)
   )+
   ggplot2::scale_x_reverse(

@@ -56,24 +56,18 @@ my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_da
 p1 <-
   ggplot2::ggplot(
     richness_data,
-    ggplot2::aes(x = age, y = richness, color = dataset_id)
-  ) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line(
-    linetype = "dashed",
-    alpha = 0.5
+    ggplot2::aes(x = age, y = richness)
   ) +
   ggplot2::labs(
     y = "Pollen Richness", x = "Age (cal yr BP)"
   )+
-  ggplot2::scale_color_manual(values = my_palette) +
   ggplot2::theme_classic(
     
   )+
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f"),
-                 axis.text  = element_text(color = "#2a707f"),
+                 axis.title = element_text(color = "#2a707f", size = 18),
+                 axis.text  = element_text(color = "#2a707f", size = 18),
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
                  )
@@ -126,6 +120,7 @@ write_rds(gam_1,here("Data/Paper_1/data_model/gam_1_na.rds"))
 
 gam_1 <- read_rds(here("Data/Paper_1/data_model/gam_1_na.rds"))
 
+summary(gam_1)
 gam.check(gam_1)
 AIC(gam_1)
 
@@ -238,7 +233,7 @@ p1 +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
-    linewidth = 1,
+    linewidth = 2,
     color = "#2a707f"
   ) +
   ggplot2::theme(

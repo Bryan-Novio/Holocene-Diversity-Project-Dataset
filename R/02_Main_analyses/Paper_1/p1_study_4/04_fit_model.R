@@ -56,22 +56,16 @@ my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_da
 p3 <-
   ggplot2::ggplot(
     richness_data4,
-    ggplot2::aes(x = age, y = richness, color = dataset_id)
-  ) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line(
-    linetype = "dashed",
-    alpha = 0.5
+    ggplot2::aes(x = age, y = richness)
   ) +
   ggplot2::labs(y = "Pollen Richness", x = "Age"
   ) +
-  ggplot2::scale_color_manual(values = my_palette) +
   ggplot2::theme_classic(
   )+
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f"),
-                 axis.text  = element_text(color = "#2a707f", size = 6),
+                 axis.title = element_text(color = "#2a707f", size = 18),
+                 axis.text  = element_text(color = "#2a707f", size = 10),
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
   )
@@ -105,7 +99,7 @@ gam_3 <-
     time_var = "age",
     group_var = "dataset_id",
     random = "slope",
-    sel_k = 10, 
+    sel_k = 15, 
     error_family = stats::poisson(link = "log"),
     nthreads = n_cores_to_use,
     discrete = TRUE,
@@ -121,6 +115,7 @@ gam_3 <- read_rds(here("Data/Paper_1/data_model/gam_3.rds"))
 
 gam.check(gam_3)
 AIC(gam_3)
+summary(gam_3)
 #----------------------------------------------------------#
 # 4. Model prediction -----
 #----------------------------------------------------------#
@@ -229,7 +224,7 @@ p3 +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
-    linewidth = 1,
+    linewidth = 2,
     color = "#2a707f"
   ) +
   ggplot2::theme(
