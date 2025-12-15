@@ -18,7 +18,7 @@ library(taxospace)
 #Run first '00_subset_data script' to generate each study dataset
 
 datasubset_all  <- 
-  list.files(here("Outputs/Data/p1_datasubset/"), pattern ="[.]rds$", full.names = TRUE) %>% 
+  list.files(here("Data/Paper_1/data_subset/"), pattern ="[.]rds$", full.names = TRUE) %>% 
   purrr::map(readr::read_rds)
 
 #Since Fossilpol taxon names needs to translated to Neotoma names, we need to load the taxa reference table

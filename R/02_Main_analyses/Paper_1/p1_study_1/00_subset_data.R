@@ -21,7 +21,7 @@ library(here)
 data <- 
   read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
 
-
+data %>% filter(region == "Europe")
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -72,6 +72,12 @@ data_p1_s1_sub_region <- data_p1_s1  %>%
     long >= 11 ~ "Temperate Continental"
   )) %>%
   relocate(subregion, .after = region) 
+
+data_p1_s1_sub_region %>% distinct(dataset_id)
+
+data_p1_s1_sub_region %>% 
+  unnest(levels) %>%
+  relocate(age,sample_id)
 
 # visualize in map
 
@@ -131,15 +137,32 @@ data_p1_s1_subregion_counts_ages <-
   data_p1_s1_sub_region %>% 
   get_pollen_counts_with_ages() 
 
-data_p1_s1_subregion_counts_ages_subregion <- 
+data_p1_s1_subregion_counts_ages_subregion <-  # 477 sites
   data_p1_s1_subregion_counts_ages %>% 
   inner_join(data_p1_s1_sub_region, by = "dataset_id") %>% 
   select(dataset_id, age, taxa, pollen_counts, subregion) %>% 
   rename(taxon_name = taxa)
 
+# include only sites with at least 32 identified pollen types
+
+# 451 sites (less 26 sites or 35,833 samples)
+
+sites_with_more_32 <- 
+  data_p1_s1_subregion_counts_ages_subregion %>%  
+  group_by(dataset_id) %>% 
+  summarize(n_taxon = n_distinct(taxon_name)) %>% 
+  filter(n_taxon >= 32)
+
+data_p1_s1_subregion_counts_ages_subregion_filtered <- 
+  data_p1_s1_subregion_counts_ages_subregion %>% 
+  inner_join(sites_with_more_32, by = "dataset_id") %>% 
+  select(-n_taxon)
+
+
+View(data_p1_s1_subregion_counts_ages_subregion)
 
 #----------------------------------------------------------#
 # 6. Write the subset data to RDS file
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s1_subregion_counts_ages_subregion, here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
+write_rds(data_p1_s1_subregion_counts_ages_subregion_filtered, here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))

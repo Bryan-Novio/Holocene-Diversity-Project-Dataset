@@ -1,3 +1,9 @@
+
+library(tidyverse)
+library(here)
+
+
+
 source(
   here("R/02_Main_analyses/Paper_1/p1_study_1/00_subset_data.R")
 )
@@ -19,14 +25,10 @@ source(
 )
 
 source(
-  here("R/02_Main_analyses/Paper_1/p1_study_1/05/visualize_trend.R")
+  here("R/02_Main_analyses/Paper_1/p1_study_1/05_visualize_trend.R")
 )
 
 
 source(
-  here("R/02_Main_analyses/Paper_1/p1_study_1/06/supplementary_analyses.R")
-)
-
-source(
-  here("R/02_Main_analyses/Paper_1/p1_study_1/06/study_1_master.R")
+  here("R/02_Main_analyses/Paper_1/p1_study_1/study_1_master.R")
 )
