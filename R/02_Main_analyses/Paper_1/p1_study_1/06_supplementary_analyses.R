@@ -393,3 +393,109 @@ one <- richness_subregion_lat %>%
 lat_trend <- ggarrange(ten,sev,four, three, one, common.legend = TRUE, nrow = 1, label.y = 1)
 
 #===========================================================================================#
+
+#Customize harmonization table for Study 1 by adding missing taxa
+
+study1_hlist_raw <- 
+  read_csv(here("C:/Users/ADMIN/Downloads/EMPD_Pollen/study1_hlist_raw.csv")) 
+
+study1_hlist_raw %>% 
+  distinct(taxon_name)
+
+harmonisation_table <- 
+  readr::read_csv(  
+    here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
+  ) %>% 
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6) %>% 
+  rename(Pollen_type = level_6)
+
+harmonisation_table %>% distinct(taxon_name)
+
+harmonisation_table_missing <- 
+  study1_hlist_raw %>% 
+  anti_join(harmonisation_table, by = "taxon_name")
+
+
+study1_hlist_updated <- 
+  bind_rows(harmonisation_table,harmonisation_table_missing)
+
+study1_hlist_updated %>% 
+  distinct(taxon_name)
+
+View(study1_hlist_updated)
+
+write_csv(study1_hlist_updated, here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
+
+
+#===========================================================================================#
+
+
+# View p1_study1 datasets (12/15/2025)
+
+pollen_data_s1_renamed %>% 
+  filter(pollen_counts > 0) %>% 
+  group_by(dataset_id, age) %>% 
+  summarise(n_taxa = n_distinct(taxon_name)) %>% 
+  summary()
+
+
+data_study1_harmonised %>% 
+  filter(pollen_counts > 0) %>% 
+  group_by(dataset_id, age) %>% 
+  summarise(n_taxa = n_distinct(taxon_name)) %>% 
+  summary()
+
+
+pollen_data_s1_renamed$pollen_counts %>% 
+  sum()
+
+
+data_study1_harmonised$pollen_counts %>% # 30873834
+  sum()
+
+
+data_binned %>% 
+  filter(summed_pollen_count > 0) %>% 
+  group_by(dataset_id, BIN) %>% 
+  summarise(n_taxa = n_distinct(taxa)) %>% 
+  summary()
+
+data_binned$summed_pollen_count %>%  # 30873834
+  sum()
+
+data_binned_samples_500$summed_pollen_count %>%  # 23968770
+  sum()
+
+data_binned_samples_500 %>% 
+  filter(summed_pollen_count > 0) %>% 
+  group_by(dataset_id, BIN) %>% 
+  summarise(n_taxa = n_distinct(taxa)) %>% 
+  summary()
+
+data_binned_samples_500 %>% 
+  summarise(n_taxa = n_distinct(taxa)) %>% 
+  summary()
+
+data_tesst_1 <- data_study1_harmonised %>% 
+  group_by(dataset_id) %>% 
+  summarise(new_pollen_sum = sum(pollen_counts))
+
+data_tesst_2 <- data_binned %>% 
+  group_by(dataset_id) %>% 
+  summarise(new_pollen_sum = sum(summed_pollen_count))
+
+full_join(data_tesst_1,data_tesst_2 , by ="dataset_id", suffix = c("harm", "binned")) %>% 
+  mutate(pollen_difference = new_pollen_sumharm - new_pollen_sumbinned) %>% 
+  filter(pollen_difference != 0)
+
+
+rarefied_data1 %>% 
+  filter(summed_pollen_count > 0) %>% 
+  group_by(dataset_id, BIN) %>% 
+  summarise(n_taxa = n_distinct(taxa)) %>% 
+  summary()
+
+
+
+

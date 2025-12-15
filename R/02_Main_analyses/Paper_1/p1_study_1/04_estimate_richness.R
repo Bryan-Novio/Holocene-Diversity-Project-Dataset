@@ -21,6 +21,7 @@ library(here)
 rarefied_data1 <- 
   read_rds(here("Data/Paper_1/data_rarefy/data_study1_rarefied.rds"))
 
+View(rarefied_data1)
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -36,7 +37,8 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <- 
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -51,12 +53,13 @@ data_prepared_richness_estimation <-
   rarefied_data1  %>% 
   separate_wider_delim(dataset_id_age, delim = "_", 
                        names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = Acer:Noaea, 
+  pivot_longer(cols = -c(dataset_id, BIN), 
                names_to = "taxa", values_to = "summed_pollen_count") %>% 
   prepare_data_for_richness_estimation(type = "binned")
 
 
 ## 3.2. Estimate richness
+
 richness <- 
   data_prepared_richness_estimation %>% 
   estimate_richness() %>% 
