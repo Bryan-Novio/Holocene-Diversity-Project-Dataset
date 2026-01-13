@@ -49,10 +49,6 @@ richness_data <-
   richness_data %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-
-n_datasets <- length(unique(richness_data$dataset_id))
-my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_datasets))
-
 p1 <-
   ggplot2::ggplot(
     richness_data,
@@ -71,6 +67,7 @@ p1 <-
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
                  )
+
 
 #----------------------------------------------------------#
 # 3. Model fitting -----
@@ -95,6 +92,7 @@ n_cores_to_use <-
 ## 3.2. Fit model -----
 
 set.seed(19900723)
+
 gam_1 <-
   fit_regression_model(
     data_source = richness_data,
@@ -102,7 +100,7 @@ gam_1 <-
     time_var = "age",
     group_var = "dataset_id",
     random = "slope",
-    sel_k = 10, 
+    sel_k = 20, 
     error_family = stats::poisson(link = "log"),
     nthreads = n_cores_to_use,
     discrete = TRUE,
@@ -113,16 +111,9 @@ gam_1 <-
   )
 
 
-
 ## 3.3. Save model as RDS files --
 
 write_rds(gam_1,here("Data/Paper_1/data_model/gam_1_na.rds"))
-
-gam_1 <- read_rds(here("Data/Paper_1/data_model/gam_1_na.rds"))
-
-summary(gam_1)
-gam.check(gam_1)
-AIC(gam_1)
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
@@ -218,6 +209,7 @@ p1 +
   )
 
 # 4.2. Plot general trend-----
+
 p1 +
   ggplot2::geom_ribbon(
     data = data_pred_general,
@@ -244,5 +236,3 @@ p1 +
   ) +
   ggplot2::scale_x_reverse()
   
-
-

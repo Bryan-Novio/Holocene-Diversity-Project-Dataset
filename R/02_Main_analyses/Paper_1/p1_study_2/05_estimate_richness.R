@@ -36,7 +36,8 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- sapply(
+source_files <-
+  sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
@@ -57,6 +58,7 @@ data_prepared_richness_estimation <-
 
 
 ## 3.2. Estimate richness
+
 richness <- 
   data_prepared_richness_estimation %>% 
   estimate_richness() %>% 

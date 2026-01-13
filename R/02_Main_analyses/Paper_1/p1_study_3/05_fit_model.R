@@ -61,7 +61,7 @@ my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_da
 
 p2 <-
   ggplot2::ggplot(
-    richness_data_na,
+    richness_data_eu,
     ggplot2::aes(x = age, y = richness)
   ) +
   ggplot2::labs(
@@ -253,3 +253,8 @@ p2 +
     limits = c(12000, 0),
     breaks = seq(0, 12000, by = 4000)
   )
+
+
+# standardize diversity use scale():
+
+richness_data$richness %>% scale()

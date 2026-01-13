@@ -65,6 +65,8 @@ data_p1_s3_NA <-
 
 data_p1_s3_NA %>% distinct(dataset_id)
   
+
+
 #####3.1. get pollen counts with ages
 
 data_p1_s3_EU_counts_ages <- 
