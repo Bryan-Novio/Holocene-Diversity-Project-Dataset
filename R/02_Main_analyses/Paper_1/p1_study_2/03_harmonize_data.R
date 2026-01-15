@@ -30,6 +30,17 @@ harmonisation_table <-
   ) %>% 
   rename(taxon_name = neotoma_names)
 
+study2_hlist_updated <- 
+  read_csv(here("Data/Paper_1/data_supplementary/study2_hlist_updated.csv")) %>% 
+  rename(taxon_name = neotoma_names)
+
+harmonisation_table_missing <- 
+  study2_hlist_updated %>% 
+  anti_join(harmonisation_table, by = "taxon_name")
+
+study2_hlist_updated <- 
+  bind_rows(harmonisation_table,harmonisation_table_missing)
+
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -63,12 +74,20 @@ data_only_woody_renamed <-
     .groups = "drop"
   )
 
+data_only_woody_renamed %>% distinct(taxon_name)
+
+harmonisation_table %>% anti_join(data_only_woody_renamed) 
+
+data_only_woody_renamed %>% anti_join(harmonisation_table) 
+
+3102-2717
+
 # Harmonize taxa at different taxonomic levels
 
 data_study2_harmonised <-
   harmonize_taxa(
     data_to_harmonize = data_only_woody_renamed,
-    harmonisation_table = harmonisation_table,
+    harmonisation_table = study2_hlist_updated,
     level = "level_6"
   )
 
