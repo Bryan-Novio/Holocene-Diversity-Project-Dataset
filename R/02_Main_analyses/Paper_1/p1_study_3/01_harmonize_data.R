@@ -34,6 +34,8 @@ harmonisation_table <-
 neotoma_taxa <- 
   readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
+
+
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#

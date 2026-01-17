@@ -49,40 +49,23 @@ source_files <-
 # 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
 
-# sub-setting data to Europe/N.America
- 
-data_p1_s3_EU  <- 
-  data %>%
-  filter(long >= -25 & long <= 35,lat >= 35) %>%  
-  relocate(region)
+# sub-setting data to Europe/N.America/Asia
 
-data_p1_s3_EU %>% distinct(dataset_id)
-
-data_p1_s3_NA <- 
+study3_data  <-
   data %>% 
-  filter(region =="North America") %>%  
-  relocate(region)
+  relocate(region) %>% 
+  filter(region %in% c("North America", "Europe", "Asia")
+         )
 
-data_p1_s3_NA %>% distinct(dataset_id)
-  
-
+study3_data %>% distinct(region) 
 
 #####3.1. get pollen counts with ages
 
-data_p1_s3_EU_counts_ages <- 
-  data_p1_s3_EU %>%
+data_p1_s3_counts_ages <- 
+  study3_data %>%
   get_pollen_counts_with_ages() 
 
-data_p1_s3_NA_counts_ages <-
-  data_p1_s3_NA %>%
-  get_pollen_counts_with_ages() 
-
-
-data_p1_s3_EU_counts_ages %>% 
-  arrange(desc(age)) %>% 
-  head(10) # max. age
-
-data_p1_s3_EU_counts_ages %>% 
+data_p1_s3_counts_ages %>% 
   arrange(desc(age)) %>%
   head(10) # max. age
 
@@ -90,5 +73,5 @@ data_p1_s3_EU_counts_ages %>%
 # 4. Write the subset data to RDS file
 #----------------------------------------------------------# 
 
-write_rds(data_p1_s3_EU_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s3_EU_counts_ages.rds"))
-write_rds(data_p1_s3_NA_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s3_NA_counts_ages.rds"))
+write_rds(data_p1_s3_counts_ages, here("Data/Paper_1/data_subset/datasub_p1_s3_counts_ages.rds"))
+
