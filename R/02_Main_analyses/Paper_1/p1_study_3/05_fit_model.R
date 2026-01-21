@@ -17,7 +17,6 @@
 library(tidyverse)
 library(here)
 library(mgcv)
-library(mvgam)
 
 # Load the function into the global environment
 
@@ -38,31 +37,46 @@ source_files <-
 # 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_data_eu <- 
-  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_eu.csv"))
+richness_data_asia <- 
+  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_asia.csv"))
 
-richness_data_na <- 
-  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_na.csv"))
+richness_data_europe <- 
+  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_europe.csv"))
+
+richness_data_namerica <- 
+  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_namerica.csv"))
 
 #  Convert dataset_id as random factor
-richness_data_eu <-
-  richness_data_eu %>%              
+
+richness_data_asia <-
+  richness_data_asia %>%              
+  mutate(region = "asia")
+
+
+richness_data_europe <-
+  richness_data_europe %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-min(richness_data_eu$age)
 
-richness_data_na <-
-  richness_data_na %>%              
+richness_data_namerica <-
+  richness_data_namerica %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
+# standardize diversity use scale():
 
-n_datasets <- length(unique(richness_data_eu$dataset_id))
-my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_datasets))
+richness_data_asia_std  <- 
+  richness_data_asia$richness %>% scale() %>% 
+  as_tibble()
 
-p2 <-
+richness_data_m <- bind_cols(richness_data_europe,richness_data_asia, richness_data_namerica) %>%
+  mutate(st_richness = scale(richness))
+
+
+
+p <-
   ggplot2::ggplot(
-    richness_data_eu,
-    ggplot2::aes(x = age, y = richness)
+    richness_data_asia_std_2,
+    ggplot2::aes(x = age, y = st_richness )
   ) +
   ggplot2::labs(
     y = "Pollen Richness", x = "Age") +
@@ -88,7 +102,7 @@ n_available_cores <-
 
 # number of cores to use cannot be more than number of random effect levels
 n_cores_to_use <-
-  richness_data_na %>%
+  richness_data_asia_std_2 %>%
   dplyr::distinct(dataset_id) %>%
   nrow() %>%
   {
@@ -99,14 +113,15 @@ n_cores_to_use <-
 ## 3.2. Fit model -----
 
 set.seed(19900723)
-gam_2 <-
+
+gam_1 <-
   fit_regression_model(
-    data = richness_data_na,
+    data = richness_data_asia_std_2,
     y_var = "richness",
     time_var = "age",
-    group_var = "dataset_id",
+    group_var = "region",
     random = "slope",
-    sel_k = 20, 
+    sel_k = 12, 
     error_family = stats::poisson(link = "log"),
     nthreads = n_cores_to_use,
     discrete = TRUE,
@@ -118,18 +133,7 @@ gam_2 <-
 
 ## 3.3. Save model as RDS files --
 
-write_rds(gam_2,here("Data/Paper_1/data_model/gam_2_na.rds"))
-gam_2_eu <- read_rds(here("Data/Paper_1/data_model/gam_2_eu.rds"))
-gam_2_na <- read_rds(here("Data/Paper_1/data_model/gam_2_na.rds"))
-
-summary(gam_2_eu)
-summary(gam_2_na)
-
-gam.check(gam_2_eu)
-gam.check(gam_2_na)
-
-AIC(gam_2_eu)
-AIC(gam_2_na)
+write_rds(gam_1,here("Data/Paper_1/data_model/gam_2_asia.rds"))
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
@@ -137,10 +141,10 @@ AIC(gam_2_na)
 
 data_dummy_full <-
   tidyr::expand_grid(
-    dataset_id = unique(richness_data_eu$dataset_id),
+    dataset_id = unique(richness_data_asia_std_2$dataset_id),
     age = seq(
-      min(richness_data_na$age),
-      max(richness_data_na$age),
+      min(richness_data_asia_std_2$age),
+      max(richness_data_asia_std_2$age),
       length.out = 10
     )
   )
@@ -148,15 +152,15 @@ data_dummy_full <-
 data_dummy_general <-
   tidyr::expand_grid(
     age = seq(
-      min(richness_data_na$age),
-      max(richness_data_na$age),
+      min(richness_data_asia_std_2$age),
+      max(richness_data_asia_std_2$age),
       length.out = 10
     )
   )
 
 data_pred_full <-
   predict_model(
-    model = gam_2_eu,
+    model = gam_1,
     newdata = data_dummy_full,
     type = "response"
   ) %>%
@@ -169,7 +173,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_2_na,
+    model = gam_1,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -224,7 +228,8 @@ p2 +
   )
 
 # 4.2. Plot general trend-----
-p2 +
+
+p +
   ggplot2::geom_ribbon(
     data = data_pred_general,
     ggplot2::aes(
@@ -255,6 +260,4 @@ p2 +
   )
 
 
-# standardize diversity use scale():
 
-richness_data$richness %>% scale()

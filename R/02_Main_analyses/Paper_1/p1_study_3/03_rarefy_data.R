@@ -20,11 +20,14 @@ library(vegan)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-data_binned_eu <- 
-  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_eu.rds"))
+data_binned_asia <- 
+  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_asia.rds"))
 
-data_binned_na <- 
-  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_na.rds"))
+data_binned_europe <- 
+  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_europe.rds"))
+
+data_binned_namerica <- 
+  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_namerica.rds"))
 
 neotoma_taxa <- 
   readr::read_csv(
@@ -37,6 +40,7 @@ neotoma_taxa <-
 #----------------------------------------------------------#
 
 # Get a vector of general functions
+
 fun_list <-
   list.files(
     path = "R/Functions/",
@@ -45,6 +49,7 @@ fun_list <-
   )
 
 # Load the function into the global environment
+
 source_files <-
   sapply(
   paste0("R/Functions/", fun_list, sep = ""),
@@ -55,23 +60,13 @@ source_files <-
 # 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-data_to_rarefy_eu <- 
-  data_binned_eu %>% 
-  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
-  select(dataset_id, BIN, neotoma_names,summed_pollen_count) %>% 
-  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = neotoma_names) %>% 
-  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
-  )  %>% 
-  pivot_wider(
-    names_from = taxon_name,
-    values_from = pollen_counts
-  )
+##Asia
 
-data_to_rarefy_na <- 
-  data_binned_na %>% 
-  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
-  select(dataset_id, BIN, neotoma_names,summed_pollen_count) %>% 
-  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = neotoma_names) %>% 
+data_to_rarefy_asia <- 
+  data_binned_asia %>% 
+  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
+  select(dataset_id, BIN, taxa,summed_pollen_count) %>% 
+  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = taxa) %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
   )  %>% 
   pivot_wider(
@@ -81,25 +76,62 @@ data_to_rarefy_na <-
   
 set.seed(1234)
 
-rarefied_data_eu <-
+rarefied_data_asia <-
   rarefy_all_samples(
-    data_source = data_to_rarefy_eu,
+    data_source = data_to_rarefy_asia,
     n_grains = 300
+  )
+
+
+## Europe
+
+data_to_rarefy_europe <- 
+  data_binned_europe %>% 
+  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
+  select(dataset_id, BIN, taxa,summed_pollen_count) %>% 
+  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = taxa) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  )  %>% 
+  pivot_wider(
+    names_from = taxon_name,
+    values_from = pollen_counts
   )
 
 set.seed(1234)
 
-rarefied_data_na <-
+rarefied_data_europe <-
   rarefy_all_samples(
-    data_source = data_to_rarefy_na,
-    n_grains = 300
+    data_source = data_to_rarefy_europe,
+    n_grains = 300)
+
+##NAmerica
+
+data_to_rarefy_namerica <- 
+  data_binned_namerica %>% 
+  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
+  select(dataset_id, BIN, taxa,summed_pollen_count) %>% 
+  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = taxa) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  )  %>% 
+  pivot_wider(
+    names_from = taxon_name,
+    values_from = pollen_counts
   )
+
+set.seed(1234)
+
+rarefied_data_namerica <-
+  rarefy_all_samples(
+    data_source = data_to_rarefy_namerica,
+    n_grains = 300)
+
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file --------------
 #----------------------------------------------------------#
 
-write_rds(rarefied_data_eu, here("Data/Paper_1/data_rarefy/data_study3_rarefied_eu.rds"))
+write_rds(rarefied_data_asia, here("Data/Paper_1/data_rarefy/data_study3_rarefied_asia.rds"))
 
-write_rds(rarefied_data_na, here("Data/Paper_1/data_rarefy/data_study3_rarefied_na.rds"))
+write_rds(rarefied_data_europe, here("Data/Paper_1/data_rarefy/data_study3_rarefied_europe.rds"))
 
+write_rds(rarefied_data_namerica, here("Data/Paper_1/data_rarefy/data_study3_rarefied_namerica.rds"))

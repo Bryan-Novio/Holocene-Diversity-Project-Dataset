@@ -496,6 +496,55 @@ rarefied_data1 %>%
   summarise(n_taxa = n_distinct(taxa)) %>% 
   summary()
 
+#Study report ===========================================================================================#
+
+#Number of dataset ids per time
+
+n_id_time <- 
+  richness %>%
+  select(dataset_id,age) %>% 
+  group_by(age) %>% 
+  summarise(n_id_time = n())
+
+n_id_time %>% 
+  ggplot(aes(x = age, y = n_id_time))  +
+  geom_segment(yend = min(n_id_time) , color = "blue",size = 0.5) +
+  geom_point(color= "red",size = 3) +
+  geom_area(fill = "lightyellow", alpha = 0.5)+
+  theme_classic()
+  
+# Standard deviation(sd)
+
+richness_stats <- 
+  richness %>% 
+  group_by(age) %>% 
+  summarise(n_id_time = n(),
+            mean_richness = mean(richness),
+            stddev = sd(richness),
+            mean_sd_l = mean_richness - stddev,
+            mean_sd_u = mean_richness + stddev) 
+
+# Mean richness per time
+
+plot_mean <-
+  richness_stats %>% 
+  ggplot(aes(x = age, y = mean_richness)) +
+  geom_point() +
+  theme_classic()
+
+# Add sd as error bars
+
+with_error_bar <- 
+  plot_mean + geom_errorbar(aes(ymin = mean_sd_l , ymax = mean_sd_u ), width=0.2)
 
 
+with_error_bar
+
+# Add jitters to the individual data points
+
+add_each_data_point <-
+  b + geom_point(data=richness, aes(x=age, y= richness), position = position_jitter(), color="skyblue",  alpha = 0.1) +
+  theme_classic()
+
+add_each_data_point
 
