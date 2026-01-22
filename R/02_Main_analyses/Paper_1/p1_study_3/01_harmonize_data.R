@@ -58,13 +58,13 @@ hlist_birks_namerica <- birks_harm_tables[[5]] %>%
 # Check mismatch from study hlist with birks hlist
 
 not_in_harm_table_asia <- 
-  anti_join(hlist_birks_asia,harmonisation_table, join_by (raw_name == taxon_name)) 
+  anti_join(hlist_birks_asia,harmonisation_table, join_by (raw_name == taxon_name)) # 1260
 
 not_in_harm_table_europe <- 
-  anti_join(hlist_birks_europe,harmonisation_table, join_by (raw_name == taxon_name)) 
+  anti_join(hlist_birks_europe,harmonisation_table, join_by (raw_name == taxon_name)) # 197
 
 not_in_harm_table_namerica <- 
-  anti_join(hlist_birks_namerica,harmonisation_table, join_by (raw_name == taxon_name))
+  anti_join(hlist_birks_namerica,harmonisation_table, join_by (raw_name == taxon_name)) #93
 
 # Merge unique from birks to orig hlist
 
@@ -74,7 +74,6 @@ full_join(harmonisation_table, not_in_harm_table_asia, join_by(taxon_name == raw
   # remove taxa duplicates (n = 140)
   distinct(taxon_name, .keep_all = TRUE)
 
-
 harmonisation_table_new_europe <- 
   full_join(harmonisation_table, not_in_harm_table_europe, join_by(taxon_name == raw_name)) %>% 
   mutate(level_to_harm  = coalesce(level_6, level)) # no duplicates detected
@@ -82,6 +81,15 @@ harmonisation_table_new_europe <-
 harmonisation_table_new_namerica <- 
   full_join(harmonisation_table, not_in_harm_table_namerica, join_by(taxon_name == raw_name)) %>% 
   mutate(level_to_harm  = coalesce(level_6, level)) # no duplicates detected
+
+# save new harm tables
+
+write_csv(harmonisation_table_new_asia, here("Data/Paper_1/data_supplementary/study3_hlist_updated_Asia.csv"))
+
+write_csv(harmonisation_table_new_europe, here("Data/Paper_1/data_supplementary/study3_hlist_updated_Europe.csv"))
+
+
+write_csv(harmonisation_table_new_namerica, here("Data/Paper_1/data_supplementary/study3_hlist_updated_NAmerica.csv"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -113,7 +121,7 @@ source_files <-
 data_to_harmonize_asia <- 
   pollen_data_s3 %>% 
   filter(region =="Asia") %>% 
-  inner_join(neotoma_taxa, by = 'taxon_name') %>% 
+  inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name')) %>% 
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
@@ -128,7 +136,7 @@ anti_join(taxon_name_data_asia, harm_table_taxon_name_asia, by = 'taxon_name')
 data_to_harmonize_europe <- 
   pollen_data_s3 %>% 
   filter(region =="Europe") %>% 
-  inner_join(neotoma_taxa, by = "taxon_name")%>% 
+  inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name'))%>% 
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
@@ -142,7 +150,7 @@ anti_join(taxon_name_data_europe, harm_table_taxon_name_europe, by = 'taxon_name
 data_to_harmonize_namerica <- 
   pollen_data_s3 %>% 
   filter(region == "North America") %>% 
-  inner_join(neotoma_taxa, by = 'taxon_name') %>% 
+  inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name')) %>% 
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
