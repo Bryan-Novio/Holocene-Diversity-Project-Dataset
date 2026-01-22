@@ -19,11 +19,15 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-data_study3_harmonised_eu <- 
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_eu.rds"))
+data_study3_harmonised_asia <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_asia.rds"))
 
-data_study3_harmonised_na <-
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_na.rds"))
+
+data_study3_harmonised_europe <-
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_europe.rds"))
+
+data_study3_harmonised_namerica <-
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_namerica.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -50,17 +54,22 @@ source_files <-
 # 3. Bin data  at different taxo rank --
 #----------------------------------------------------------# 
 
-data_binned <-
-  data_study3_harmonised_eu  %>% 
+data_binned_asia <-
+  data_study3_harmonised_asia %>% 
   bin_data(dataset_id, 500)
 
-data_binned_2 <-
-  data_study3_harmonised_na  %>% 
+data_binned_europe <-
+  data_study3_harmonised_europe %>% 
+  bin_data(dataset_id, 500)
+
+data_binned_namerica <-
+  data_study3_harmonised_namerica %>% 
   bin_data(dataset_id, 500)
 
 #----------------------------------------------------------#
 # 4. Write the binned and prepared_data to RDS files
 #----------------------------------------------------------# 
 
-write_rds(data_binned, here("Data/Paper_1/data_bin/data_study3_binned_eu.rds"))
-write_rds(data_binned_2, here("Data/Paper_1/data_bin/data_study3_binned_na.rds"))
+write_rds(data_binned_asia, here("Data/Paper_1/data_bin/data_study3_binned_asia.rds"))
+write_rds(data_binned_europe, here("Data/Paper_1/data_bin/data_study3_binned_europe.rds"))
+write_rds(data_binned_namerica, here("Data/Paper_1/data_bin/data_study3_binned_namerica.rds"))
