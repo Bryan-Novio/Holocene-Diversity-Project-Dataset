@@ -27,8 +27,6 @@ study1_hlist_updated %>%
 pollen_data_s1 <-  
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
 
-
-
 harmonisation_table <- 
   readr::read_csv(  
     here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
@@ -73,7 +71,14 @@ pollen_data_s1_renamed <-
   inner_join(neotoma_taxa, by = "taxon_name") %>% 
   select(neotoma_names,dataset_id,pollen_counts,age,subregion) %>% 
   rename(taxon_name = neotoma_names)
-  
+
+#check all taxa in data present in harm table
+
+pollen_data_s1_renamed_taxon_name <- pollen_data_s1_renamed %>%  distinct(taxon_name)
+
+study1_hlist_updated_taxon_name <- study1_hlist_updated %>% distinct(taxon_name)
+
+anti_join(pollen_data_s1_renamed_taxon_name,study1_hlist_updated_taxon_name, by = 'taxon_name' )
 
 # Harmonize taxa at different taxonomic levels
 
