@@ -80,7 +80,6 @@ harmonisation_table %>% anti_join(data_only_woody_renamed)
 
 data_only_woody_renamed %>% anti_join(harmonisation_table) 
 
-3102-2717
 
 # Harmonize taxa at different taxonomic levels
 
