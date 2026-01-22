@@ -18,12 +18,6 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-study1_hlist_updated <- 
-  read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
-
-study1_hlist_updated %>% 
-  distinct(Pollen_type)
-
 pollen_data_s1 <-  
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
 
@@ -38,6 +32,46 @@ harmonisation_table %>%
 
 neotoma_taxa <- 
   readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+
+
+#Customize harmonization table for Study 1 by adding missing taxa
+
+study1_hlist_raw <- 
+  read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_raw_epd.csv")) 
+
+study1_hlist_raw %>% 
+  distinct(taxon_name)
+
+harmonisation_table <- 
+  readr::read_csv(  
+    here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
+  ) %>% 
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6) %>% 
+  rename(Pollen_type = level_6)
+
+harmonisation_table %>% distinct(taxon_name)
+
+harmonisation_table_missing <- 
+  study1_hlist_raw %>% 
+  anti_join(harmonisation_table, by = "taxon_name")
+
+
+study1_hlist_updated <- 
+  bind_rows(harmonisation_table,harmonisation_table_missing)
+
+study1_hlist_updated %>% 
+  distinct(taxon_name)
+
+View(study1_hlist_updated)
+
+write_csv(study1_hlist_updated, here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
+
+study1_hlist_updated <- 
+  read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
+
+study1_hlist_updated %>% 
+  distinct(Pollen_type)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
