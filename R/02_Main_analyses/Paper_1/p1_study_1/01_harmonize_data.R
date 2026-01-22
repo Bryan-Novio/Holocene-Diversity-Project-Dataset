@@ -42,6 +42,12 @@ study1_hlist_raw <-
 study1_hlist_raw %>% 
   distinct(taxon_name)
 
+# remove duplicates
+
+study1_hlist_raw_unique <- 
+  read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_raw_epd.csv")) %>% 
+  distinct(taxon_name, .keep_all = TRUE) # remove duplicates (n =110)
+
 harmonisation_table <- 
   readr::read_csv(  
     here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
@@ -53,7 +59,7 @@ harmonisation_table <-
 harmonisation_table %>% distinct(taxon_name)
 
 harmonisation_table_missing <- 
-  study1_hlist_raw %>% 
+  study1_hlist_raw_unique %>% 
   anti_join(harmonisation_table, by = "taxon_name")
 
 
@@ -71,7 +77,7 @@ study1_hlist_updated <-
   read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
 
 study1_hlist_updated %>% 
-  distinct(Pollen_type)
+  distinct(taxon_name)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
