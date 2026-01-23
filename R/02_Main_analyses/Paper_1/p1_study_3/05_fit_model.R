@@ -46,37 +46,38 @@ richness_data_europe <-
 richness_data_namerica <- 
   read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_namerica.csv"))
 
-#  Convert dataset_id as random factor
+#  Convert dataset_id as random factor and add regions
 
 richness_data_asia <-
   richness_data_asia %>%              
-  mutate(region = "asia")
-
+  mutate(region = "asia") %>% 
+  mutate(dataset_id = as_factor(dataset_id))
 
 richness_data_europe <-
-  richness_data_europe %>%              
+  richness_data_europe %>% 
+  mutate(region = "europe") %>% 
   mutate(dataset_id = as_factor(dataset_id))
-
 
 richness_data_namerica <-
-  richness_data_namerica %>%              
+  richness_data_namerica %>%  
+  mutate(region = "namerica") %>%
   mutate(dataset_id = as_factor(dataset_id))
+
+#bind all dataframes with richness estimate
+
+study3_richness <- 
+  bind_rows(richness_data_asia,richness_data_europe, richness_data_namerica)
 
 # standardize diversity use scale():
 
-richness_data_asia_std  <- 
-  richness_data_asia$richness %>% scale() %>% 
-  as_tibble()
-
-richness_data_m <- bind_cols(richness_data_europe,richness_data_asia, richness_data_namerica) %>%
+study3_richness_std  <- 
+  study3_richness %>%
   mutate(st_richness = scale(richness))
-
-
 
 p <-
   ggplot2::ggplot(
-    richness_data_asia_std_2,
-    ggplot2::aes(x = age, y = st_richness )
+    study3_richness,
+    ggplot2::aes(x = age, y = richness )
   ) +
   ggplot2::labs(
     y = "Pollen Richness", x = "Age") +
@@ -102,7 +103,7 @@ n_available_cores <-
 
 # number of cores to use cannot be more than number of random effect levels
 n_cores_to_use <-
-  richness_data_asia_std_2 %>%
+  study3_richness_std %>%
   dplyr::distinct(dataset_id) %>%
   nrow() %>%
   {
@@ -116,8 +117,8 @@ set.seed(19900723)
 
 gam_1 <-
   fit_regression_model(
-    data = richness_data_asia_std_2,
-    y_var = "richness",
+    data = study3_richness_std,
+    y_var = "st_richness",
     time_var = "age",
     group_var = "region",
     random = "slope",
