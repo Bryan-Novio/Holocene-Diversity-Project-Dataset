@@ -45,7 +45,7 @@ fit_regression_model <- function(
 
   random <-
     match.arg(random,
-      choices = c("intercept", "slope")
+      choices = c("intercept", "slope","study3" )
     )
 
   assertthat::assert_that(
@@ -70,10 +70,14 @@ fit_regression_model <- function(
       "slope" =
         stringr::str_glue(
           "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'cr') + s({time_var}, {group_var}, k = {sel_k}, bs = 'fs', xt = list(bs = 'cr'))"
-        )
-    ) |>
+        ),
+      "study3" = 
+        stringr::str_glue(
+          "{y_var} ~ {group_var} + s({time_var}, by = {group_var}, k = {sel_k}) + s(dataset_id, bs = 're')" 
+        ),
+      ) |>
     as.formula()
-
+ 
   mod <-
     mgcv::bam(
       formula = sel_formula,
