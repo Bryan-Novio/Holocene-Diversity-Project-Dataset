@@ -70,14 +70,29 @@ study3_richness <-
 
 # standardize diversity use scale():
 
-study3_richness_std  <- 
-  study3_richness %>%
-  mutate(st_richness = scale(richness))
+study3_richness_z_scores <- 
+  study3_richness %>% 
+  group_by(region) %>% 
+  mutate(st_richness = scale(richness)) %>%
+  ungroup() %>% 
+  mutate(st_richness = st_richness[,1]) %>% 
+  mutate(region = as_factor(region))
+
+# Get mean and sd to back-transform 
+
+study3_richness_standard <-
+  study3_richness %>% 
+  dplyr::group_by(region) %>% 
+  dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
+                   sd_richness = sd(richness, na.rm = TRUE)) %>% 
+  dplyr::ungroup()
+
+##general plot
 
 p <-
   ggplot2::ggplot(
-    study3_richness,
-    ggplot2::aes(x = age, y = richness )
+    study3_richness_z_scores,
+    ggplot2::aes(x = age, y = st_richness )
   ) +
   ggplot2::labs(
     y = "Pollen Richness", x = "Age") +
@@ -103,7 +118,7 @@ n_available_cores <-
 
 # number of cores to use cannot be more than number of random effect levels
 n_cores_to_use <-
-  study3_richness_std %>%
+  study3_richness_z_scores %>%
   dplyr::distinct(dataset_id) %>%
   nrow() %>%
   {
@@ -117,8 +132,8 @@ set.seed(19900723)
 
 gam_1 <-
   fit_regression_model(
-    data = study3_richness_std,
-    y_var = "st_richness",
+    data = study3_richness_z_scores_btr,
+    y_var = "btr_richness",
     time_var = "age",
     group_var = "region",
     random = "slope",
@@ -132,6 +147,12 @@ gam_1 <-
     )
   )
 
+##Back-transform study3_richness_z_scores to natural scale
+
+study3_richness_z_scores_btr <- 
+  study3_richness_z_scores %>% 
+ mutate(btr_richness = st_richness * study3_richness_standard$sd_richness + study3_richness_standard$mean_richness)
+
 ## 3.3. Save model as RDS files --
 
 write_rds(gam_1,here("Data/Paper_1/data_model/gam_2_asia.rds"))
@@ -142,19 +163,19 @@ write_rds(gam_1,here("Data/Paper_1/data_model/gam_2_asia.rds"))
 
 data_dummy_full <-
   tidyr::expand_grid(
-    dataset_id = unique(richness_data_asia_std_2$dataset_id),
+    region = unique(study3_richness_z_scores_btr$region),
     age = seq(
-      min(richness_data_asia_std_2$age),
-      max(richness_data_asia_std_2$age),
-      length.out = 10
+      min(study3_richness_z_scores_btr$age),
+      max(study3_richness_z_scores_btr$age),
+      length.out = 1000
     )
   )
 
 data_dummy_general <-
   tidyr::expand_grid(
     age = seq(
-      min(richness_data_asia_std_2$age),
-      max(richness_data_asia_std_2$age),
+      min(study3_richness_z_scores$age),
+      max(study3_richness_z_scores$age),
       length.out = 10
     )
   )
@@ -168,7 +189,7 @@ data_pred_full <-
   as.data.frame() %>%
   tibble::as_tibble() %>%
   dplyr::relocate(
-    estimate, dataset_id, age,
+    estimate, region, age,
     .before = dplyr::everything()
   )
 
@@ -177,12 +198,12 @@ data_pred_general <-
     model = gam_1,
     newdata = data_dummy_general,
     type = "response",
-    exclude_terms = "dataset_id"
+    exclude_terms = "region"
   ) %>%
   as.data.frame() %>%
   tibble::as_tibble() %>%
   dplyr::mutate(
-    dataset_id = NA_character_
+    region = NA_character_
   ) %>%
   dplyr::relocate(
     estimate,age,
@@ -194,8 +215,8 @@ data_pred_general <-
 #----------------------------------------------------------#
 
 #  4.1. Plot predictions for individual series-----
-p2 +
-  ggplot2::facet_wrap(~ dataset_id) +
+p +
+  ggplot2::facet_wrap(~ region) +
   ggplot2::geom_ribbon(
     data = data_pred_full,
     ggplot2::aes(
@@ -203,13 +224,13 @@ p2 +
       y = estimate,
       ymin = conf_low,
       ymax = conf_high,
-      fill = dataset_id
+      fill = region
     ),
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = data_pred_full,
-    ggplot2::aes(x = age, y = estimate,color = dataset_id),
+    ggplot2::aes(x = age, y = estimate,color = region),
     linewidth = 1
   ) +
   ggplot2::theme(legend.position = "none",
@@ -225,9 +246,11 @@ p2 +
                  )
   ) +
   ggplot2::coord_cartesian(
-    ylim = c(0, max(richness_data_eu$richness) + 5)
+    ylim = c(14, 24)
   )
 
+min(study3_richness_z_scores_btr$btr_richness)
+max(study3_richness_z_scores_btr$btr_richness)
 # 4.2. Plot general trend-----
 
 p +
@@ -245,14 +268,14 @@ p +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
-    linewidth = 3,
+    linewidth = 1,
     color = "#2a707f"
   ) +
   ggplot2::theme(
     legend.position = "none"
   ) +
   ggplot2::coord_cartesian(
-    ylim = c(15, 17) ,
+    ylim = c(0, 3) ,
     xlim = c(12000,0)
   )+
   ggplot2::scale_x_reverse(
