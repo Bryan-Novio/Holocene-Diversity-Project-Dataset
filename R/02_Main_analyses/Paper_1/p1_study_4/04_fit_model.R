@@ -17,10 +17,7 @@
 library(tidyverse)
 library(here)
 library(mgcv)
-library(mvgam)
-library(REcopol)
-library(remotes)
-library(scales)
+
 
 # Load the function into the global environment
 
@@ -45,15 +42,12 @@ richness_data4 <-
   read_rds(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
 
 #  Convert dataset_id as random factor
+
 richness_data4 <-
   richness_data4 %>%              
   mutate(dataset_id = as_factor(dataset_id))
 
-
-n_datasets <- length(unique(richness_data4$dataset_id))
-my_palette <- seq_gradient_pal("#d0a053", "#eacdaa")(seq(0, 1, length.out = n_datasets))
-
-p3 <-
+p <-
   ggplot2::ggplot(
     richness_data4,
     ggplot2::aes(x = age, y = richness)
@@ -65,7 +59,7 @@ p3 <-
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
                  axis.title = element_text(color = "#2a707f", size = 18),
-                 axis.text  = element_text(color = "#2a707f", size = 10),
+                 axis.text  = element_text(color = "#2a707f", size = 6),
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
   )
@@ -80,6 +74,7 @@ n_available_cores <-
   parallelly::availableCores() - 1
 
 # number of cores to use cannot be more than number of random effect levels
+
 n_cores_to_use <-
   richness_data4 %>%
   dplyr::distinct(dataset_id) %>%
@@ -92,6 +87,7 @@ n_cores_to_use <-
 ## 3.2. Fit model -----
 
 set.seed(19900723)
+
 gam_3 <-
   fit_regression_model(
     data = richness_data4,
@@ -99,13 +95,13 @@ gam_3 <-
     time_var = "age",
     group_var = "dataset_id",
     random = "slope",
-    sel_k = 15, 
+    sel_k = 30, 
     error_family = stats::poisson(link = "log"),
     nthreads = n_cores_to_use,
     discrete = TRUE,
     control = mgcv::gam.control(
       trace = TRUE,
-      maxit = 500
+      maxit = 1000
     )
   )
 
@@ -126,7 +122,7 @@ data_dummy_full <-
     age = seq(
       min(richness_data4$age),
       max(richness_data4$age),
-      length.out = 10
+      length.out = 1000
     )
   )
 
@@ -135,7 +131,7 @@ data_dummy_general <-
     age = seq(
       min(richness_data4$age),
       max(richness_data4$age),
-      length.out = 10
+      length.out = 100000
     )
   )
 
@@ -174,9 +170,10 @@ data_pred_general <-
 #----------------------------------------------------------#
 
 ## 4.1. Plot predictions for individual series-----
-p3 +
+
+p +
   ggplot2::geom_ribbon(
-    data = data_pred_general,
+    data = data_pred_full,
     ggplot2::aes(
       x = age,
       y = estimate,
@@ -209,7 +206,7 @@ p3 +
 
 ## 4.2. Plot general trend-----
 
-p3 +
+p +
   ggplot2::geom_ribbon(
     data = data_pred_general,
     ggplot2::aes(
@@ -218,17 +215,18 @@ p3 +
       ymin = conf_low,
       ymax = conf_high
     ),
-    fill = "#2a707f",
+    fill = "gray",
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
     linewidth = 2,
-    color = "#2a707f"
+    color = "black"
   ) +
   ggplot2::theme(
-    legend.position = "none"
+    legend.position = "none",
+    axis.text  = element_text(color = "#2a707f", size = 16,  hjust = 0.8)
   ) +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),

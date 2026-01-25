@@ -4,8 +4,8 @@
 #            Paper01| Method 4: Bhatta et al
 #
 #
-#                       
 #                          2023
+#
 # Asia, site-based richness (dataset_id,age)
 # nonbinned  - rarefy 300 
 #
@@ -14,6 +14,7 @@
 
 library(tidyverse)
 library(here)
+library(assertthat)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
@@ -30,6 +31,50 @@ harmonisation_table <-
 
 neotoma_taxa <- 
   readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
+
+
+# update harm table 
+
+bhatta_harm_tables <- 
+  list.files("Data/Paper_1/data_supplementary", pattern = "Bhatta\\.csv$", full.names = TRUE) %>%
+  purrr::map(read_csv)
+
+Asia_levant <- bhatta_harm_tables[[1]] 
+Asia_main <- bhatta_harm_tables[[2]]
+Asia_siberia <- bhatta_harm_tables[[3]]
+
+#bind harm tables
+
+hlist_bhatta_asia <-
+  bind_rows(Asia_levant, Asia_main, Asia_siberia) %>% 
+  select(taxon_name, level_2) %>% 
+  rename(level = level_2) %>% 
+#remove duplication in taxa
+  distinct(taxon_name,level)
+
+#convert raw names to neotoma names
+
+hlist_bhatta_asia_neotoma <- 
+  left_join(hlist_bhatta_asia, neotoma_taxa, by = "taxon_name") %>% 
+  select(level, neotoma_names) %>% 
+  rename(taxon_name = neotoma_names)
+
+# Check mismatch from study hlist with bhatta hlist
+
+not_in_harm_table_bhatta_asia <- 
+  anti_join(hlist_bhatta_asia_neotoma,harmonisation_table,by = "taxon_name") %>%
+  filter(!is.na(taxon_name))
+  
+# Merge unique from birks to current hlist
+
+harmonisation_table_study4_asia <- 
+  full_join(harmonisation_table, not_in_harm_table_bhatta_asia,by = "taxon_name") %>% 
+  mutate(level_to_harm  = coalesce(level_6, level)) %>% 
+  distinct(taxon_name, .keep_all = TRUE) # duplicates removed (n=18)
+
+# save new harm table
+
+write_csv(harmonisation_table_study4_asia, here("Data/Paper_1/data_supplementary/study4_hlist_updated_Asia.csv"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -62,18 +107,22 @@ pollen_data_s4_renamed <-
   select(neotoma_names,dataset_id,pollen_counts,age) %>% 
   rename(taxon_name = neotoma_names)
 
+pollen_data_s4_renamed %>% distinct(taxon_name) # 899 taxa
 
 # Harmonize taxa at different taxonomic levels
 
 data_study4_harmonised <-
   harmonize_taxa(
     data_to_harmonize = pollen_data_s4_renamed,
-    harmonisation_table = harmonisation_table,
-    level = "level_6"
-  )
+    harmonisation_table = harmonisation_table_study4_asia,
+    level = "level_to_harm") # did not omit 'undif'
+
+data_study4_harmonised %>% 
+  distinct(taxon_name) # 446 taxa 
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
 
 write_rds(data_study4_harmonised, here("Data/Paper_1/data_harmonize/data_study4_harmonised.rds"))
+
 #----------------------------------------------------------#
