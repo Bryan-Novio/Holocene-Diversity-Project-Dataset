@@ -47,17 +47,19 @@ source_files <-
 # 3. Estimate richness  at different taxo rank --
 #----------------------------------------------------------# 
 
-#3.1 Format rarefied data 
+#3.1 Format rarefied data
+
 data_prepared_richness_estimation4 <- 
   rarefied_data_4 %>% 
   separate_wider_delim(dataset_id_age, delim = "_", 
                        names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = Alnus:Noaea, 
+  pivot_longer(cols = -c(dataset_id, BIN), 
                names_to = "taxa", values_to = "summed_pollen_count") %>% 
   rename(age = BIN, pollen_counts = summed_pollen_count) %>% 
   prepare_data_for_richness_estimation(type = "nonbinned")
 
 #3.2. Estimate richness
+
 richness4 <- 
   data_prepared_richness_estimation4 %>% 
   estimate_richness() %>% 

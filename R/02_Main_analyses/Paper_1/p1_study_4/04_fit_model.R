@@ -41,12 +41,6 @@ source_files <-
 richness_data4 <- 
   read_rds(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
 
-#  Convert dataset_id as random factor
-
-richness_data4 <-
-  richness_data4 %>%              
-  mutate(dataset_id = as_factor(dataset_id))
-
 p <-
   ggplot2::ggplot(
     richness_data4,
