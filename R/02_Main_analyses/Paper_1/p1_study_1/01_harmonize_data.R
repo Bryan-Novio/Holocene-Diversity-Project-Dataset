@@ -27,57 +27,46 @@ harmonisation_table <-
   ) %>% 
   rename(taxon_name = neotoma_names)
 
-harmonisation_table %>% 
-  distinct(level_6)
-
 neotoma_taxa <- 
   readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
-
-#Customize harmonization table for Study 1 by adding missing taxa
+# Load harmonization table based on EPD version 2015 (https://doi.org/10.1038/s41467-01)
 
 study1_hlist_raw <- 
   read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_raw_epd.csv")) 
 
-study1_hlist_raw %>% 
-  distinct(taxon_name)
+## convert first to neotoma_names
 
-# remove duplicates
+pollen_data_s1_neotoma <- 
+  pollen_data_s1 %>% 
+  distinct(taxon_name) %>% 
+  left_join(.,neotoma_taxa, by = "taxon_name")
 
-study1_hlist_raw_unique <- 
-  read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_raw_epd.csv")) %>% 
-  distinct(taxon_name, .keep_all = TRUE) # remove duplicates (n =110)
+## create harm table for taxa in data (Harm A)
 
-harmonisation_table <- 
-  readr::read_csv(  
-    here::here("Data/Paper_1/data_harmonize/harmonization_table_all_studies.csv")
-  ) %>% 
-  rename(taxon_name = neotoma_names) %>% 
-  select(taxon_name, level_6) %>% 
-  rename(Pollen_type = level_6)
+pollen_data_taxa_harm_table <- 
+  left_join(pollen_data_s1_neotoma, harmonisation_table, join_by("neotoma_names" == "taxon_name"))
 
-harmonisation_table %>% distinct(taxon_name)
+## check for taxa in present in data but not in birks harm table
 
-harmonisation_table_missing <- 
-  study1_hlist_raw_unique %>% 
-  anti_join(harmonisation_table, by = "taxon_name")
+pollen_data_taxa_not_in_birks <- 
+  anti_join(pollen_data_s1_neotoma,study1_hlist_raw, join_by("neotoma_names" == "taxon_name")) %>%  # 581 taxa missing
+  select(neotoma_names)
 
+# create auxiliary harm table (Harm B)
 
-study1_hlist_updated <- 
-  bind_rows(harmonisation_table,harmonisation_table_missing)
+birks_aux_harm_table <- 
+  inner_join(pollen_data_taxa_not_in_birks, harmonisation_table, join_by("neotoma_names" =="taxon_name"))
 
-study1_hlist_updated %>% 
-  distinct(taxon_name)
+##merge auxiliary harm table with pollen_data_taxa_harm_table
 
-View(study1_hlist_updated)
+birks_aux_harm_table_merged_with_pollen_data <-
+  bind_rows(birks_aux_harm_table, pollen_data_taxa_harm_table ) %>%
+  select(-taxon_name) %>% 
+  distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
+  rename(taxon_name = neotoma_names)
 
-write_csv(study1_hlist_updated, here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
-
-study1_hlist_updated <- 
-  read_csv(here("Data/Paper_1/data_supplementary/study1_hlist_updated.csv"))
-
-study1_hlist_updated %>% 
-  distinct(taxon_name)
+write_csv(birks_aux_harm_table_merged_with_pollen_data, here("Data/Paper_1/data_supplementary/study1_harm_table_updated.csv"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -92,13 +81,14 @@ fun_list <-
     recursive = TRUE
   )
 
+
 # Load the function into the global environment
 
 source_files <- 
   sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
 #----------------------------------------------------------#
 # 3. Test {harmonize_taxa} at different taxo rank --
@@ -112,23 +102,17 @@ pollen_data_s1_renamed <-
   select(neotoma_names,dataset_id,pollen_counts,age,subregion) %>% 
   rename(taxon_name = neotoma_names)
 
-#check all taxa in data present in harm table
-
-pollen_data_s1_renamed_taxon_name <- pollen_data_s1_renamed %>%  distinct(taxon_name)
-
-study1_hlist_updated_taxon_name <- study1_hlist_updated %>% distinct(taxon_name)
-
-anti_join(pollen_data_s1_renamed_taxon_name,study1_hlist_updated_taxon_name, by = 'taxon_name' )
-
-# Harmonize taxa at different taxonomic levels
+# Harmonize taxa at a selected taxonomic level
 
 data_study1_harmonised <-
   harmonize_taxa(
     data_to_harmonize = pollen_data_s1_renamed,
-    harmonisation_table = study1_hlist_updated,
-    level = "Pollen_type"
-  ) 
+    harmonisation_table = birks_aux_harm_table_merged_with_pollen_data,
+    level = "level_6") %>%
+    filter(taxon_name!= "delete") # Remove 'delete' in taxa
 
+# Add subregion as col in harmonized data
+  
 dataset_id_subregion <- 
   pollen_data_s1_renamed %>%
     select(dataset_id, subregion) %>%
@@ -136,12 +120,12 @@ dataset_id_subregion <-
 
 data_study1_harmonised_subregion <- 
   data_study1_harmonised %>% 
-  inner_join(dataset_id_subregion, by = "dataset_id") %>% 
+  left_join(dataset_id_subregion, by = "dataset_id") %>% 
   rename(taxa = taxon_name)
 
 data_study1_harmonised_subregion_renamed <- 
   data_study1_harmonised_subregion %>% 
-  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
+  left_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
   select(taxon_name,dataset_id,pollen_counts,age,subregion) %>% 
   rename(taxa = taxon_name)
 
