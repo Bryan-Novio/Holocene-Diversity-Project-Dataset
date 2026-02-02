@@ -45,24 +45,27 @@ pollen_data_s1_neotoma <-
 ## create harm table for taxa in data (Harm A)
 
 pollen_data_taxa_harm_table <- 
-  left_join(pollen_data_s1_neotoma, harmonisation_table, join_by("neotoma_names" == "taxon_name"))
+  inner_join(pollen_data_s1_neotoma, study1_hlist_raw, join_by("neotoma_names" == "taxon_name")) %>% 
+  select(-taxon_name)
 
 ## check for taxa in present in data but not in birks harm table
 
 pollen_data_taxa_not_in_birks <- 
-  anti_join(pollen_data_s1_neotoma,study1_hlist_raw, join_by("neotoma_names" == "taxon_name")) %>%  # 581 taxa missing
+  anti_join(pollen_data_s1_neotoma, study1_hlist_raw, join_by("neotoma_names" == "taxon_name")) %>%  # 581 taxa missing
   select(neotoma_names)
+
 
 # create auxiliary harm table (Harm B)
 
 birks_aux_harm_table <- 
-  inner_join(pollen_data_taxa_not_in_birks, harmonisation_table, join_by("neotoma_names" =="taxon_name"))
+  inner_join(pollen_data_taxa_not_in_birks, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
+select(neotoma_names, level_6) %>% 
+  rename(Pollen_type = level_6) 
 
 ##merge auxiliary harm table with pollen_data_taxa_harm_table
 
 birks_aux_harm_table_merged_with_pollen_data <-
   bind_rows(birks_aux_harm_table, pollen_data_taxa_harm_table ) %>%
-  select(-taxon_name) %>% 
   distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
   rename(taxon_name = neotoma_names)
 
@@ -108,7 +111,7 @@ data_study1_harmonised <-
   harmonize_taxa(
     data_to_harmonize = pollen_data_s1_renamed,
     harmonisation_table = birks_aux_harm_table_merged_with_pollen_data,
-    level = "level_6") %>%
+    level = "Pollen_type") %>%
     filter(taxon_name!= "delete") # Remove 'delete' in taxa
 
 # Add subregion as col in harmonized data
@@ -123,16 +126,10 @@ data_study1_harmonised_subregion <-
   left_join(dataset_id_subregion, by = "dataset_id") %>% 
   rename(taxa = taxon_name)
 
-data_study1_harmonised_subregion_renamed <- 
-  data_study1_harmonised_subregion %>% 
-  left_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
-  select(taxon_name,dataset_id,pollen_counts,age,subregion) %>% 
-  rename(taxa = taxon_name)
-
 
 #----------------------------------------------------------#
 # Write the harmonized data to RDS files
 
-write_rds(data_study1_harmonised_subregion_renamed, here("Data/Paper_1/data_harmonize/data_study1_harmonised.rds"))
+write_rds(data_study1_harmonised_subregion, here("Data/Paper_1/data_harmonize/data_study1_harmonised.rds"))
 
 #----------------------------------------------------------#
