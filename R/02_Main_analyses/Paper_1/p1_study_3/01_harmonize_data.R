@@ -38,12 +38,30 @@ birks_harm_tables <-
   list.files("Data/Paper_1/data_supplementary", pattern = "06\\.csv$", full.names = TRUE) %>%
   purrr::map(read_csv)
 
+##==================================================================================================##
+
+#create harm table for taxa in data (Harm A)
+
+## convert first to neotoma_names
+
+pollen_data_s3_neotoma <- 
+  pollen_data_s3 %>% 
+  distinct(taxa) %>% 
+  left_join(.,neotoma_taxa, join_by("taxa" == "taxon_name")
+  ) %>% 
+  select(neotoma_names)
+
+## create harm table for taxa in data (Harm A)
+
+pollen_data_taxa_harm_table <- 
+  left_join(pollen_data_s3_neotoma, harmonisation_table, join_by("neotoma_names" == "taxon_name")) 
+
+
+# Recreate Birks harm list per region
 
 Asia_levant <- birks_harm_tables[[1]] 
 Asia_main <- birks_harm_tables[[2]]
 Asia_siberia <- birks_harm_tables[[3]]
-
-# Recreate Birks harm list per region
 
 ##Asia
 hlist_birks_asia <- bind_rows(Asia_levant, Asia_main, Asia_siberia) %>% 
@@ -59,22 +77,6 @@ hlist_birks_europe <- birks_harm_tables[[4]]  %>%
 hlist_birks_namerica <- birks_harm_tables[[5]] %>% 
   select(-taxon_name) %>% 
   rename(level = level_1)
-
-# create harm table for taxa in data (Harm A)
-
-## convert first to neotoma_names
-
-pollen_data_s3_neotoma <- 
-  pollen_data_s3 %>% 
-  distinct(taxa) %>% 
-  left_join(.,neotoma_taxa, join_by("taxa" == "taxon_name")
-  ) %>% 
-  select(neotoma_names)
-
-## create harm table for taxa in data (Harm A)
-
-pollen_data_taxa_harm_table <- 
-  left_join(pollen_data_s3_neotoma, harmonisation_table, join_by("neotoma_names" == "taxon_name")) 
 
 # check for taxa in present in data but not in each birks harm table
 
@@ -95,6 +97,7 @@ pollen_data_taxa_not_in_birks_namerica <-
   anti_join(pollen_data_s3_neotoma,hlist_birks_namerica, join_by("neotoma_names" == "raw_name")) %>%  # 1,872 taxa missing
   select(neotoma_names)
 
+
 # Create auxiliary harm table (Harm B)
 
 # -------------------------------------------------------------------------
@@ -102,17 +105,20 @@ pollen_data_taxa_not_in_birks_namerica <-
 ##Asia 
 
 birks_aux_harm_table_asia <- 
-  inner_join(pollen_data_taxa_not_in_birks_asia, harmonisation_table, join_by("neotoma_names" =="taxon_name"))
+  inner_join(pollen_data_taxa_not_in_birks_asia, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
+  select(neotoma_names, level_6)
 
 ##Europe
 
 birks_aux_harm_table_europe <- 
-  inner_join(pollen_data_taxa_not_in_birks_europe, harmonisation_table, join_by("neotoma_names" =="taxon_name"))
+  inner_join(pollen_data_taxa_not_in_birks_europe, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
+  select(neotoma_names, level_6)
 
 ##Namerica
 
 birks_aux_harm_table_namerica <- 
-  inner_join(pollen_data_taxa_not_in_birks_namerica, harmonisation_table, join_by("neotoma_names" =="taxon_name"))
+  inner_join(pollen_data_taxa_not_in_birks_namerica, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
+  select(neotoma_names, level_6)
 
 
 ##Merge auxiliary harm table with pollen_data_taxa_harm_table
@@ -121,21 +127,28 @@ birks_aux_harm_table_namerica <-
 birks_aux_harm_table_asia_merged <-
   bind_rows(birks_aux_harm_table_asia, pollen_data_taxa_harm_table) %>%
   distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
-  rename(taxon_name = neotoma_names)
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6)
 
 ##Europe
 
 birks_aux_harm_table_europe_merged <-
   bind_rows(birks_aux_harm_table_europe, pollen_data_taxa_harm_table) %>%
   distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
-  rename(taxon_name = neotoma_names)
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6)
+
+birks_aux_harm_table_europe_merged%>% distinct(level_6)
+birks_aux_harm_table_namerica_merged %>% distinct(level_6)
+birks_aux_harm_table_asia_merged %>% distinct(level_6)
 
 ##Namerica
 
 birks_aux_harm_table_namerica_merged <-
   bind_rows(birks_aux_harm_table_namerica, pollen_data_taxa_harm_table) %>%
   distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
-  rename(taxon_name = neotoma_names)
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6)
 
 # save new harm tables
 
@@ -180,11 +193,6 @@ data_to_harmonize_asia <-
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
-#check all taxa in data present in harm table
-harm_table_taxon_name_asia <- harmonisation_table_new_asia %>% distinct(taxon_name)
-taxon_name_data_asia <- data_to_harmonize_asia %>% distinct(taxon_name)
-
-anti_join(taxon_name_data_asia, harm_table_taxon_name_asia, by = 'taxon_name')
 
 # Europe harmonization
 
@@ -195,11 +203,6 @@ data_to_harmonize_europe <-
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
-#check all taxa in data present in harm table
-harm_table_taxon_name_europe <- harmonisation_table_new_europe %>% distinct(taxon_name)
-taxon_name_data_europe <- data_to_harmonize_europe %>% distinct(taxon_name)
-
-anti_join(taxon_name_data_europe, harm_table_taxon_name_europe, by = 'taxon_name')
 
 #NAmerica
 data_to_harmonize_namerica <- 
@@ -209,35 +212,28 @@ data_to_harmonize_namerica <-
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
-#check all taxa in data present in harm table
-harm_table_taxon_name_namerica <- harmonisation_table_new_namerica %>% distinct(taxon_name)
-taxon_name_data_namerica <- data_to_harmonize_namerica %>% distinct(taxon_name)
-
-anti_join(taxon_name_data_namerica, harm_table_taxon_name_namerica, by = 'taxon_name')
 
 # Harmonize taxa for each region
 
 data_study3_harmonised_asia <-
   harmonize_taxa(
     data_to_harmonize = data_to_harmonize_asia,
-    harmonisation_table = harmonisation_table_new_asia,
-    level = "level_to_harm") %>% 
+    harmonisation_table = birks_aux_harm_table_asia_merged,
+    level = "level_6") %>% 
     rename(taxa = taxon_name) # no 'delete' in taxa
-
-data_study3_harmonised_asia %>% filter(taxa == 'delete')
 
 data_study3_harmonised_europe <-
   harmonize_taxa(
     data_to_harmonize = data_to_harmonize_europe,
-    harmonisation_table = harmonisation_table_new_europe,
-    level = "level_to_harm") %>% 
+    harmonisation_table = birks_aux_harm_table_europe_merged ,
+    level = "level_6") %>% 
     rename(taxa = taxon_name) # do
 
 data_study3_harmonised_namerica <-
   harmonize_taxa(
     data_to_harmonize = data_to_harmonize_namerica,
-    harmonisation_table = harmonisation_table_new_namerica,
-    level = "level_to_harm") %>% 
+    harmonisation_table = birks_aux_harm_table_namerica_merged,
+    level = "level_6") %>% 
     rename(taxa = taxon_name) # do
 
 #----------------------------------------------------------#
