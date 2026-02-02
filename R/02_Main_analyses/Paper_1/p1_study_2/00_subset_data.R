@@ -23,6 +23,8 @@ library(here)
 data <- 
   read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
 
+data %>% distinct(dataset_id)
+
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -73,13 +75,17 @@ data_p1_s2_12k <-
 # 3.1.3. Filter out all samples younger than 1000 years (young samples)
 
 data_p1_s2_12k_1k <- 
-  data_p1_s2_12k %>% filter(age_min <= 1000)
+  data_p1_s2_12k %>% filter(age_min < 1000)
+
+data_p1_s2_12k_1k %>% distinct(dataset_id)
 
 ##### 3.2. get pollen counts with ages
 
 data_p1_s2_12k_1k_counts_ages <- 
   data_p1_s2_12k_1k %>%
   get_pollen_counts_with_ages()
+
+data_p1_s2_12k_1k_counts_ages %>%  distinct(dataset_id)
 
 #----------------------------------------------------------#
 # 4. Write the subset data to RDS file
