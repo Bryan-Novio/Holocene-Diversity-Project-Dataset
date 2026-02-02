@@ -34,7 +34,6 @@ neotoma_taxa <-
 
 ### Load harmonization table Birks harmonisation tables (doi: 10.6084/m9.figshare.24088194)
 
-
 birks_harm_tables <- 
   list.files("Data/Paper_1/data_supplementary", pattern = "06\\.csv$", full.names = TRUE) %>%
   purrr::map(read_csv)
@@ -194,13 +193,16 @@ data_to_harmonize_asia <-
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
+
 ##Europe
+
 data_to_harmonize_europe <- 
   pollen_data_s3 %>% 
   filter(region =="Europe") %>% 
   inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name'))%>% 
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
+
 
 ##NAmerica
 data_to_harmonize_namerica <- 
@@ -219,19 +221,20 @@ data_study3_harmonised_asia <-
     level = "level_6") %>% 
   rename(taxa = taxon_name) # no 'delete' in taxa
 
+
 data_study3_harmonised_europe <-
   harmonize_taxa(
     data_to_harmonize = data_to_harmonize_europe,
     harmonisation_table = birks_aux_harm_table_europe_merged ,
     level = "level_6") %>% 
-  rename(taxa = taxon_name) # do
+    rename(taxa = taxon_name) # do
 
 data_study3_harmonised_namerica <-
   harmonize_taxa(
     data_to_harmonize = data_to_harmonize_namerica,
     harmonisation_table = birks_aux_harm_table_namerica_merged,
     level = "level_6") %>% 
-  rename(taxa = taxon_name) # no 'delete' in taxa
+    rename(taxa = taxon_name) # no 'delete' in taxa
 
 
 #----------------------------------------------------------#
