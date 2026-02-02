@@ -50,23 +50,21 @@ richness_data_namerica <-
 
 richness_data_asia <-
   richness_data_asia %>%              
-  mutate(region = "asia") %>% 
-  mutate(dataset_id = as_factor(dataset_id))
+  mutate(region = "asia") 
 
 richness_data_europe <-
   richness_data_europe %>% 
-  mutate(region = "europe") %>% 
-  mutate(dataset_id = as_factor(dataset_id))
+  mutate(region = "europe")
 
 richness_data_namerica <-
   richness_data_namerica %>%  
-  mutate(region = "namerica") %>%
-  mutate(dataset_id = as_factor(dataset_id))
+  mutate(region = "namerica") 
 
 #bind all dataframes with richness estimate
 
 study3_richness <- 
-  bind_rows(richness_data_asia,richness_data_europe, richness_data_namerica)
+  bind_rows(richness_data_asia,richness_data_europe, richness_data_namerica) %>%
+  mutate(dataset_id = as_factor(dataset_id))
 
 # standardize diversity use scale():
 
@@ -87,32 +85,7 @@ study3_richness_standard <-
                    sd_richness = sd(richness, na.rm = TRUE)) %>% 
   dplyr::ungroup()
 
-##Back-transform study3_richness_z_scores to natural scale
 
-study3_richness_z_scores_btr <- study3_richness_z_scores %>% 
-  mutate(btr_richness = st_richness * 
-           study3_richness_standard$sd_richness +    study3_richness_standard$mean_richness)
-
-
-##general plot
-
-p <-
-  ggplot2::ggplot(
-    study3_richness_z_scores_btr ,
-    ggplot2::aes(x = age, y = btr_richness)
-  ) +
-  ggplot2::labs(
-    y = "Pollen Richness", x = "cal yr BP") +
-  ggplot2::theme_classic(
-    
-  )+
-  ggplot2::theme(legend.position = "none",
-                 plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f", size = 14),
-                 axis.text  = element_text(color = "#2a707f", size = 24),
-                 axis.ticks = element_line(color = "#2a707f"),
-                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
-  )
 
 #----------------------------------------------------------#
 # 3. Model fitting -----
@@ -139,13 +112,13 @@ set.seed(19900723)
 
 gam_s3 <-
   fit_regression_model(
-    data = study3_richness_z_scores_btr,
-    y_var = "btr_richness",
+    data = study3_richness_z_scores,
+    y_var = "st_richness",
     time_var = "age",
     group_var = "region",
-    random = "slope",
+    random = "study3",
     sel_k = 12, 
-    error_family = stats::poisson(link = "log"),
+    error_family = scat(),
     nthreads = n_cores_to_use,
     discrete = TRUE,
     control = mgcv::gam.control(
@@ -156,7 +129,7 @@ gam_s3 <-
 
 ## 3.3. Save model as RDS files --
 
-write_rds(gam_1,here("Data/Paper_1/data_model/gam_2_asia.rds"))
+write_rds(gam_s3,here("Data/Paper_1/data_model/gam_3.rds"))
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
@@ -164,20 +137,12 @@ write_rds(gam_1,here("Data/Paper_1/data_model/gam_2_asia.rds"))
 
 data_dummy_full <-
   tidyr::expand_grid(
-    region = unique(study3_richness_z_scores_btr$region),
+    study3_richness_z_scores %>% 
+      distinct(region),
     age = seq(
-      min(study3_richness_z_scores_btr$age),
-      max(study3_richness_z_scores_btr$age),
-      length.out = 100000
-    )
-  )
-
-data_dummy_general <-
-  tidyr::expand_grid(
-    age = seq(
-      min(study3_richness_z_scores_btr$age),
-      max(study3_richness_z_scores_btr$age),
-      length.out = 1000
+      min(study3_richness_z_scores$age),
+      max(study3_richness_z_scores$age),
+      length.out = 100
     )
   )
 
@@ -185,7 +150,8 @@ data_pred_full <-
   predict_model(
     model = gam_s3,
     newdata = data_dummy_full,
-    type = "response"
+    type = "response",
+    exclude_terms = "dataset_id"
   ) %>%
   as.data.frame() %>%
   tibble::as_tibble() %>%
@@ -194,26 +160,36 @@ data_pred_full <-
     .before = dplyr::everything()
   )
 
-data_pred_general <-
-  predict_model(
-    model = gam_1,
-    newdata = data_dummy_general,
-    type = "response",
-    exclude_terms = "region"
-  ) %>%
-  as.data.frame() %>%
-  tibble::as_tibble() %>%
-  dplyr::mutate(
-    region = NA_character_
-  ) %>%
-  dplyr::relocate(
-    estimate,age,
-    .before = dplyr::everything()
-  )
+data_richness_btr <- 
+  data_pred_full %>% 
+  left_join(study3_richness_standard, by = "region") %>% 
+  mutate(
+    richness = estimate*sd_richness + mean_richness,
+    rich_low = conf_low*sd_richness + mean_richness,
+    rich_high = conf_high*sd_richness + mean_richness) 
+  
 
 #----------------------------------------------------------#
 # 4. Visualization -----
 #----------------------------------------------------------#
+
+##general plot
+
+p <-
+  ggplot2::ggplot(
+  ) +
+  ggplot2::labs(
+    y = "Pollen Richness", x = "cal yr BP") +
+  ggplot2::theme_classic(
+    
+  )+
+  ggplot2::theme(legend.position = "none",
+                 plot.title = element_text(color = "#2a707f"),
+                 axis.title = element_text(color = "#2a707f", size = 14),
+                 axis.text  = element_text(color = "#2a707f", size = 24),
+                 axis.ticks = element_line(color = "#2a707f"),
+                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
+  )
 
 #  4.1. Plot predictions for each region -----
 
@@ -222,19 +198,19 @@ data_pred_general <-
 p1 <- p +
   ggplot2::facet_wrap(~ region, dir = 'rt', ncol = 1, strip.position = 'right') +
   ggplot2::geom_ribbon(
-    data = data_pred_full,
+    data = data_richness_btr,
     ggplot2::aes(
       x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high,
-      fill = region
+      y = richness,
+      ymin = rich_low,
+      ymax = rich_high,
+      fill = as.factor(region)
     ),
-    alpha = 0.1
+    alpha = 0.3
   ) +
   ggplot2::geom_line(
-    data = data_pred_full,
-    ggplot2::aes(x = age, y = estimate,color = region),
+    data = data_richness_btr,
+    ggplot2::aes(x = age, y = richness,color = region),
     linewidth = 1
   ) +
   ggplot2::theme(legend.position = "none",
