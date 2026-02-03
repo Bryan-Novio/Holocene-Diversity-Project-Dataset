@@ -46,7 +46,7 @@ richness_data_europe <-
 richness_data_namerica <- 
   read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_namerica.csv"))
 
-#  Convert dataset_id as random factor and add regions
+#  add regions to each dataset
 
 richness_data_asia <-
   richness_data_asia %>%              
@@ -60,7 +60,7 @@ richness_data_namerica <-
   richness_data_namerica %>%  
   mutate(region = "namerica") 
 
-#bind all dataframes with richness estimate
+#bind all dataframes with richness estimate, convert dataset_id as random factor and add regions
 
 study3_richness <- 
   bind_rows(richness_data_asia,richness_data_europe, richness_data_namerica) %>%
@@ -98,7 +98,7 @@ n_available_cores <-
 
 # number of cores to use cannot be more than number of random effect levels
 n_cores_to_use <-
-  study3_richness_z_scores_btr %>%
+  study3_richness_z_scores %>%
   dplyr::distinct(dataset_id) %>%
   nrow() %>%
   {
@@ -235,9 +235,9 @@ p1 +
 
 ## show individual trend for each continent
 
-asia <- data_pred_full %>% filter(region == 'asia')
-europe <- data_pred_full %>% filter(region == 'europe')
-namerica <- data_pred_full %>% filter(region == 'namerica')
+asia <- data_richness_btr %>% filter(region == 'asia')
+europe <- data_richness_btr %>% filter(region == 'europe')
+namerica <- data_richness_btr %>% filter(region == 'namerica')
 
 ##Asia
 
@@ -246,16 +246,16 @@ A <- p +
     data = asia,
     ggplot2::aes(
       x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high,
+      y = richness,
+      ymin = rich_low,
+      ymax = rich_high,
       fill = region
     ),
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = asia,
-    ggplot2::aes(x = age, y = estimate),
+    ggplot2::aes(x = age, y = richness),
     linewidth = 2, color = 'red'
   ) +
   ggplot2::theme(legend.position = "none",
@@ -283,16 +283,16 @@ E <- p +
     data = europe,
     ggplot2::aes(
       x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high,
+      y = richness,
+      ymin = rich_low,
+      ymax = rich_high,
       fill = region
     ),
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = europe,
-    ggplot2::aes(x = age, y = estimate),
+    ggplot2::aes(x = age, y = richness),
     linewidth = 2, color = 'purple'
   ) +
   ggplot2::theme(legend.position = "none",
@@ -320,16 +320,16 @@ N <- p +
     data = namerica,
     ggplot2::aes(
       x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high,
+      y = richness,
+      ymin = rich_low,
+      ymax = rich_high,
       fill = region
     ),
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = namerica,
-    ggplot2::aes(x = age, y = estimate),
+    ggplot2::aes(x = age, y = richness),
     linewidth = 2, color = 'orange'
   ) +
   ggplot2::theme(legend.position = "none",
@@ -350,42 +350,9 @@ N <- p +
 
 N
 
-##combine continental trends
+##combine continental trends into single plot
 
 library(patchwork)
 
 A + E + N
-
-
-# 4.2. Plot general trend-----
-
-p +
-  ggplot2::geom_ribbon(
-    data = data_pred_general,
-    ggplot2::aes(
-      x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high
-    ),
-    fill = "#2a707f",
-    alpha = 0.1
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_general,
-    ggplot2::aes(x = age, y = estimate),
-    linewidth = 1,
-    color = "#2a707f"
-  ) +
-  ggplot2::theme(
-    legend.position = "none"
-  ) +
-  ggplot2::coord_cartesian(
-    ylim = c(14, 24) ,
-    xlim = c(12000,0)
-  )+
-  ggplot2::scale_x_reverse(
-    limits = c(12000, 0),
-    breaks = seq(0, 12000, by = 4000)
-  )
 
