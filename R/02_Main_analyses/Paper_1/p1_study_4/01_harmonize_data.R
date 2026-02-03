@@ -33,7 +33,7 @@ neotoma_taxa <-
   readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
 
-# update harm table 
+# Load Bhatta harm tables 
 
 bhatta_harm_tables <- 
   list.files("Data/Paper_1/data_supplementary", pattern = "Bhatta\\.csv$", full.names = TRUE) %>%
@@ -50,31 +50,51 @@ hlist_bhatta_asia <-
   select(taxon_name, level_2) %>% 
   rename(level = level_2) %>% 
 #remove duplication in taxa
-  distinct(taxon_name,level)
-
-#convert raw names to neotoma names
-
-hlist_bhatta_asia_neotoma <- 
-  left_join(hlist_bhatta_asia, neotoma_taxa, by = "taxon_name") %>% 
-  select(level, neotoma_names) %>% 
-  rename(taxon_name = neotoma_names)
-
-# Check mismatch from study hlist with bhatta hlist
-
-not_in_harm_table_bhatta_asia <- 
-  anti_join(hlist_bhatta_asia_neotoma,harmonisation_table,by = "taxon_name") %>%
-  filter(!is.na(taxon_name))
+  distinct(taxon_name,level) %>% 
+  left_join(.,neotoma_taxa, by = "taxon_name") %>% 
+  select(neotoma_names, level)
   
-# Merge unique from birks to current hlist
+# create harm table for taxa in data (Harm A)
 
-harmonisation_table_study4_asia <- 
-  full_join(harmonisation_table, not_in_harm_table_bhatta_asia,by = "taxon_name") %>% 
-  mutate(level_to_harm  = coalesce(level_6, level)) %>% 
-  distinct(taxon_name, .keep_all = TRUE) # duplicates removed (n=18)
+## convert first to neotoma_names
+
+pollen_data_s4_neotoma <- 
+  pollen_data_s4 %>% 
+  distinct(taxa) %>% 
+  left_join(.,neotoma_taxa, join_by("taxa" == "taxon_name")
+  ) %>% 
+  select(neotoma_names)
+
+pollen_data_taxa_harm_table <- 
+  left_join(pollen_data_s4_neotoma, harmonisation_table, join_by("neotoma_names" == "taxon_name")) 
+
+# Check for taxa in present in data but not in each birks harm table
+
+pollen_data_taxa_not_in_bhatta <- 
+  anti_join(pollen_data_s4_neotoma,hlist_bhatta_asia, by = "neotoma_names") %>%  #  72 taxa missing
+  select(neotoma_names)
+
+## Create auxiliary harm table (Harm B)
+
+# ---------------------------------------------------------------------
+
+bhatta_aux_harm_table  <- 
+  inner_join(pollen_data_taxa_not_in_bhatta, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
+  select(neotoma_names, level_6)
+
+##Merge auxiliary harm table with pollen_data_taxa_harm_table
+
+
+bhata_aux_harm_table_merged <-
+  bind_rows(bhatta_aux_harm_table, pollen_data_taxa_harm_table) %>%
+  distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6)
+
 
 # save new harm table
 
-write_csv(harmonisation_table_study4_asia, here("Data/Paper_1/data_supplementary/study4_hlist_updated_Asia.csv"))
+write_csv(bhata_aux_harm_table_merged, here("Data/Paper_1/data_supplementary/study4_hlist_updated_Asia.csv"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -114,8 +134,8 @@ pollen_data_s4_renamed %>% distinct(taxon_name) # 899 taxa
 data_study4_harmonised <-
   harmonize_taxa(
     data_to_harmonize = pollen_data_s4_renamed,
-    harmonisation_table = harmonisation_table_study4_asia,
-    level = "level_to_harm") # did not omit 'undif'
+    harmonisation_table = bhata_aux_harm_table_merged,
+    level = "level_6") # did not omit 'undif'
 
 data_study4_harmonised %>% 
   distinct(taxon_name) # 446 taxa 

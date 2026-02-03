@@ -52,7 +52,7 @@ p <-
   )+
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f", size = 18),
+                 axis.title = element_text(color = "#2a707f", size = 22),
                  axis.text  = element_text(color = "#2a707f", size = 6),
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
@@ -82,7 +82,7 @@ n_cores_to_use <-
 
 set.seed(19900723)
 
-gam_3 <-
+gam_s4 <-
   fit_regression_model(
     data = richness_data4,
     y_var = "richness",
@@ -99,13 +99,10 @@ gam_3 <-
     )
   )
 
-## 3.3. Save model as RDS files --
+## 3.3. Save model as an RDS file --
 
-gam_3 <- read_rds(here("Data/Paper_1/data_model/gam_3.rds"))
+write_rds(gam_s4, here("Data/Paper_1/data_model/gam_s4.rds"))
 
-gam.check(gam_3)
-AIC(gam_3)
-summary(gam_3)
 #----------------------------------------------------------#
 # 4. Model prediction -----
 #----------------------------------------------------------#
@@ -116,7 +113,7 @@ data_dummy_full <-
     age = seq(
       min(richness_data4$age),
       max(richness_data4$age),
-      length.out = 1000
+      length.out = 100
     )
   )
 
@@ -125,13 +122,13 @@ data_dummy_general <-
     age = seq(
       min(richness_data4$age),
       max(richness_data4$age),
-      length.out = 100000
+      length.out = 100
     )
   )
 
 data_pred_full <-
   predict_model(
-    model = gam_3,
+    model = gam_s4,
     newdata = data_dummy_full,
     type = "response"
   ) %>%
@@ -144,7 +141,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_3,
+    model = gam_s4,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -215,12 +212,12 @@ p +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
-    linewidth = 2,
+    linewidth = 4,
     color = "black"
   ) +
   ggplot2::theme(
     legend.position = "none",
-    axis.text  = element_text(color = "#2a707f", size = 16,  hjust = 0.8)
+    axis.text  = element_text(color = "#2a707f", size = 24,  hjust = 0.8)
   ) +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),
