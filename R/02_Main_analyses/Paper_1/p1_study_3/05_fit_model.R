@@ -85,8 +85,6 @@ study3_richness_standard <-
                    sd_richness = sd(richness, na.rm = TRUE)) %>% 
   dplyr::ungroup()
 
-
-
 #----------------------------------------------------------#
 # 3. Model fitting -----
 #----------------------------------------------------------#
@@ -185,7 +183,7 @@ p <-
   )+
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f", size = 14),
+                 axis.title = element_text(color = "#2a707f", size = 18),
                  axis.text  = element_text(color = "#2a707f", size = 24),
                  axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
@@ -256,12 +254,12 @@ A <- p +
   ggplot2::geom_line(
     data = asia,
     ggplot2::aes(x = age, y = richness),
-    linewidth = 2, color = 'red'
+    linewidth = 4, color = 'red'
   ) +
   ggplot2::theme(legend.position = "none",
-                 axis.text  = element_text(size = 9),
+                 axis.text  = element_text(size = 22),
                  strip.text = element_text(
-                   size = 10,
+                   size = 16,
                    color = "#2a707f"
                  ),
                  strip.background = element_rect(
@@ -270,7 +268,7 @@ A <- p +
                    linewidth = 0.3
                  )
   ) +
-  ggplot2::coord_cartesian(ylim = c(14, 23) 
+  ggplot2::coord_cartesian(ylim = c(14, 19) 
   ) + 
   ggplot2::scale_x_reverse()
 
@@ -293,10 +291,10 @@ E <- p +
   ggplot2::geom_line(
     data = europe,
     ggplot2::aes(x = age, y = richness),
-    linewidth = 2, color = 'purple'
+    linewidth = 4, color = 'purple'
   ) +
   ggplot2::theme(legend.position = "none",
-                 axis.text  = element_text(size = 9),
+                 axis.text  = element_text(size = 22),
                  strip.text = element_text(
                    size = 10,
                    color = "#2a707f"
@@ -330,10 +328,10 @@ N <- p +
   ggplot2::geom_line(
     data = namerica,
     ggplot2::aes(x = age, y = richness),
-    linewidth = 2, color = 'orange'
+    linewidth = 4, color = 'orange'
   ) +
   ggplot2::theme(legend.position = "none",
-                 axis.text  = element_text(size = 9),
+                 axis.text  = element_text(size = 22),
                  strip.text = element_text(
                    size = 10,
                    color = "#2a707f"
@@ -344,7 +342,7 @@ N <- p +
                    linewidth = 0.3
                  )
   ) +
-  ggplot2::coord_cartesian(ylim = c(16, 19) 
+  ggplot2::coord_cartesian(ylim = c(16, 18) 
   ) + 
   ggplot2::scale_x_reverse()
 
