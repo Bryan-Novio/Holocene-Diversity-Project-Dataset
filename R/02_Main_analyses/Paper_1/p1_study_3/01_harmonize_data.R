@@ -176,16 +176,16 @@ fun_list <-
 
 source_files <-
   sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
 #----------------------------------------------------------#
 # 3.Filter data by region and rename taxa to neotoma names 
 #----------------------------------------------------------# 
 #Rename taxa with neotoma name and filter by region
 
-# Asia 
+## Asia 
 data_to_harmonize_asia <- 
   pollen_data_s3 %>% 
   filter(region =="Asia") %>% 
@@ -194,7 +194,7 @@ data_to_harmonize_asia <-
   rename(taxon_name = neotoma_names)
 
 
-# Europe harmonization
+##Europe
 
 data_to_harmonize_europe <- 
   pollen_data_s3 %>% 
@@ -204,14 +204,13 @@ data_to_harmonize_europe <-
   rename(taxon_name = neotoma_names)
 
 
-#NAmerica
+##NAmerica
 data_to_harmonize_namerica <- 
   pollen_data_s3 %>% 
   filter(region == "North America") %>% 
   inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name')) %>% 
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
-
 
 # Harmonize taxa for each region
 
@@ -220,7 +219,8 @@ data_study3_harmonised_asia <-
     data_to_harmonize = data_to_harmonize_asia,
     harmonisation_table = birks_aux_harm_table_asia_merged,
     level = "level_6") %>% 
-    rename(taxa = taxon_name) # no 'delete' in taxa
+  rename(taxa = taxon_name) # no 'delete' in taxa
+
 
 data_study3_harmonised_europe <-
   harmonize_taxa(
@@ -234,7 +234,8 @@ data_study3_harmonised_namerica <-
     data_to_harmonize = data_to_harmonize_namerica,
     harmonisation_table = birks_aux_harm_table_namerica_merged,
     level = "level_6") %>% 
-    rename(taxa = taxon_name) # do
+    rename(taxa = taxon_name) # no 'delete' in taxa
+
 
 #----------------------------------------------------------#
 # 1. Write the harmonized data to RDS files ----------------

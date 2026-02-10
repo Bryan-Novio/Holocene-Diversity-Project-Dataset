@@ -25,10 +25,6 @@ data_study1_harmonised <-
 data_study1_binned <- 
   read_rds(here("Data/Paper_1/data_bin/data_study1_binned.rds"))
 
-neotoma_taxa <- 
-  readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
-
-
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -58,9 +54,8 @@ source_files <-
 
 data_to_rarefy1 <- 
   data_study1_binned  %>%
-  inner_join(neotoma_taxa, join_by(taxa == taxon_name)) %>% 
-  select(neotoma_names, BIN, summed_pollen_count, dataset_id) %>% 
-  rename(taxon_name = neotoma_names, age = BIN, pollen_counts = summed_pollen_count) %>% 
+  select(taxa, BIN, summed_pollen_count, dataset_id) %>% 
+  rename(taxon_name = taxa, age = BIN, pollen_counts = summed_pollen_count) %>% 
   mutate(age = as.double(age)) %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
   )  %>% 

@@ -16,9 +16,6 @@
 library(tidyverse)
 library(here)
 library(mgcv)
-library(mvgam)
-library(scales)
-
 
 # Load the function into the global environment
 
@@ -45,6 +42,7 @@ richness_data <-
 hist(richness_data$richness)
 
 #  Convert dataset_id as random factor
+
 richness_data <-
   richness_data %>%              
   mutate(dataset_id = as_factor(dataset_id))
@@ -93,7 +91,7 @@ n_cores_to_use <-
 
 set.seed(19900723)
 
-gam_1 <-
+gam_s2 <-
   fit_regression_model(
     data_source = richness_data,
     y_var = "richness",
@@ -110,6 +108,10 @@ gam_1 <-
     )
   )
 
+gam_check <- gam.check(gam_s2)
+summary(gam_s2)
+
+write_csv(gam_check,here("Outputs/Paper_1/study2_gam-check.csv"))
 
 ## 3.3. Save model as RDS files --
 
@@ -125,7 +127,7 @@ data_dummy_full <-
     age = seq(
       min(richness_data$age),
       max(richness_data$age),
-      length.out = 10
+      length.out = 1000
     )
   )
 
@@ -134,13 +136,13 @@ data_dummy_general <-
     age = seq(
       min(richness_data$age),
       max(richness_data$age),
-      length.out = 10
+      length.out = 10000
     )
   )
 
 data_pred_full <-
   predict_model(
-    model = gam_1,
+    model = gam_s2,
     newdata = data_dummy_full,
     type = "response"
   ) %>%
@@ -153,7 +155,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_1,
+    model = gam_s2,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -168,12 +170,12 @@ data_pred_general <-
     .before = dplyr::everything()
   )
 
-
 #----------------------------------------------------------#
 # 5. Visualization -----
 #----------------------------------------------------------#
 
 #  4.1. Plot predictions for individual series-----
+
 p1 +
   ggplot2::facet_wrap(~ dataset_id) +
   ggplot2::geom_ribbon(
@@ -219,20 +221,20 @@ p1 +
       ymin = conf_low,
       ymax = conf_high
       ),
-      fill = "#2a707f",
+      fill = "gray",
       alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
     linewidth = 2,
-    color = "#2a707f"
+    color = "black"
   ) +
   ggplot2::theme(
     legend.position = "none"
   ) +
   ggplot2::coord_cartesian(
-    ylim = c(6,16)
+    ylim = c(10,14)
   ) +
   ggplot2::scale_x_reverse()
   
