@@ -16,8 +16,6 @@
 library(tidyverse)
 library(here)
 library(mgcv)
-library(mvgam)
-library(scales)
 
 
 # Load the function into the global environment
@@ -114,6 +112,9 @@ gam_1 <-
 ## 3.3. Save model as RDS files --
 
 write_rds(gam_1,here("Data/Paper_1/data_model/gam_1_na.rds"))
+
+
+gam_1 <- read_rds(here("Data/Paper_1/data_model/gam_1_na.rds"))
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
