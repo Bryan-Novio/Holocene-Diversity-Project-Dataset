@@ -227,14 +227,14 @@ data_study3_harmonised_europe <-
     data_to_harmonize = data_to_harmonize_europe,
     harmonisation_table = birks_aux_harm_table_europe_merged ,
     level = "level_6") %>% 
-  rename(taxa = taxon_name) # do
+    rename(taxa = taxon_name) # do
 
 data_study3_harmonised_namerica <-
   harmonize_taxa(
     data_to_harmonize = data_to_harmonize_namerica,
     harmonisation_table = birks_aux_harm_table_namerica_merged,
     level = "level_6") %>% 
-  rename(taxa = taxon_name) # no 'delete' in taxa
+    rename(taxa = taxon_name) # no 'delete' in taxa
 
 
 #----------------------------------------------------------#
