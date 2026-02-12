@@ -105,7 +105,7 @@ pollen_data_taxa_not_in_birks_namerica <-
 ##Asia 
 
 birks_aux_harm_table_asia <- 
-  inner_join(pollen_data_taxa_not_in_birks_asia, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
+  left_join(pollen_data_taxa_not_in_birks_asia, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
   select(neotoma_names, level_6)
 
 ##Europe
@@ -129,6 +129,12 @@ birks_aux_harm_table_asia_merged <-
   distinct(neotoma_names, .keep_all = TRUE) %>% #taxon_name is unique
   rename(taxon_name = neotoma_names) %>% 
   select(taxon_name, level_6)
+
+birks_aux_harm_table_asia_merged_2 <-
+  bind_rows(birks_aux_harm_table_asia, pollen_data_taxa_harm_table) %>%
+  rename(taxon_name = neotoma_names) %>% 
+  select(taxon_name, level_6)
+
 
 ##Europe
 

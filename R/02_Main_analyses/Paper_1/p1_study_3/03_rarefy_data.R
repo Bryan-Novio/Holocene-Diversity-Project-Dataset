@@ -34,7 +34,6 @@ neotoma_taxa <-
     here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"),
     show_col_types = FALSE
   )
-
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -74,7 +73,7 @@ data_to_rarefy_asia <-
     values_from = pollen_counts
   )
   
-set.seed(1234)
+set.seed(1234) # do not run if will do repeated rarefaction
 
 rarefied_data_asia <-
   rarefy_all_samples(
@@ -82,6 +81,29 @@ rarefied_data_asia <-
     n_grains = 300
   )
 
+# do repetitive rarefaction 1000 times
+
+n_iter <- 1:1000
+
+##within script
+
+rarefied_dataset_assembly_asia <- 
+  purrr::map_dfr(n_iter, function(x) {
+  
+  rarefied_data <- data_to_rarefy_asia %>% 
+    rarefy_all_samples(n_grains = 300)
+  
+  tibble(
+    id = as.character(x), # Ensures ID is character
+    rarefied_dataset = list(rarefied_data) # Wraps data in a list-column
+  )
+})
+
+##using a function
+
+rarefied_dataset_assembly2 <- 
+  rarefy_all_samples_iter(data_rarefy = data_to_rarefy_asia,
+                          n_iter = n_iter)
 
 ## Europe
 
@@ -104,6 +126,21 @@ rarefied_data_europe <-
     data_source = data_to_rarefy_europe,
     n_grains = 300)
 
+##with iteration
+
+
+rarefied_dataset_assembly_europe <- 
+  purrr::map_dfr(n_iter, function(x) {
+    
+    rarefied_data <- data_to_rarefy_europe %>% 
+      rarefy_all_samples(n_grains = 300)
+    
+    tibble(
+      id = as.character(x), 
+      rarefied_dataset = list(rarefied_data) 
+    )
+  })
+
 ##NAmerica
 
 data_to_rarefy_namerica <- 
@@ -124,6 +161,20 @@ rarefied_data_namerica <-
   rarefy_all_samples(
     data_source = data_to_rarefy_namerica,
     n_grains = 300)
+
+##with iteration
+
+rarefied_dataset_assembly_namerica <- 
+  purrr::map_dfr(n_iter, function(x) {
+    
+    rarefied_data <- data_to_rarefy_namerica %>% 
+      rarefy_all_samples(n_grains = 300)
+    
+    tibble(
+      id = as.character(x), 
+      rarefied_dataset = list(rarefied_data)
+    )
+  })
 
 
 #----------------------------------------------------------#
