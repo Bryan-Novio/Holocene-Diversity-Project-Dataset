@@ -83,12 +83,12 @@ rarefied_data_asia <-
 
 # do repetitive rarefaction 1000 times
 
-n_iter <- 1:1000
+n_iter <- 1:11
 
 ##within script
 
 rarefied_dataset_assembly_asia <- 
-  purrr::map_dfr(n_iter, function(x) {
+  purrr::map(n_iter, function(x) {
   
   rarefied_data <- data_to_rarefy_asia %>% 
     rarefy_all_samples(n_grains = 300)
@@ -130,7 +130,7 @@ rarefied_data_europe <-
 
 
 rarefied_dataset_assembly_europe <- 
-  purrr::map_dfr(n_iter, function(x) {
+  purrr::map(n_iter, function(x) {
     
     rarefied_data <- data_to_rarefy_europe %>% 
       rarefy_all_samples(n_grains = 300)
@@ -165,7 +165,7 @@ rarefied_data_namerica <-
 ##with iteration
 
 rarefied_dataset_assembly_namerica <- 
-  purrr::map_dfr(n_iter, function(x) {
+  purrr::map(n_iter, function(x) {
     
     rarefied_data <- data_to_rarefy_namerica %>% 
       rarefy_all_samples(n_grains = 300)

@@ -2,7 +2,7 @@
 rarefy_all_samples_iter <-
   
   function(n_iter, data_rarefy) {
-  purrr::map_dfr(n_iter,  
+  purrr::map(n_iter,  
     
     rarefied_data <- data_rarefy %>% 
       rarefy_all_samples(n_grains = 300),
