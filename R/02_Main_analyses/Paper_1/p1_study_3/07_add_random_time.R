@@ -66,6 +66,22 @@ age_uncertainty <-
 
 id <- age_uncertainty %>%
   filter(dataset_id =="1001") %>% 
-  unnest(age_uncertainty)
+  unnest(age_uncertainty) %>% 
+  
+
+glimpse(id)
 
 View(id)
+
+
+##Asia
+
+rarefied_dataset_assembly_asia_iteration_1 <- 
+  rarefied_dataset_assembly_asia %>% 
+  filter(id =="1") %>% unnest(rarefied_dataset) %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id", "bin"))
+
+
+asia_iteration_1_age_uncertainty <- 
+  left_join(rarefied_dataset_assembly_asia_iteration_1, age_uncertainty, by = "dataset_id") %>% 
+  relocate(age_uncertainty)
