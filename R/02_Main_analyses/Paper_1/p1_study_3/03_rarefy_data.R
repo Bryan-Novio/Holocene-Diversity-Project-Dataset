@@ -83,7 +83,7 @@ rarefied_data_asia <-
 
 # do repetitive rarefaction 1000 times
 
-n_iter <- 1:11
+n_iter <- 1:3
 
 ##within script
 
@@ -91,19 +91,21 @@ rarefied_dataset_assembly_asia <-
   purrr::map(n_iter, function(x) {
   
   rarefied_data <- data_to_rarefy_asia %>% 
-    rarefy_all_samples(n_grains = 300)
+    rarefy_all_samples(n_grains = 300) 
   
-  tibble(
+tibble(
     id = as.character(x), # Ensures ID is character
     rarefied_dataset = list(rarefied_data) # Wraps data in a list-column
-  )
-})
+  ) 
+}) %>% purrr::list_rbind()
+
 
 ##using a function
 
 rarefied_dataset_assembly2 <- 
   rarefy_all_samples_iter(data_rarefy = data_to_rarefy_asia,
                           n_iter = n_iter)
+
 
 ## Europe
 
@@ -139,7 +141,8 @@ rarefied_dataset_assembly_europe <-
       id = as.character(x), 
       rarefied_dataset = list(rarefied_data) 
     )
-  })
+  }) %>% 
+  list_rbind()
 
 ##NAmerica
 
@@ -174,8 +177,8 @@ rarefied_dataset_assembly_namerica <-
       id = as.character(x), 
       rarefied_dataset = list(rarefied_data)
     )
-  })
-
+  }) %>% 
+  list_rbind()
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file --------------
