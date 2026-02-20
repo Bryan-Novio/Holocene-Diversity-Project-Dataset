@@ -49,6 +49,7 @@ fun_list <-
 
 # Load the function into the global environment
 
+
 source_files <-
   sapply(
     paste0("R/Functions/", fun_list, sep = ""),
@@ -60,28 +61,57 @@ source_files <-
 # 3. Add random selection of time  to each iteration ------
 #----------------------------------------------------------#
 
-age_uncertainty <- 
+##extract age uncertainties from full dataset
+
+data_age_uncertainty <- 
   data %>% 
-  select(dataset_id, age_uncertainty) 
+  select(dataset_id, age_uncertainty)
 
-id <- age_uncertainty %>%
-  filter(dataset_id =="1001") %>% 
-  unnest(age_uncertainty) %>% 
-  
+data_age_uncertainty %>% 
+  distinct(dataset_id)
 
-glimpse(id)
+##show for a dataset id 
 
-View(id)
+age_un_dataset_id <-
+  data_age_uncertainty %>%
+  filter(dataset_id =="1013") %>% 
+  unnest(age_uncertainty)
 
+# as a tibble
+age_un_dataset_id_tib <-
+  as_tibble(do.call(data.frame,age_un_dataset_id ))
+
+#fix col names and create data frame with three cols(dataset_id, sample_id, potential_age)
+
+dataset_potential_age <-
+  rename_with(age_un_dataset_id_tib,
+              ~ str_remove_all(.x,"[age_uncertainty.]")) %>% #rename cols to sample id
+  rename(dataset_id = dsd) %>% 
+  pivot_longer(!dataset_id, names_to = "sample_id", values_to = "potential_age")
+
+dataset_potential_age %>% distinct(sample_id) # no of samples for each dataset_id
+
+#iteration get potential ages from age_uncertainty for each dataset id
 
 ##Asia
 
-rarefied_dataset_assembly_asia_iteration_1 <- 
+### show rarefied data for all iteration(iter)
+
+rarefied_dataset_assembly_asia_un <- 
   rarefied_dataset_assembly_asia %>% 
-  filter(id =="1") %>% unnest(rarefied_dataset) %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id", "bin"))
+  unnest(rarefied_dataset) %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id", "bin")) %>% 
+  rename(iter = id) 
+
+iter_1 <- 
+  rarefied_dataset_assembly_asia_un %>% 
+  filter(iter == "1") 
+
+##Add age uncertainty to data assembly
+
+rarefied_dataset_assembly_asia
 
 
-asia_iteration_1_age_uncertainty <- 
-  left_join(rarefied_dataset_assembly_asia_iteration_1, age_uncertainty, by = "dataset_id") %>% 
-  relocate(age_uncertainty)
+
+get_potential_ages(data_age_uncertainty,"1013")
+

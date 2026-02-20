@@ -106,7 +106,7 @@ pollen_data_taxa_not_in_birks_namerica <-
 
 birks_aux_harm_table_asia <- 
   left_join(pollen_data_taxa_not_in_birks_asia, harmonisation_table, join_by("neotoma_names" =="taxon_name")) %>% 
-  select(neotoma_names, level_6)
+  select(neotoma_names, level_6) 
 
 ##Europe
 
@@ -130,11 +130,6 @@ birks_aux_harm_table_asia_merged <-
   rename(taxon_name = neotoma_names) %>% 
   select(taxon_name, level_6)
 
-birks_aux_harm_table_asia_merged_2 <-
-  bind_rows(birks_aux_harm_table_asia, pollen_data_taxa_harm_table) %>%
-  rename(taxon_name = neotoma_names) %>% 
-  select(taxon_name, level_6)
-
 
 ##Europe
 
@@ -146,6 +141,7 @@ birks_aux_harm_table_europe_merged <-
 
 birks_aux_harm_table_europe_merged%>% distinct(level_6)
 birks_aux_harm_table_namerica_merged %>% distinct(level_6)
+
 birks_aux_harm_table_asia_merged %>% distinct(level_6)
 
 ##Namerica
@@ -214,7 +210,7 @@ data_to_harmonize_europe <-
 data_to_harmonize_namerica <- 
   pollen_data_s3 %>% 
   filter(region == "North America") %>% 
-  inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name')) %>% 
+  inner_join(neotoma_taxa, join_by('taxa'== 'taxon_name')) %>%
   select(dataset_id, sample_id,age, neotoma_names, pollen_counts) %>% 
   rename(taxon_name = neotoma_names)
 
