@@ -1,5 +1,7 @@
 
-rarefy_all_samples_iter <- function(n_iter, data_to_rarefy){
+rarefy_all_samples_iter <- 
+  
+  function(n_iter, data_to_rarefy){
   
   n_iter <- 1:n_iter
 

@@ -19,6 +19,9 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
+data <-
+  read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
+
 data_study3_harmonised_asia <- 
   read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_asia.rds"))
 
@@ -49,9 +52,22 @@ source_files <-
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
+#----------------------------------------------------------#
+# 3. Add random selection of time  to each iteration ------
+#----------------------------------------------------------#
+
+##extract age uncertainties from full dataset
+
+data_age_uncertainty <- 
+  data %>% 
+  select(dataset_id, age_uncertainty)
+
+
+data_potential_ages <- 
+  get_potential_ages(data_source = data_age_uncertainty) #using a function
 
 #----------------------------------------------------------#
-# 3. Bin data  at different taxo rank --
+# 4. Bin data  at different taxo rank --
 #----------------------------------------------------------# 
 
 data_binned_asia <-
