@@ -94,7 +94,6 @@ for (i in iter){
 data_binned_asia_res_new <- 
   bind_rows(data_binned_asia_res,.id = "iter")
 
-
 #----------------------------------------------------------#
 # 4. Write the binned and prepared_data to RDS files
 #----------------------------------------------------------# 
