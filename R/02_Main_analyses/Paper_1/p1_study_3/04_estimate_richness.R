@@ -19,6 +19,9 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
+data_binned_asia_res_new <- 
+  read_rds(here("Data/Paper_1/data_bin/data_binned_asia_res_iter.rds"))
+
 rarefied_data_asia <- 
   read_rds(here("Data/Paper_1/data_rarefy/data_study3_rarefied_asia.rds"))
 
@@ -78,6 +81,51 @@ data_prepared_richness_estimation_namerica <-
                names_to = "taxa", values_to = "summed_pollen_count") %>% 
   prepare_data_for_richness_estimation(type = "binned")
 
+
+### with iteration
+
+####format to be accepted by prepare_data_for_richness_estimation(type = "binned")
+
+data_binned_asia_res_new_for_richness_est <- 
+  data_binned_asia_res_new %>% 
+  mutate(summed_pollen_count = as.integer(summed_pollen_count)) %>% 
+  pivot_wider(names_from = taxa, values_from = summed_pollen_count) %>% 
+  select (!BIN_chr) %>% 
+  unite("dataset_id_age", dataset_id, BIN, sep = "_", remove = TRUE) 
+
+####prepare data for richness estimation
+
+data_binned_asia_res_new_for_richness_est_new <- 
+  data_binned_asia_res_new_for_richness_est %>% 
+  separate_wider_delim(dataset_id_age, delim = "_", 
+                       names = c("dataset_id","BIN")) %>% 
+  pivot_longer(cols = -c(iter,dataset_id, BIN), 
+               names_to = "taxa", values_to = "summed_pollen_count") 
+
+#### runtime: ~ 1hr
+
+iter <- 1:1000
+
+data_binned_asia_res_richness_est_prep <- list()
+
+for (i in iter){
+  
+  data_binned_asia_res_richness_est_prep[[i]] <- 
+    data_binned_asia_res_new_for_richness_est_new %>% 
+    filter(iter == i) %>% 
+    prepare_data_for_richness_estimation(type = "binned")
+  
+}
+
+write_rds(data_binned_asia_res_richness_est_prep,"Data/Paper_1/data_estimate_richness/data_binned_asia_res_richness_est_prep.rds" )
+  
+##transfrom back to a single dataframe
+
+data_binned_asia_prep_new <- 
+  bind_rows(data_binned_asia_res_richness_est_prep,.id = "iter")
+
+write_rds(data_binned_asia_prep_new,"Data/Paper_1/data_estimate_richness/data_binned_asia_prep_new.rds" )
+
 #3.2. Estimate richness
 
 richness_asia <- 
@@ -107,6 +155,26 @@ richness_namerica <-
   filter(age <= 12000)
 
 summary(richness_namerica)
+
+##estimate richness with iteration;  run time:~ 2mins
+
+data_estimate_richness_asia_res <- list()
+
+for (i in iter){
+  
+  data_estimate_richness_asia_res[[i]] <- 
+    data_binned_asia_prep_new %>% 
+    filter(iter == i) %>% 
+    estimate_richness() 
+
+}
+
+##transfrom back to a single dataframe
+
+data_estimate_richness_asia_res_new <- 
+  bind_rows(data_estimate_richness_asia_res,.id = "iter")
+
+write_rds(data_estimate_richness_asia_res_new, here("Data/Paper_1/data_estimate_richness/study3_richness_asia_iter.rds"))
 
 #----------------------------------------------------------#
 # 4. Write the richness data to an RDS file

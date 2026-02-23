@@ -166,10 +166,16 @@ data_age_uncertainty %>%
 data_potential_ages <- 
   get_potential_ages(data_age_uncertainty) #using a function
 
-## test rarefied_data_iter
+## test rarefied data with iterations
 
 rarefied_dataset_assembly_asia <- 
   read_rds(here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_asia.rds")) %>% rename(iter  = id)
+
+rarefied_dataset_assembly_europe <- 
+  read_rds(here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_europe.rds")) %>% rename(iter  = id)
+
+rarefied_dataset_assembly_namerica <- 
+  read_rds(here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_namerica.rds")) %>% rename(iter  = id)
 
 # collapse rarefied data assembly to single dataframe
 
@@ -180,26 +186,71 @@ rarefied_dataset_assembly_asia_un <-
                        names = c("dataset_id", "bin"),delim ="_") %>% 
   select(-bin)
 
+rarefied_dataset_assembly_europe_un <-
+  rarefied_dataset_assembly_europe %>%
+  unnest(cols = c(rarefied_dataset)) %>% 
+  separate_wider_delim(.,cols = dataset_id_age,
+                       names = c("dataset_id", "bin"),delim ="_") %>% 
+  select(-bin)
+
+rarefied_dataset_assembly_namerica_un <-
+  rarefied_dataset_assembly_namerica %>%
+  unnest(cols = c(rarefied_dataset)) %>% 
+  separate_wider_delim(.,cols = dataset_id_age,
+                       names = c("dataset_id", "bin"),delim ="_") %>% 
+  select(-bin)
+
 # Add random selection of time to rarefied dataset with iterations
 
 ##dataset_ids from assembly
 
-dataset_assembly_ids <-                 
+dataset_assembly_asia_ids <-                 
   rarefied_dataset_assembly_asia_un %>% 
+  distinct(dataset_id) %>% 
+  as.vector()
+
+dataset_assembly_europe_ids <-                 
+  rarefied_dataset_assembly_europe_un %>% 
+  distinct(dataset_id) %>% 
+  as.vector()
+
+dataset_assembly_namerica_ids <-                 
+  rarefied_dataset_assembly_namerica_un %>% 
   distinct(dataset_id) %>% 
   as.vector()
 
 ## filter potential ages for dataset ids in the assembly
 
-data_potential_ages_filtered <- 
+data_potential_ages_filtered_asia <- 
   data_potential_ages %>%
-  filter(dataset_id %in% dataset_assembly_ids$dataset_id)
+  filter(dataset_id %in% dataset_assembly_asia_ids$dataset_id)
+
+data_potential_ages_filtered_europe <- 
+  data_potential_ages %>%
+  filter(dataset_id %in% dataset_assembly_europe_ids$dataset_id)
+
+data_potential_ages_filtered_namerica <- 
+  data_potential_ages %>%
+  filter(dataset_id %in% dataset_assembly_namerica_ids$dataset_id)
 
 ## add random ages for each dataset_id in the assembly
 
 rarefied_dataset_assembly_asia_p_ages <- 
-  purrr::map(dataset_assembly_ids$dataset_id, 
-             ~ add_random_ages(., rarefied_dataset_assembly_asia_un,   data_potential_ages_filtered)) %>% 
+  purrr::map(dataset_assembly_asia_ids$dataset_id, 
+             ~ add_random_ages(., rarefied_dataset_assembly_asia_un,   data_potential_ages_filtered_asia)) %>% 
+  list_rbind() %>% 
+  mutate(potential_age  = as.double(potential_age))
+
+
+rarefied_dataset_assembly_europe_p_ages <- 
+  purrr::map(dataset_assembly_europe_ids$dataset_id, 
+             ~ add_random_ages(., rarefied_dataset_assembly_europe_un,   data_potential_ages_filtered_europe)) %>% 
+  list_rbind() %>% 
+  mutate(potential_age  = as.double(potential_age))
+
+rarefied_dataset_assembly_namerica_p_ages <- 
+  purrr::map(dataset_assembly_namerica_ids$dataset_id, 
+             ~ add_random_ages(., rarefied_dataset_assembly_namerica_un,   data_potential_ages_filtered_namerica)) %>% 
   list_rbind() %>% 
   mutate(potential_age  = as.double(potential_age))
 
@@ -212,6 +263,23 @@ rarefied_dataset_assembly_asia_p_ages_to_bin <-
                values_to = "pollen_counts") %>% 
   rename(age = potential_age) %>% 
   mutate(pollen_counts  = as.double(pollen_counts))
+
+rarefied_dataset_assembly_europe_p_ages_to_bin <-       ##do not run -- Error in `vec_interleave_indices()`: vector lim reached
+  rarefied_dataset_assembly_europe_p_ages %>%
+  pivot_longer(cols = -c(potential_age,iter,dataset_id),
+               names_to = "taxa",
+               values_to = "pollen_counts") %>% 
+  rename(age = potential_age) %>% 
+  mutate(pollen_counts  = as.double(pollen_counts))
+
+rarefied_dataset_assembly_namerica_p_ages_to_bin <- 
+  rarefied_dataset_assembly_namerica_p_ages %>%
+  pivot_longer(cols = -c(potential_age,iter,dataset_id),
+               names_to = "taxa",
+               values_to = "pollen_counts") %>% 
+  rename(age = potential_age) %>% 
+  mutate(pollen_counts  = as.double(pollen_counts))
+
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file --------------
@@ -230,6 +298,9 @@ write_rds(rarefied_dataset_assembly_namerica, here("Data/Paper_1/data_rarefy/rar
 
 write_rds(rarefied_dataset_assembly_asia_p_ages_to_bin, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_asia_p_ages_to_bin.rds"))
 
+write_rds(rarefied_dataset_assembly_europe_p_ages_to_bin, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_europe_p_ages_to_bin.rds"))
+
+write_rds(rarefied_dataset_assembly_namerica_p_ages_to_bin, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_namerica_p_ages_to_bin.rds"))
 
 ##rarefied data single iteration
 
