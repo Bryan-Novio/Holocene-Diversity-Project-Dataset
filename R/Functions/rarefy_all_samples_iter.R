@@ -2,18 +2,14 @@
 rarefy_all_samples_iter <- 
   
   function(n_iter, data_to_rarefy){
-  
-  n_iter <- 1:n_iter
 
-  purrr::map(n_iter, function(x) {
-    
-    rarefied_data <- data_to_rarefy %>% 
-      rarefy_all_samples(n_grains = 300) 
-    
-    tibble(
-      id = as.character(x), # Ensures ID is character
-      rarefied_dataset = list(rarefied_data) # Wraps data in a list-column
-    ) 
-  }) %>% purrr::list_rbind()
+  1:n_iter %>% 
+  purrr::set_names() %>% 
+  furrr::future_map(
+    .progress = TRUE,
+    .f = ~ rarefy_all_samples(data_to_rarefy, n_grains = 300),
+    .options = furrr::furrr_options(seed = 12345)
+    ) %>% 
+  dplyr::bind_rows(.id = "id")
 }
     

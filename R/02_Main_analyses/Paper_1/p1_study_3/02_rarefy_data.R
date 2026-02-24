@@ -23,14 +23,14 @@ library(vegan)
 data <-
   read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
 
-data_binned_asia <- 
-  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_asia.rds"))
+data_study3_harmonised_asia <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_asia.rds"))
 
-data_binned_europe <- 
-  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_europe.rds"))
+data_study3_harmonised_europe <- 
+read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_europe.rds"))
 
-data_binned_namerica <- 
-  read_rds(here("Data/Paper_1/data_bin/data_study3_binned_namerica.rds"))
+data_study3_harmonised_namerica <- 
+read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_namerica.rds"))
 
 neotoma_taxa <- 
   readr::read_csv(
@@ -63,13 +63,21 @@ source_files <-
 # 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-##Asia
+data_binned_merge <- 
+  dplyr::bind_rows(
+    data_study3_harmonised_asia %>% 
+      dplyr::mutate(region = "Asia"),
+    data_study3_harmonised_europe %>% 
+      dplyr::mutate(region = "Europe"),
+    data_study3_harmonised_namerica %>% 
+      dplyr::mutate(region = "North_America"),
+  )
 
-data_to_rarefy_asia <- 
-  data_binned_asia %>% 
+data_to_rarefy <- 
+  data_binned_merge %>% 
   inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
-  select(dataset_id, BIN, taxa,summed_pollen_count) %>% 
-  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = taxa) %>% 
+  select(dataset_id, age, taxa, pollen_counts ) %>% 
+  rename(taxon_name = taxa) %>% 
   mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
   )  %>% 
   pivot_wider(
@@ -77,76 +85,49 @@ data_to_rarefy_asia <-
     values_from = pollen_counts
   )
   
-set.seed(1234) # do not run if will do repeated rarefaction
-
-rarefied_data_asia <-
-  rarefy_all_samples(
-    data_source = data_to_rarefy_asia,
-    n_grains = 300
-  )
 
 # do repetitive rarefaction 1000 times
 
-rarefied_dataset_assembly_asia <- 
-  data_to_rarefy_asia %>% 
-  rarefy_all_samples_iter(n_iter = 1000)
+library(furrr)
+future::plan(multisession)
 
+library(tictoc)
 
-rarefied_dataset_assembly_asia %>% filter(id == "1") %>% unnest(rarefied_dataset)
-
-## Europe
-
-data_to_rarefy_europe <- 
-  data_binned_europe %>% 
-  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
-  select(dataset_id, BIN, taxa,summed_pollen_count) %>% 
-  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = taxa) %>% 
-  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
-  )  %>% 
-  pivot_wider(
-    names_from = taxon_name,
-    values_from = pollen_counts
+tic()
+rarefied_dataset_assembly <- 
+  data_to_rarefy %>% 
+  rarefy_all_samples_iter(n_iter = 10) %>% 
+  tidyr::nest(
+    rarefied_dataset = -c(id)
   )
+toc()
 
-set.seed(1234)
-
-rarefied_data_europe <-
-  rarefy_all_samples(
-    data_source = data_to_rarefy_europe,
-    n_grains = 300)
-
-##with iteration 1000x
-
-rarefied_dataset_assembly_europe <- 
-  data_to_rarefy_europe%>% 
-  rarefy_all_samples_iter(n_iter = 1000)
-
-##NAmerica
-
-data_to_rarefy_namerica <- 
-  data_binned_namerica %>% 
-  inner_join(neotoma_taxa, join_by(taxa == neotoma_names)) %>% 
-  select(dataset_id, BIN, taxa,summed_pollen_count) %>% 
-  rename(age = BIN, pollen_counts = summed_pollen_count, taxon_name = taxa) %>% 
-  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
-  )  %>% 
-  pivot_wider(
-    names_from = taxon_name,
-    values_from = pollen_counts
+manual_check <- FALSE
+if (
+ namual_check == TRUE  
+) {
+  library(waldo)
+  
+  waldo::compare(
+    rarefied_dataset_assembly$rarefied_dataset[[1]],
+    rarefied_dataset_assembly$rarefied_dataset[[2]]
   )
+  
+  rarefied_dataset_assembly%>% filter(id == "1") %>% unnest(rarefied_dataset)
+}
 
-set.seed(1234)
+rarefied_dataset_assembly_by_dataset <- 
+rarefied_dataset_assembly %>% 
+  unnest(cols = c(rarefied_dataset)) %>% 
+  separate_wider_delim(.,cols = dataset_id_age,
+                       names = c("dataset_id", "age"),delim ="_") %>% 
+  group_by(dataset_id) %>% 
+  nest() %>% 
+  ungroup()
 
-rarefied_data_namerica <-
-  rarefy_all_samples(
-    data_source = data_to_rarefy_namerica,
-    n_grains = 300)
+rarefied_dataset_assembly_by_dataset$data[[1]] %>% 
+  dplyr::filter(age == 338)
 
-##with iteration 1000x
-
-rarefied_dataset_assembly_namerica <- 
-  data_to_rarefy_namerica %>% 
-  rarefy_all_samples_iter(n_iter = 1000)
 
 
 #----------------------------------------------------------#
@@ -158,6 +139,8 @@ rarefied_dataset_assembly_namerica <-
 data_age_uncertainty <- 
   data %>% 
   select(dataset_id, age_uncertainty)
+
+
 
 data_age_uncertainty %>% 
   filter(dataset_id =="1001") %>% 
@@ -237,20 +220,20 @@ data_potential_ages_filtered_namerica <-
 
 rarefied_dataset_assembly_asia_p_ages <- 
   purrr::map(dataset_assembly_asia_ids$dataset_id, 
-             ~ add_random_ages(., rarefied_dataset_assembly_asia_un,   data_potential_ages_filtered_asia)) %>% 
+             ~ add_random_ages(., rarefied_dataset_assembly_asia_un,data_potential_ages_filtered_asia)) %>% 
   list_rbind() %>% 
   mutate(potential_age  = as.double(potential_age))
 
 
 rarefied_dataset_assembly_europe_p_ages <- 
   purrr::map(dataset_assembly_europe_ids$dataset_id, 
-             ~ add_random_ages(., rarefied_dataset_assembly_europe_un,   data_potential_ages_filtered_europe)) %>% 
+             ~ add_random_ages(., rarefied_dataset_assembly_europe_un,data_potential_ages_filtered_europe)) %>% 
   list_rbind() %>% 
   mutate(potential_age  = as.double(potential_age))
 
 rarefied_dataset_assembly_namerica_p_ages <- 
   purrr::map(dataset_assembly_namerica_ids$dataset_id, 
-             ~ add_random_ages(., rarefied_dataset_assembly_namerica_un,   data_potential_ages_filtered_namerica)) %>% 
+             ~ add_random_ages(., rarefied_dataset_assembly_namerica_un,data_potential_ages_filtered_namerica)) %>% 
   list_rbind() %>% 
   mutate(potential_age  = as.double(potential_age))
 
