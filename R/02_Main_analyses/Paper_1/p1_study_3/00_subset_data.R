@@ -46,7 +46,7 @@ source_files <-
 )
 
 #----------------------------------------------------------#
-# 3. Subset data for Paper 1, Study 1
+# 3. Subset data for Paper 1, Study 3 ---------------------
 #----------------------------------------------------------# 
 
 # sub-setting data to Europe/N.America/Asia
@@ -61,7 +61,7 @@ region <-
   study3_data %>%  
   distinct(region, dataset_id)
   
-#####3.1. get pollen counts with ages
+#3.1. get pollen counts with ages
 
 data_p1_s3_counts_ages <- 
   study3_data %>%
@@ -75,8 +75,18 @@ data_p1_s3_counts_ages_region <-
   inner_join(data_p1_s3_counts_ages, region, by = "dataset_id") 
 
 #----------------------------------------------------------#
-# 4. Write the subset data to RDS file
+# 4. Extract age uncertainties from full dataset --------
+#----------------------------------------------------------#
+
+data_age_uncertainty <- 
+  data %>% 
+  select(dataset_id, age_uncertainty)
+
+#----------------------------------------------------------#
+# 5. Write the datasubsets to RDS files-------------------
 #----------------------------------------------------------# 
 
 write_rds(data_p1_s3_counts_ages_region, here("Data/Paper_1/data_subset/datasub_p1_s3_counts_ages.rds"))
+
+write_rds(data_age_uncertainty, here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
 
