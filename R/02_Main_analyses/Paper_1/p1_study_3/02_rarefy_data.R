@@ -79,19 +79,8 @@ toc()
 
 ## 3.3. Check rarefied datasets
 
-manual_check <- TRUE
-
-if (
- manual_check == TRUE  
-) {
-  
-  waldo::compare(
-    data_with_new_age,
-    rarefied_dataset_assembly$rarefied_dataset[[2]]
-  )
-  
-  rarefied_dataset_assembly%>% filter(id == "1") %>% unnest(rarefied_dataset)
-}
+rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[1]])
+rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[2]])
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file --------------
