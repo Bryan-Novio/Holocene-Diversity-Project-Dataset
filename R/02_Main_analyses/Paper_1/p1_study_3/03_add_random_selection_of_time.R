@@ -9,21 +9,46 @@
 # North America, site-based richness (dataset_id,age, 
 # 500 bins - rarefy 300 
 #
-#                 ----RAREFACTION  ----
+
+# ----ADD RANDOM SELECTION  OF TIME TO EACH ITERATION----
+
 #----------------------------------------------------------#
 
 library(tidyverse)
 library(here)
-library(vegan)
-library(tictoc)
-library(furrr)
-library(waldo)
 
 #----------------------------------------------------------#
-# 1. Add random selection of time  to each iteration ------
+# 1. Load data ----------
 #----------------------------------------------------------#
 
-#reshape age unceratinty so that each line is in iteratio, 
+rarefied_dataset_assembly <- read_rds(here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
+
+data_age_uncertainty <- 
+  read_rds(here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
+
+#----------------------------------------------------------#
+# 2. Load functions ----------
+#----------------------------------------------------------#
+# Get a vector of general functions
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
+
+# Load the function into the global environment
+
+source_files <-
+  sapply(
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
+
+#----------------------------------------------------------#
+# 3. Reshape age uncertainty, each line is an iteration ------
+#----------------------------------------------------------#
 
 data_age_uncertainty_pivot <- 
   data_age_uncertainty %>% 
@@ -32,7 +57,9 @@ data_age_uncertainty_pivot <-
     age_uncertainty = !id
   )
 
-# merge by iteration
+#----------------------------------------------------------#
+# 4. Merge by iteration ------
+#----------------------------------------------------------#
 
 data_merged <- 
   dplyr::inner_join(
@@ -44,8 +71,9 @@ data_merged <-
     by = "id"
   )
 
-
-# add we column with new age
+#----------------------------------------------------------#
+# 5. Add we column with new age -------------
+#----------------------------------------------------------#
 
 data_with_new_age <- 
   data_merged %>% 
@@ -88,9 +116,12 @@ data_with_new_age <-
         
       }
       
-    )
+    ) 
   )
+  
+#----------------------------------------------------------#
+# 6. Save as RDS file rarefied data with new age ----------
+#----------------------------------------------------------#
 
-
-
+write_rds(data_with_new_age, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_with_new_age.rds"))
 

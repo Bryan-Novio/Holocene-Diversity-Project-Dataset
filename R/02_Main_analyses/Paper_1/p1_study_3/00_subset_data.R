@@ -82,7 +82,6 @@ data_age_uncertainty <-
   data %>% 
   select(dataset_id, age_uncertainty)
 
-
 #----------------------------------------------------------#
 # 5. Write the datasubsets to RDS files-------------------
 #----------------------------------------------------------# 

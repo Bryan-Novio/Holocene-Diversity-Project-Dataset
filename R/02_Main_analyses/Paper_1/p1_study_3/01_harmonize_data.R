@@ -60,7 +60,7 @@ source_files <-
   )
 
 #----------------------------------------------------------#
-# 3. Create harm table for each region --
+# 3. Create harm table for each region ---------------------
 #----------------------------------------------------------# 
 
 ##3.1.convert first to neotoma_names
@@ -170,7 +170,7 @@ birks_aux_harm_table_namerica_merged %>% distinct(level_6)
 birks_aux_harm_table_asia_merged %>% distinct(level_6)
 
 #----------------------------------------------------------#
-# 4. Harmonise taxa for each region --
+# 4. Harmonise taxa for each region -----------------------
 #----------------------------------------------------------# 
 
 ## 4.1. Filter data by region and rename taxa to neotoma names 
@@ -245,6 +245,24 @@ data_harmonised_merge <-
 #----------------------------------------------------------# 
 
 ## 5.1. save new harm tables
+
+target_dir <- 
+  "Data/Paper_1/data_supplementary"
+
+data_harmonised_merge%>%
+  group_by(region) %>%
+  nest() %>% 
+  walk2(.x, .y = .$region, ~ {
+    file_path <- file.path(target_dir, paste0(.y, ".csv"))
+    write_csv(.x, file_path)
+  })
+  
+  group_walk(~ {
+    file_name <- paste0(.y[[1]], "_study3_hlist_updated.csv")
+    full_path <- file.path(target_dir, file_name)
+    write_csv(.x, full_path)
+  })
+
 
 write_csv(birks_aux_harm_table_asia_merged, here("Data/Paper_1/data_supplementary/study3_hlist_updated_Asia.csv"))
 

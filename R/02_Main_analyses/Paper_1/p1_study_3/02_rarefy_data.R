@@ -16,7 +16,6 @@ library(tidyverse)
 library(here)
 library(vegan)
 library(tictoc)
-library(furrr)
 library(waldo)
 
 #----------------------------------------------------------#
@@ -25,9 +24,6 @@ library(waldo)
 
 data_harmonised_merge <-
   read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds"))
-
-data_age_uncertainty <- 
-  read_rds(here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -67,70 +63,41 @@ data_to_rarefy <-   # 1001 dataset_ids
     values_from = pollen_counts
   )
 
-## 3.2. Rarefy iteratively
 
+## 3.2. Rarefy iteratively
 
 tic()
 
-set.seed(12345)
-
 rarefied_dataset_assembly <- 
   data_to_rarefy %>% 
-  rarefy_all_samples_iter(n_iter = 1000) %>% 
+  rarefy_all_samples_iter(., n_iter = 20) %>% 
   tidyr::nest(
     rarefied_dataset = -c(id)
   )
+
 toc()
 
 ## 3.3. Check rarefied datasets
 
-manual_check <- FALSE
+manual_check <- TRUE
 
 if (
  manual_check == TRUE  
 ) {
   
   waldo::compare(
-    rarefied_dataset_assembly$rarefied_dataset[[1]],
+    data_with_new_age,
     rarefied_dataset_assembly$rarefied_dataset[[2]]
   )
   
   rarefied_dataset_assembly%>% filter(id == "1") %>% unnest(rarefied_dataset)
 }
 
-
-
-## transform data for binning
-
-rarefied_dataset_assembly_asia_p_ages_to_bin <- 
-  rarefied_dataset_assembly_asia_p_ages %>%
-  pivot_longer(cols = -c(potential_age,iter,dataset_id),
-               names_to = "taxa",
-               values_to = "pollen_counts") %>% 
-  rename(age = potential_age) %>% 
-  mutate(pollen_counts  = as.double(pollen_counts))
-
-
-
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file --------------
 #----------------------------------------------------------#
 
-##rarefied data multiple iteration (1000x)
+##rarefied data multiple iteration (20x)
 
-write_rds(rarefied_dataset_assembly_asia, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_asia.rds"))
-
-write_rds(rarefied_dataset_assembly_europe, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_europe.rds"))
-
-write_rds(rarefied_dataset_assembly_namerica, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_namerica.rds"))
-
-
-## rarefied_data_assembly for binning
-
-write_rds(rarefied_dataset_assembly_asia_p_ages_to_bin, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_asia_p_ages_to_bin.rds"))
-
-write_rds(rarefied_dataset_assembly_europe_p_ages_to_bin, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_europe_p_ages_to_bin.rds"))
-
-write_rds(rarefied_dataset_assembly_namerica_p_ages_to_bin, here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_namerica_p_ages_to_bin.rds"))
-
+write_rds(rarefied_dataset_assembly, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
 
