@@ -5,11 +5,11 @@ rarefy_all_samples_iter <-
 
   1:n_iter %>% 
   purrr::set_names() %>% 
-  furrr::future_map(
+  purrr::map(
     .progress = TRUE,
-    .f = ~ rarefy_all_samples(data_to_rarefy, n_grains = 300),
-    .options = furrr::furrr_options(seed = 12345)
+    .f = ~ rarefy_all_samples(data_to_rarefy, n_grains = 300)
     ) %>% 
   dplyr::bind_rows(.id = "id")
 }
     
+
