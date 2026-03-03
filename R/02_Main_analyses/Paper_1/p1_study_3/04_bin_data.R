@@ -68,9 +68,10 @@ dataset_with_new_age_to_bin <-
   )
 )
   
-
-rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[1]])
-rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[2]])
+if(FALSE){
+  rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[1]])
+  rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[2]])
+}
 
 #----------------------------------------------------------#
 # 4. Bin data  at different taxo rank --
@@ -93,6 +94,7 @@ data_binned <-
    )
   )
  
+
 
 #----------------------------------------------------------#
 # 5. Write the binned and prepared_data to RDS files
