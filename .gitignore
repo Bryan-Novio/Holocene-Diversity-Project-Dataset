@@ -43,3 +43,4 @@ Data/Paper_1/data_bin/*.rds
 Data/Paper_1/data_model/*.rds
 Data/Paper_1/data_estimate_richness/*.rds
 Outputs/Paper_1/*
+Data/Paper_1/data_rarefy/iterations/
