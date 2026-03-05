@@ -21,7 +21,9 @@ library(here)
 # 1. Load data ----------
 #----------------------------------------------------------#
 
-rarefied_dataset_assembly <- read_rds(here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
+rarefied_dataset_assembly <- 
+  here::here("Data/Paper_1/data_rarefy/iterations") %>% 
+  list.files(full.names = TRUE) 
 
 data_age_uncertainty <- 
   read_rds(here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
@@ -61,18 +63,21 @@ data_age_uncertainty_pivot <-
 # 4. Merge by iteration ------
 #----------------------------------------------------------#
 
+rarefied_dataset_assembly <- 
+rarefied_dataset_assembly %>% 
+purrr::map(
+  .f = ~ readr::read_rds(.x)) %>% 
+  tibble::enframe(name = "id", value = "rarefied_data") 
+
 data_merged <- 
   dplyr::inner_join(
-    rarefied_dataset_assembly %>% 
-      dplyr::mutate(
-        id = as.integer(id)
-      ),
+    rarefied_dataset_assembly,
     data_age_uncertainty_pivot,
     by = "id"
   )
 
 #----------------------------------------------------------#
-# 5. Add we column with new age -------------
+# 5. Add column with new age -------------
 #----------------------------------------------------------#
 
 data_with_new_age <- 
@@ -80,7 +85,7 @@ data_with_new_age <-
   dplyr::mutate(
     data_with_new_age = purrr::map2(
       .progress = TRUE,
-      .x = rarefied_dataset,
+      .x = rarefied_data,
       .y = age_uncertainty,
       .f = ~ {
         

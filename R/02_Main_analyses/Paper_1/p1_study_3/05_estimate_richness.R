@@ -185,3 +185,11 @@ write_csv(richness_europe, here("Data/Paper_1/data_estimate_richness/study3_rich
 write_csv(richness_namerica, here("Data/Paper_1/data_estimate_richness/study3_richness_namerica.csv"))
 
 
+list_richness <- 
+  here::here("Data/Paper_1/data_rarefy/iterations") %>% 
+  list.files(full.names = TRUE) %>% 
+  purrr::map(
+    .f = ~ readr::read_rds(.x) %>% 
+      estimate_richness()
+  )
+

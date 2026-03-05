@@ -73,6 +73,7 @@ if(FALSE){
   rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[2]])
 }
 
+
 #----------------------------------------------------------#
 # 4. Bin data  at different taxo rank --
 #----------------------------------------------------------# 
@@ -86,15 +87,13 @@ data_binned <-
     binned <- 
       .x %>% 
       unnest() %>% 
-      bin_data (dataset_id, 500)
-    
-    return(binned)
-    
+      bin_data_iter(dataset_id, 500,
+      path = here::here("Data/Paper_1/data_bin/bin_iterations"))
     }
    )
   )
- 
 
+data_binned$data_binned[[1]]
 
 #----------------------------------------------------------#
 # 5. Write the binned and prepared_data to RDS files
