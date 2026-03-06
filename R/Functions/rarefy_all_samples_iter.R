@@ -13,6 +13,11 @@ rarefy_all_samples_iter <-
     .f = ~ rarefy_all_samples(data_to_rarefy, n_grains = 300) %>% 
     readr::write_rds(file = paste0(path, "/", .x, ".rds"))
     )
+    
+    # Explicitly clear local large objects and run gc()
+    rm(data)
+    gc(verbose = FALSE) 
+    
 }
     
 
