@@ -50,51 +50,59 @@ source_files <-
 
 dataset_with_new_age_to_bin <- 
   data_with_new_age %>% 
-  mutate(data_to_bin = purrr::map(
+  dplyr::mutate(data_to_bin = purrr::map(
     .progress = TRUE,
-    .x = data_with_new_age,
+    .x =  data_with_new_age,
     .f = ~ {
     data_to_bin <- 
      .x %>%
-     unnest() %>% 
-     pivot_longer(cols = -c(sample_id,age,dataset_id),
+     tidyr::pivot_longer(cols = -c(sample_id,age,dataset_id),
                      names_to = "taxa",
                      values_to = "pollen_counts") %>% 
-        mutate(pollen_counts  = as.double(pollen_counts))
+        dplyr::mutate(pollen_counts  = as.double(pollen_counts))
   
   return(data_to_bin)
  
     }
   )
 )
-  
+
+
 if(FALSE){
   rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[1]])
   rlang::hash(dataset_with_new_age_to_bin$data_to_bin[[2]])
 }
 
 #----------------------------------------------------------#
-# 4. Bin data  at different taxo rank --
+# 3. Reshape data to bin -------------------------
+#----------------------------------------------------------#
+
+#----------------------------------------------------------#
+# 4. Bin data  --
 #----------------------------------------------------------# 
 
 data_binned <-
   dataset_with_new_age_to_bin %>% 
-  mutate(data_binned = purrr::map(
+  dplyr::mutate(data_binned = purrr::map(
     .progress = TRUE,
     .x = data_to_bin,
     .f = ~ {
     binned <- 
       .x %>% 
-      unnest() %>% 
-      bin_data (dataset_id, 500)
-    
-    return(binned)
+      tidyr::unnest() %>%
+      bin_data(dataset_id, 500) 
     
     }
    )
   )
- 
 
+
+data_binned$data_binned[[1]]
+data_binned$data_binned[[2]]
+
+data_binned <- 
+  data_binned %>% 
+  select(id,data_binned)
 
 #----------------------------------------------------------#
 # 5. Write the binned and prepared_data to RDS files

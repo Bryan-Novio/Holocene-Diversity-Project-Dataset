@@ -19,17 +19,11 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-data_binned_asia_res_new <- 
-  read_rds(here("Data/Paper_1/data_bin/data_binned_asia_res_iter.rds"))
+data_binned <- 
+  read_rds(here("Data/Paper_1/data_bin/data_binned_iter20.rds"))
 
-rarefied_data_asia <- 
-  read_rds(here("Data/Paper_1/data_rarefy/data_study3_rarefied_asia.rds"))
-
-rarefied_data_europe <- 
-read_rds(here("Data/Paper_1/data_rarefy/data_study3_rarefied_europe.rds"))
-
-rarefied_data_namerica <- 
-read_rds(here("Data/Paper_1/data_rarefy/data_study3_rarefied_namerica.rds"))
+region <- 
+  read_rds(here("Data/Paper_1/data_subset/data_regions.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -57,131 +51,93 @@ source_files <-
 
 #3.1 Format rarefied data 
 
-data_prepared_richness_estimation_asia <- 
-  rarefied_data_asia %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", 
-                       names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = -c(dataset_id, BIN), 
-               names_to = "taxa", values_to = "summed_pollen_count") %>% 
-  prepare_data_for_richness_estimation(type = "binned")
+data_binned_to_estimate <- 
+  data_binned %>% 
+  dplyr::mutate(bin_to_estimate = purrr::map(
+    .progress = TRUE,
+    .x = data_binned,
+    .f = ~ {
+      .x %>% 
+    tidyr::unnest() %>% 
+    mutate(summed_pollen_count = as.integer(
+      summed_pollen_count)) %>% 
+        pivot_wider(names_from = taxa, 
+        values_from = summed_pollen_count) %>% 
+        select (!BIN_chr) %>% 
+        unite("dataset_id_age", dataset_id,
+        BIN, sep = "_", remove = TRUE)
+    }
+   )
+  )
 
-data_prepared_richness_estimation_europe <- 
-  rarefied_data_europe %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", 
-                       names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = -c(dataset_id, BIN), 
-               names_to = "taxa", values_to = "summed_pollen_count") %>% 
-  prepare_data_for_richness_estimation(type = "binned")
-
-data_prepared_richness_estimation_namerica <- 
-  rarefied_data_namerica %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", 
-                       names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = -c(dataset_id, BIN), 
-               names_to = "taxa", values_to = "summed_pollen_count") %>% 
-  prepare_data_for_richness_estimation(type = "binned")
-
-
-### with iteration
-
-####format to be accepted by prepare_data_for_richness_estimation(type = "binned")
-
-data_binned_asia_res_new_for_richness_est <- 
-  data_binned_asia_res_new %>% 
-  mutate(summed_pollen_count = as.integer(summed_pollen_count)) %>% 
-  pivot_wider(names_from = taxa, values_from = summed_pollen_count) %>% 
-  select (!BIN_chr) %>% 
-  unite("dataset_id_age", dataset_id, BIN, sep = "_", remove = TRUE) 
-
-####prepare data for richness estimation
-
-data_binned_asia_res_new_for_richness_est_new <- 
-  data_binned_asia_res_new_for_richness_est %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", 
-                       names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = -c(iter,dataset_id, BIN), 
-               names_to = "taxa", values_to = "summed_pollen_count") 
-
-#### runtime: ~ 1hr
-
-iter <- 1:1000
-
-data_binned_asia_res_richness_est_prep <- list()
-
-for (i in iter){
-  
-  data_binned_asia_res_richness_est_prep[[i]] <- 
-    data_binned_asia_res_new_for_richness_est_new %>% 
-    filter(iter == i) %>% 
+data_binned_to_estimate_re <- 
+  data_binned_to_estimate %>% 
+  dplyr::mutate(bin_to_estimate = purrr::map(
+    .progress = TRUE,
+    .x = bin_to_estimate,
+    .f = ~ {
+      .x %>% 
+        tidyr::unnest() %>% 
+    separate_wider_delim(dataset_id_age, delim = "_", 
+    names = c("dataset_id","BIN")) %>% 
+    pivot_longer(cols = -c(dataset_id, BIN), 
+    names_to = "taxa", values_to = "summed_pollen_count") %>% 
     prepare_data_for_richness_estimation(type = "binned")
-  
-}
+    }
+   )
+  )
 
-write_rds(data_binned_asia_res_richness_est_prep,"Data/Paper_1/data_estimate_richness/data_binned_asia_res_richness_est_prep.rds" )
-  
-##transfrom back to a single dataframe
+data_binned_to_estimate_re$bin_to_estimate[[1]]
 
-data_binned_asia_prep_new <- 
-  bind_rows(data_binned_asia_res_richness_est_prep,.id = "iter")
-
-write_rds(data_binned_asia_prep_new,"Data/Paper_1/data_estimate_richness/data_binned_asia_prep_new.rds" )
 
 #3.2. Estimate richness
 
-richness_asia <- 
-  data_prepared_richness_estimation_asia %>% 
-  estimate_richness() %>% 
-  mutate(age = as.numeric(age)) %>% 
-  mutate(dataset_id = as_factor(dataset_id)) %>% 
-  filter(age <= 12000)
+richness_estimate <- 
+  data_binned_to_estimate_re %>% 
+  dplyr::mutate(richness_estimate = purrr::map(
+    .progress = TRUE,
+    .x = bin_to_estimate,
+    .f = ~ {
+      .x %>% 
+        tidyr::unnest() %>% 
+        estimate_richness() %>% 
+        mutate(age = as.numeric(age)) %>% 
+        mutate(dataset_id = as_factor(dataset_id)) %>% 
+        filter(age <= 12000)
+    }
+  )
+)
 
-summary(richness_asia)
+richness_estimate$richness_estimate[[1]]
 
-richness_europe <- 
-  data_prepared_richness_estimation_europe %>% 
-  estimate_richness() %>% 
-  mutate(age = as.numeric(age)) %>% 
-  mutate(dataset_id = as_factor(dataset_id)) %>% 
-  filter(age <= 12000)
+richness_estimate_re <- 
+  richness_estimate %>% 
+  select(id, richness_estimate) %>% 
+  mutate(richness_estimate_region = purrr::map(
+    .progress = TRUE,
+    .x = richness_estimate,
+    .f = ~ {
+      .x %>% 
+        unnest() %>% 
+        inner_join(region, by = "dataset_id")
+    }
+  )
+)
 
-summary(richness_europe)
+richness_estimate_re$richness_estimate_region[[1]] %>% 
+  filter(region == "North America")
 
+richness_estimate_region <- 
+  richness_estimate_re %>% 
+  select(id, richness_estimate_region)
 
-richness_namerica <- 
-  data_prepared_richness_estimation_namerica %>% 
-  estimate_richness() %>% 
-  mutate(age = as.numeric(age)) %>% 
-  mutate(dataset_id = as_factor(dataset_id)) %>% 
-  filter(age <= 12000)
+richness_estimate_region$richness_estimate_region[[1]]
 
-summary(richness_namerica)
-
-##estimate richness with iteration;  run time:~ 2mins
-
-data_estimate_richness_asia_res <- list()
-
-for (i in iter){
-  
-  data_estimate_richness_asia_res[[i]] <- 
-    data_binned_asia_prep_new %>% 
-    filter(iter == i) %>% 
-    estimate_richness() 
-
-}
-
-##transfrom back to a single dataframe
-
-data_estimate_richness_asia_res_new <- 
-  bind_rows(data_estimate_richness_asia_res,.id = "iter")
-
-write_rds(data_estimate_richness_asia_res_new, here("Data/Paper_1/data_estimate_richness/study3_richness_asia_iter.rds"))
+summary(richness_estimate_region$richness_estimate_region[[1]])
 
 #----------------------------------------------------------#
 # 4. Write the richness data to an RDS file
 #----------------------------------------------------------# 
 
-write_csv(richness_asia, here("Data/Paper_1/data_estimate_richness/study3_richness_asia.csv"))
-write_csv(richness_europe, here("Data/Paper_1/data_estimate_richness/study3_richness_europe.csv"))
-write_csv(richness_namerica, here("Data/Paper_1/data_estimate_richness/study3_richness_namerica.csv"))
-
+write_rds(richness_estimate_region, here("Data/Paper_1/data_estimate_richness/study3_richness_estimate_region_iter.rds"))
 
