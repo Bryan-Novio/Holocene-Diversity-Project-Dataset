@@ -70,7 +70,7 @@ tic()
 
 rarefied_dataset_assembly <- 
   data_to_rarefy %>% 
-  rarefy_all_samples_iter(., n_iter = 1000) %>% 
+  rarefy_all_samples_iter(., n_iter = 20) %>% 
   tidyr::nest(
     rarefied_dataset = -c(id)
   )
