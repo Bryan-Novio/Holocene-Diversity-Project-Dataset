@@ -67,22 +67,9 @@ data_to_rarefy <-   # 1001 dataset_ids
 ## 3.2. Rarefy iteratively
 
 set.seed(1234)
-rarefied_dataset_assembly <- 
-  data_to_rarefy %>% 
   rarefy_all_samples_iter(
-    n_iter = 10,
-    path = here::here("Data/Paper_1/data_rarefy/iterations")) 
+    data_to_rarefy = data_to_rarefy,
+    n_iter = 20,
+    path = here::here("Data/Paper_1/data_rarefy/iterations")) #save each iteration as separate file to a single directory
 
-## 3.3. Check rarefied datasets
-
-rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[1]])
-rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[2]])
-
-#----------------------------------------------------------#
-# 4. Write the rarefied data to an RDS file --------------
-#----------------------------------------------------------#
-
-##rarefied data multiple iteration (20x)
-
-write_rds(rarefied_dataset_assembly, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
 

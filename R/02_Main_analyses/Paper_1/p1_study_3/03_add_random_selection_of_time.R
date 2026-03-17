@@ -21,10 +21,16 @@ library(here)
 # 1. Load data ----------
 #----------------------------------------------------------#
 
-rarefied_dataset_assembly <- read_rds(here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
+paths <- list.files(
+  "Data/Paper_1/data_rarefy/iterations",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
 
 data_age_uncertainty <- 
-  read_rds(here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
+  readr::read_rds(
+    here("Data/Paper_1/data_subset/data_age_uncertainty.rds")
+  )
 
 #----------------------------------------------------------#
 # 2. Load functions ----------
@@ -46,82 +52,87 @@ source_files <-
     source
   )
 
+
 #----------------------------------------------------------#
-# 3. Reshape age uncertainty, each line is an iteration ------
+# 2. Prep age uncertainty ----------
 #----------------------------------------------------------#
 
 data_age_uncertainty_pivot <- 
   data_age_uncertainty %>% 
   get_potential_ages() %>% 
-  tidyr::nest(
-    age_uncertainty = !id
-  )
+  tidyr::nest(age_uncertainty = !id)
 
 #----------------------------------------------------------#
-# 4. Merge by iteration ------
+# 3. Output folder ----------
 #----------------------------------------------------------#
 
-data_merged <- 
-  dplyr::inner_join(
-    rarefied_dataset_assembly %>% 
+out_dir <- here("Data/Paper_1/data_rarefy/rarefied_data_with_new_ages")
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+#----------------------------------------------------------#
+# 4. ITERATE ----------
+#----------------------------------------------------------#
+
+for (i in seq_along(paths)) {
+  
+  message("Processing iteration ", i)
+  
+  # ---- Load one rarefied dataset ----
+  rarefied_data <- readr::read_rds(paths[i])
+  
+  # Extract iteration id from filename
+  id <- as.integer(tools::file_path_sans_ext(basename(paths[i])))
+  
+  # ---- Get matching age uncertainty ----
+  age_uncertainty <- 
+    data_age_uncertainty_pivot %>% 
+    dplyr::filter(id == !!id) %>% 
+    dplyr::pull(age_uncertainty) %>% 
+    purrr::chuck(1)
+  
+  # ---- Add random age ----
+  result <- {
+    
+    data_pollen_nested <- 
+      rarefied_data %>% 
       dplyr::mutate(
-        id = as.integer(id)
-      ),
-    data_age_uncertainty_pivot,
-    by = "id"
-  )
-
-#----------------------------------------------------------#
-# 5. Add we column with new age -------------
-#----------------------------------------------------------#
-
-data_with_new_age <- 
-  data_merged %>% 
-  dplyr::mutate(
-    data_with_new_age = purrr::map2(
-      .progress = TRUE,
-      .x = rarefied_dataset,
-      .y = age_uncertainty,
-      .f = ~ {
-        
-        data_pollen_nested <- 
-          .x %>% 
-          dplyr::mutate(
-            dataset_id = str_extract(dataset_id_age, "^[^_]+"),
-            .before = dplyr::everything()
-          ) %>% 
-          dplyr::select(-dataset_id_age) %>% 
-          tidyr::nest(data_pollen = !dataset_id)
-        
-        data_age_nested <- 
-          .y %>% 
-          tidyr::nest(data_age = !dataset_id)
-        
-        
-        dplyr::inner_join(
-          data_pollen_nested,
-          data_age_nested,
-          by = "dataset_id"
-        ) %>% 
-          dplyr::mutate(
-            data_with_new_age = purrr::map2(
-              .x = data_pollen,
-              .y = data_age,
-              .f = ~ dplyr::bind_cols(.x, .y)
-            ) )%>% 
-          dplyr::select(dataset_id, data_with_new_age) %>% 
-          tidyr::unnest(data_with_new_age) %>% 
-          dplyr::relocate(sample_id, potential_age) %>% 
-          dplyr::rename(age = potential_age)
-        
-      }
-      
-    ) 
+        dataset_id = stringr::str_extract(dataset_id_age, "^[^_]+"),
+        .before = dplyr::everything()
+      ) %>% 
+      dplyr::select(-dataset_id_age) %>% 
+      tidyr::nest(data_pollen = !dataset_id)
+    
+    data_age_nested <- 
+      age_uncertainty %>% 
+      tidyr::nest(data_age = !dataset_id)
+    
+    dplyr::inner_join(
+      data_pollen_nested,
+      data_age_nested,
+      by = "dataset_id"
+    ) %>% 
+      dplyr::mutate(
+        data = purrr::map2(
+          data_pollen,
+          data_age,
+          ~ dplyr::bind_cols(.x, .y)
+        )
+      ) %>% 
+      dplyr::select(dataset_id, data) %>% 
+      tidyr::unnest(data) %>% 
+      dplyr::relocate(sample_id, potential_age) %>% 
+      dplyr::rename(age = potential_age)
+  }
+  
+  # ---- Save ----
+  readr::write_rds(
+    result,
+    file = file.path(out_dir, paste0(id, ".rds"))
   )
   
-#----------------------------------------------------------#
-# 6. Save as RDS file rarefied data with new age ----------
-#----------------------------------------------------------#
+  # ---- Memory cleanup ----
+  rm(rarefied_data, result)
+  gc(verbose =FALSE)
+}
 
-write_rds(data_with_new_age, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_with_new_age.rds"))
 
