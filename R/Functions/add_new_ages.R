@@ -40,7 +40,7 @@ add_new_ages <- function(data_to_add_ages, path, file_name){
             dplyr::relocate(sample_id, potential_age) %>% 
             dplyr::rename(age = potential_age)
           
-        }
+        }, 
         readr::write_rds(data_with_new_ages,file = paste0(path,"/",file_name,".rds") )
       ) 
     )
