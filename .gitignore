@@ -47,3 +47,4 @@ Outputs/Paper_1/*
 Data/Paper_1/data_bin/bin_iterations/*.rds
 Data/Paper_1/data_rarefy/iterations/*.rds
 Data/Paper_1/data_rarefy/rarefied_data_with_new_ages/*.rds
+Data/Paper_1/data_estimate_richness/s3_richness/*.rds
