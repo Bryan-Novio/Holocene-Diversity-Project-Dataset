@@ -66,16 +66,12 @@ data_to_rarefy <-   # 1001 dataset_ids
 
 ## 3.2. Rarefy iteratively
 
-tic()
-
+set.seed(1234)
 rarefied_dataset_assembly <- 
   data_to_rarefy %>% 
-  rarefy_all_samples_iter(., n_iter = 1000) %>% 
-  tidyr::nest(
-    rarefied_dataset = -c(id)
-  )
-
-toc()
+  rarefy_all_samples_iter(
+    n_iter = 10,
+    path = here::here("Data/Paper_1/data_rarefy/iterations")) 
 
 ## 3.3. Check rarefied datasets
 
