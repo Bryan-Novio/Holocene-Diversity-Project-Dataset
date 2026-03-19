@@ -19,7 +19,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-paths <- list.files(
+paths <- 
+  list.files(
   "Data/Paper_1/data_rarefy/rarefied_data_with_new_ages",
   pattern = "[.]rds$",
   full.names = TRUE
@@ -60,7 +61,7 @@ for (i in seq_along(paths)) {
   
   message("Processing iteration ", i)
   
-  # ---- Load one rarefied dataset with new ages  ----
+  # ---- Load rarefied dataset with new ages  ----
   rarefied_data_with_new_ages <- readr::read_rds(paths[i])
   
   # Extract iteration id from filename
