@@ -37,53 +37,78 @@ source_files <-
 # 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_data_asia <- 
-  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_asia.csv"))
+paths <- list.files(
+  "Data/Paper_1/data_estimate_richness/s3_richness",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
 
-richness_data_europe <- 
-  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_europe.csv"))
 
-richness_data_namerica <- 
-  read_csv(here("Data/Paper_1/data_estimate_richness/study3_richness_namerica.csv"))
+#----------------------------------------------------------#
+# 3. Output folders ----------
+#----------------------------------------------------------#
 
-#  add regions to each dataset
+out_dir_mod <- 
+  here("Data/Paper_1/data_model/mod_iterations")
 
-richness_data_asia <-
-  richness_data_asia %>%              
-  mutate(region = "asia") 
+out_dir_stdz <- 
+  here("Data/Paper_1/data_model/stdz_richness")
 
-richness_data_europe <-
-  richness_data_europe %>% 
-  mutate(region = "europe")
-
-richness_data_namerica <-
-  richness_data_namerica %>%  
-  mutate(region = "namerica") 
-
-#bind all dataframes with richness estimate, convert dataset_id as random factor and add regions
-
-study3_richness <- 
-  bind_rows(richness_data_asia,richness_data_europe, richness_data_namerica) %>%
-  mutate(dataset_id = as_factor(dataset_id))
+#----------------------------------------------------------#
+# 4. Standardize richness  ----------
+#----------------------------------------------------------#
 
 # standardize diversity use scale():
 
-study3_richness_z_scores <- 
-  study3_richness %>% 
-  group_by(region) %>% 
-  mutate(st_richness = scale(richness)) %>%
-  ungroup() %>% 
-  mutate(st_richness = st_richness[,1]) %>% 
-  mutate(region = as_factor(region))
+for (i in seq_along(paths)) {
+  
+  # ---- Load richness dataset for each iteration  ----
+  study3_richness <- readr::read_rds(paths[i])
+  
+  # Extract iteration id from filename
+  id <- as.integer(tools::file_path_sans_ext(basename(paths[i])))
+  
+  study3_richness_z_scores <- 
+    study3_richness %>% 
+    group_by(region) %>% 
+    mutate(st_richness = scale(richness)) %>%
+    ungroup() %>% 
+    mutate(st_richness = st_richness[,1]) %>% 
+    mutate(region = as_factor(region))
+  
+  readr::write_rds(study3_richness_z_scores,file = paste0(out_dir_stdz,"/",id,".rds"), compress = "gz" ) # Write the binned and prepared_data to RDS files
+  
+  rm(study3_richness, id,  study3_richness_z_scores)
+  
+  gc(verbose = FALSE)
+  
+}
 
 # Get mean and sd to back-transform 
 
-study3_richness_standard <-
-  study3_richness %>% 
+
+paths_2 <- list.files(
+  "Data/Paper_1/data_model/stdz_richness",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
+
+
+for (j in seq_along(paths_2)){
+  
+  stdz_richness <- readr::read_rds(paths_2[j])
+  
+  # Extract iteration id from filename
+  id <- as.integer(tools::file_path_sans_ext(basename(paths[j])))
+
+  study3_richness_standard <-
+  stdz_richness %>% 
   dplyr::group_by(region) %>% 
   dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
                    sd_richness = sd(richness, na.rm = TRUE)) %>% 
   dplyr::ungroup()
+  
+}
 
 #----------------------------------------------------------#
 # 3. Model fitting -----
@@ -108,26 +133,43 @@ n_cores_to_use <-
 
 set.seed(19900723)
 
-gam_s3 <-
-  fit_regression_model(
-    data = study3_richness_z_scores,
-    y_var = "st_richness",
-    time_var = "age",
-    group_var = "region",
-    random = "study3",
-    sel_k = 12, 
-    error_family = scat(),
-    nthreads = n_cores_to_use,
-    discrete = TRUE,
-    control = mgcv::gam.control(
-      trace = TRUE,
-      maxit = 500
+for (k in seq_along(paths_2)) {
+  
+  stdz_richness <- readr::read_rds(paths_2[k])
+  
+  # Extract iteration id from filename
+  id <- as.integer(tools::file_path_sans_ext(basename(paths[k])))
+  
+  gam_s3 <-
+    fit_regression_model(
+      data = stdz_richness,
+      y_var = "st_richness",
+      time_var = "age",
+      group_var = "region",
+      random = "slope",
+      sel_k = 12, 
+      error_family = scat(),
+      nthreads = n_cores_to_use,
+      discrete = TRUE,
+      control = mgcv::gam.control(
+        trace = TRUE,
+        maxit = 500
+      )
     )
-  )
+  
+  readr::write_rds(gam_s3,file = paste0(out_dir_mod,"/",id,".rds"), compress = "gz" ) # Write the binned and prepared_data to RDS files
+  
+  rm(stdz_richness, id, gam_s3)
+  
+  gc(verbose = FALSE)
+  
+}
 
-## 3.3. Save model as RDS files --
+# View a single iteration
 
-write_rds(gam_s3,here("Data/Paper_1/data_model/gam_3.rds"))
+one <- 
+  read_rds(here::here("Data/Paper_1/data_model/mod_iterations/1.rds"))
+
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
