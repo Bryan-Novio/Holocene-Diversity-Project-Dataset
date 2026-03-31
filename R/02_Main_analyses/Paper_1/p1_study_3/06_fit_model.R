@@ -61,7 +61,9 @@ standardize_richness <- purrr::map(
                dplyr::group_by(region) %>%
                dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
                dplyr::ungroup() %>%
-               dplyr::mutate(region = as.factor(region))
+               dplyr::mutate(
+                 region = as.factor(region),
+                 dataset_id = as.factor(dataset_id))
            }
          )
 
@@ -101,7 +103,8 @@ n_cores_to_use <-
 
 set.seed(19900723)
 
-walk2(
+purrr::walk2(
+  .progress = TRUE,
   .x = standardize_richness,
   .y = seq_along(standardize_richness),
   .f = ~ {
@@ -116,11 +119,11 @@ walk2(
     message("Running: ", .y)
     
     model <- fit_regression_model(
-      data = .x,
+      data_source = .x,
       y_var = "st_richness",
       time_var = "age",
       group_var = "region",
-      random = "slope",
+      random = "intercept_reg",
       sel_k = 10,
       error_family = scat(),
       nthreads = n_cores_to_use,
@@ -138,14 +141,14 @@ walk2(
 # View a single iteration
 
 one <- 
-  read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_500.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_1.rds"))
 
 
 #----------------------------------------------------------#
 # 5. Save  files for prediction -----
 #----------------------------------------------------------#
 
-write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
+readr::write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
-write_rds(study3_richness_sd,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
+readr::write_rds(study3_richness_sd,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
 

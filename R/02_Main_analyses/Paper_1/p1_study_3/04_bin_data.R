@@ -51,7 +51,7 @@ source_files <-
 # 3. Output folder ----------
 #----------------------------------------------------------#
 
-out_dir <- here("Data/Paper_1/data_bin/bin_iterations")
+out_dir <- here::here("Data/Paper_1/data_bin/bin_iterations")
 
 #----------------------------------------------------------#
 # 4.Bin with iterations -------------------
@@ -86,7 +86,7 @@ for (i in seq_along(paths)) {
 # View a single iteration
 
 one <- 
-  read_rds(here::here("Data/Paper_1/data_bin/bin_iterations/1.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_bin/bin_iterations/1.rds"))
 
 ## end
 

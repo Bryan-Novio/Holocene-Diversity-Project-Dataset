@@ -135,5 +135,5 @@ data_with_new_age$data_with_new_age[[2]]
 # 6. Save as RDS file rarefied data with new age ----------
 #----------------------------------------------------------#
 
-write_rds(data_with_new_age, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_with_new_age.rds"))
+readr::write_rds(data_with_new_age, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_with_new_age.rds"))
 

@@ -1,7 +1,7 @@
 fit_regression_model <- function(
   data_source,
   y_var, time_var, group_var,
-  random = c("intercept", "slope"),
+  random = c("intercept", "slope", "intercept_reg"),
   sel_k,
   error_family = stats::gaussian(),
   ...
@@ -45,7 +45,7 @@ fit_regression_model <- function(
 
   random <-
     match.arg(random,
-      choices = c("intercept", "slope","study3" )
+      choices = c("intercept", "slope","intercept_reg" )
     )
 
   assertthat::assert_that(
@@ -73,7 +73,7 @@ fit_regression_model <- function(
         ),
       "intercept_reg" = 
         stringr::str_glue(
-          "{y_var} ~ {group_var} + s({time_var}, by = {group_var}, k = {sel_k}) + s(dataset_id, bs = 're')" 
+          "{y_var} ~ {group_var} + s({time_var}, by = {group_var}, bs = 'fs', k = {sel_k}) + s(dataset_id, bs = 're')" 
         ),
       ) |>
     as.formula()

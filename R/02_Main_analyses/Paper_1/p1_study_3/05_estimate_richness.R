@@ -26,7 +26,7 @@ paths <- list.files(
 )
 
 region <- 
-  read_rds(here("Data/Paper_1/data_subset/data_regions.rds"))
+  readr::read_rds(here("Data/Paper_1/data_subset/data_regions.rds"))
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -53,7 +53,7 @@ source_files <-
 #----------------------------------------------------------#
 
 out_dir <- 
-  here("Data/Paper_1/data_estimate_richness/s3_richness")
+  here::here("Data/Paper_1/data_estimate_richness/s3_richness")
 
 #----------------------------------------------------------#
 # 4. Estimate richness  at different taxo rank -- at 12 cal yr bp 
@@ -71,18 +71,18 @@ for (i in seq_along(paths)) {
   
   data_binned_to_estimate <- 
     data_binned %>% 
-          pivot_wider(names_from = taxa, 
+          tidyr::pivot_wider(names_from = taxa, 
                       values_from = summed_pollen_count) %>% 
-          unite("dataset_id_age", dataset_id,
+          tidyr::unite("dataset_id_age", dataset_id,
                 BIN, sep = "_", remove = TRUE)
 
   # ---- 4.2. Prepare dataset for richness estimation ----
   
   data_binned_to_estimate_re <- 
     data_binned_to_estimate %>% 
-          separate_wider_delim(dataset_id_age, delim = "_", 
+          tidyr::separate_wider_delim(dataset_id_age, delim = "_", 
                                names = c("dataset_id","BIN")) %>% 
-          pivot_longer(cols = -c(dataset_id, BIN), 
+          tidyr::pivot_longer(cols = -c(dataset_id, BIN), 
                        names_to = "taxa", values_to = "summed_pollen_count") %>% 
           prepare_data_for_richness_estimation(type = "binned")
 
@@ -91,17 +91,17 @@ for (i in seq_along(paths)) {
   richness_estimate <- 
     data_binned_to_estimate_re %>% 
           estimate_richness() %>% 
-          mutate(age = as.numeric(age)) %>% 
-          mutate(dataset_id = as_factor(dataset_id)) %>% 
-          filter(age <= 12000)
+          dplyr::mutate(age = as.numeric(age)) %>% 
+          dplyr::mutate(dataset_id = as_factor(dataset_id)) %>% 
+          dplyr::filter(age <= 12000)
   
   # ---- 4.4. add region to each binned data ----
   
   richness_estimate_re <- 
     richness_estimate %>% 
-    ungroup() %>% 
-    mutate(dataset_id = as.character(dataset_id)) %>% 
-          inner_join(region, by = "dataset_id")
+    dplyr::ungroup() %>% 
+    dplyr::mutate(dataset_id = as.character(dataset_id)) %>% 
+          dplyr::inner_join(region, by = "dataset_id")
   
   readr::write_rds(richness_estimate_re,file = paste0(out_dir,"/",id,".rds"), compress = "gz" ) # Write the binned and prepared_data to RDS files
   
@@ -114,7 +114,11 @@ for (i in seq_along(paths)) {
 # View a single iteration
 
 one <- 
-  read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/1.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/1.rds"))
+
+two <- 
+  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/2.rds"))
+
 
 ## end
 
