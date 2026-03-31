@@ -16,89 +16,334 @@ library(tidyverse)
 library(here)
 
 #----------------------------------------------------------#
-# 1. Load data set -----------------------------------------
+# 1. Load data -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_eu <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu.rds"))
-richness_na <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_na.rds"))
+standardize_richness <-
+  read_rds(here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
-model_eu_s3 <- read_rds(here("Outputs/Data/paper_1_study_3/model_eu_s3.rds"))
-model_na_s3 <- read_rds(here("Outputs/Data/paper_1_study_2/model_na_s3.rds"))
+study3_richness_sd <- 
+  read_rds(here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
+
+gam_mods <- 
+  list.files(
+    "Data/Paper_1/data_model/mod_iterations",
+    pattern = "[.]rds$",
+    full.names = TRUE
+  )
 
 #----------------------------------------------------------#
-# 2. Visualize trends --
+# 2. Load functions ------------------------------------
 #----------------------------------------------------------# 
 
-#2.1. using actual data 
+# Load the function into the global environment
 
-## without RE
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
 
-richness_eu %>%
-  ggplot(aes(x = age, y = richness)) +
-  geom_point() +
-  geom_smooth(aes(group=1), method = "gam", formula = y ~ s(x) ) +
-  scale_x_reverse() +
-  geom_vline(xintercept = 9800, color = 'red') +
-  theme_classic()
+source_files <-
+  sapply(
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
-## with RE (geom_smooth does not allow RE in gam model from mgcv) (not working)
+#----------------------------------------------------------#
+# 3. Model predictions -----
+#----------------------------------------------------------#
 
-dataset_id <-  factor(richness$dataset_id)
-
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point() +
-  geom_smooth(method = "gam", formula = y ~ s(x) + s(dataset_id, bs="re")) +
-  scale_x_reverse() +
-  geom_vline(xintercept = 9800, color = 'red') +
-  theme_classic()
-
-## use plot_smooth from 'itsadug' package (use base R for plotting)
-
-plot(model_eu_s3, select=1)
-plot(model_na_s3, select=1)
-
-itsadug::plot_smooth(model_eu_s3, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
-itsadug::plot_smooth(model_na_s3, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
-
-##reverse x-axis 
-
-p <- ggplotify::as.ggplot(
-  function() {
-    # Plot the smooth term
-    p <- plot_smooth(model_1_s2, view = 'age', rm.ranef = TRUE, rug = FALSE)
+data_dummy_full <-
+  purrr::map(
+    .x = standardize_richness,
+    .f = ~ {
+      richness_chr <- .x %>%
+        mutate(region = as.character(region))
+      
+      tidyr::expand_grid(
+        distinct(.,region),
+        age = seq(
+          min(.$age),
+          max(.$age),
+          length.out = 100
+        )
+      )
+    }
     
-    # Add the scale_x_reverse() layer to the ggplot object 'p'
-    p  + scale_x_reverse() 
+  )
+
+##Prediction
+
+data_pred_full <-
+  purrr::map2(
+    .x  = gam_mods,
+    .y  = data_dummy_full,
+    .f = ~ {
+      mods <- 
+        readr::read_rds(.x)
+      
+      preds <-
+        predict_model(
+          model = mods,
+          newdata =.y,
+          type = "response",
+          exclude_terms = "region"
+        ) %>%
+        as.data.frame() %>%
+        tibble::as_tibble() %>%
+        dplyr::relocate(
+          estimate, region, age,
+          .before = dplyr::everything()
+        )
+      
+    }
+  )
+
+
+data_back_transform <- 
+  purrr::map2(
+    .x = data_pred_full,
+    .y = study3_richness_sd,
+    .f = ~ {
+      .x %>% 
+        left_join(.y, by = "region") %>% 
+        mutate(
+          richness = estimate*sd_richness + mean_richness,
+          rich_low = conf_low*sd_richness + mean_richness,
+          rich_high = conf_high*sd_richness + mean_richness) 
+      
+    }
+  )
+
+#----------------------------------------------------------#
+# 4. Visualization -----
+#----------------------------------------------------------#
+
+##general plot
+
+p <-
+  ggplot2::ggplot(
+  ) +
+  ggplot2::labs(
+    y = "Pollen Richness", x = "cal yr BP") +
+  ggplot2::theme_classic(
+    
+  )+
+  ggplot2::theme(legend.position = "none",
+                 plot.title = element_text(color = "#2a707f"),
+                 axis.title = element_text(color = "#2a707f", size = 18),
+                 axis.text  = element_text(color = "#2a707f", size = 24),
+                 axis.ticks = element_line(color = "#2a707f"),
+                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
+  )
+
+#  4.1. Plot predictions for each region -----
+
+#show continental trend in one figure
+
+p1 <- purrr::map(
+  .x = data_back_transform,
+  .f = ~  {
+    p + 
+      ggplot2::facet_wrap(~ region, dir = 'rt', ncol = 1, strip.position = 'right') +
+      ggplot2::geom_ribbon(
+        data = .x,
+        ggplot2::aes(
+          x = age,
+          y = richness,
+          ymin = rich_low,
+          ymax = rich_high,
+          fill = as.factor(region)
+        ),
+        alpha = 0.3
+      ) +
+      ggplot2::geom_line(
+        data = .x,
+        ggplot2::aes(x = age, y = richness,color = region),
+        linewidth = 1
+      ) +
+      ggplot2::theme(legend.position = "none",
+                     axis.text  = element_text(size = 5),
+                     strip.text = element_text(
+                       size = 10,
+                       color = "#2a707f"
+                     ),
+                     strip.background = element_rect(
+                       color = "#2a707f",
+                       fill = NA,
+                       linewidth = 0.3
+                     )) +
+      ggplot2::coord_cartesian(
+        ylim = c(14, 24))
+    
   }
 )
 
-p 
-
-#2.2. using predicted data (-- fit the GAM with mgcv and plot its predictions)
 
 
-# model_1_s2
-
-newdata <- data.frame(age = seq(from = min(richness$age), to = max(richness$age), length.out = 100),
-                      dataset_id = factor(1001))
-
-predictions <- predict(model_1_s2, newdata = newdata, se.fit = TRUE, exclude = "s(dataset_id)")
-
-newdata$fit <- predictions$fit 
-newdata$se <- predictions$se.fit
+p1 +
+  ggplot2::scale_x_reverse()
 
 
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point(alpha = 0.5) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
+## show individual trend for each continent
 
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
+asia <- 
+  purrr::map(
+    .x = data_back_transform,
+    .f =  ~ {
+      .x %>% 
+        filter(region == 'asia')
+    }
+  )
+
+europe <- 
+  purrr::map(
+    .x = data_back_transform,
+    .f =  ~ {
+      .x %>% 
+        filter(region == 'europe')
+    }
+  )
+
+
+namerica <- 
+  purrr::map(
+    .x = data_back_transform,
+    .f =  ~ {
+      .x %>% 
+        filter(region == 'namerica')
+    }
+  )
+
+
+##Asia
+
+A <- purrr::map(
+  .x = asia,
+  .f = ~ {
+    p +
+      ggplot2::geom_ribbon(
+        data = .x,
+        ggplot2::aes(
+          x = age,
+          y = richness,
+          ymin = rich_low,
+          ymax = rich_high,
+          fill = region
+        ),
+        alpha = 0.1
+      ) +
+      ggplot2::geom_line(
+        data = .x,
+        ggplot2::aes(x = age, y = richness),
+        linewidth = 4, color = 'red'
+      ) +
+      ggplot2::theme(legend.position = "none",
+                     axis.text  = element_text(size = 22),
+                     strip.text = element_text(
+                       size = 16,
+                       color = "#2a707f"
+                     ),
+                     strip.background = element_rect(
+                       color = "#2a707f",
+                       fill = NA,
+                       linewidth = 0.3
+                     )
+      ) +
+      ggplot2::coord_cartesian(ylim = c(14, 19) 
+      ) 
+  }
+) 
+
+A + ggplot2::scale_x_reverse()
+
+#Europe
+
+E <- 
+  purrr::map(
+    .x = europe,
+    .f = ~ {
+      p +
+        ggplot2::geom_ribbon(
+          data = .x,
+          ggplot2::aes(
+            x = age,
+            y = richness,
+            ymin = rich_low,
+            ymax = rich_high,
+            fill = region
+          ),
+          alpha = 0.1
+        ) +
+        ggplot2::geom_line(
+          data = .x,
+          ggplot2::aes(x = age, y = richness),
+          linewidth = 4, color = 'red'
+        ) +
+        ggplot2::theme(legend.position = "none",
+                       axis.text  = element_text(size = 22),
+                       strip.text = element_text(
+                         size = 16,
+                         color = "#2a707f"
+                       ),
+                       strip.background = element_rect(
+                         color = "#2a707f",
+                         fill = NA,
+                         linewidth = 0.3
+                       )
+        ) +
+        ggplot2::coord_cartesian(ylim = c(14, 19) 
+        ) 
+    }
+  ) 
+
+E + ggplot2::scale_x_reverse()
+
+##NAmerica
+
+N <- purrr::map(
+  .x = namerica,
+  .f = ~ {
+    p +
+      ggplot2::geom_ribbon(
+        data = .x,
+        ggplot2::aes(
+          x = age,
+          y = richness,
+          ymin = rich_low,
+          ymax = rich_high,
+          fill = region
+        ),
+        alpha = 0.1
+      ) +
+      ggplot2::geom_line(
+        data = .x,
+        ggplot2::aes(x = age, y = richness),
+        linewidth = 4, color = 'red'
+      ) +
+      ggplot2::theme(legend.position = "none",
+                     axis.text  = element_text(size = 22),
+                     strip.text = element_text(
+                       size = 16,
+                       color = "#2a707f"
+                     ),
+                     strip.background = element_rect(
+                       color = "#2a707f",
+                       fill = NA,
+                       linewidth = 0.3
+                     )
+      ) +
+      ggplot2::coord_cartesian(ylim = c(14, 19) 
+      ) 
+  }
+) 
+
+N + ggplot2::scale_x_reverse()
+
+##combine continental trends into single plot
+
+library(patchwork)
+
+A + E + N
