@@ -124,7 +124,7 @@ purrr::walk2(
       time_var = "age",
       group_var = "region",
       random = "intercept_reg",
-      sel_k = 10,
+      sel_k = 50,
       error_family = scat(),
       nthreads = n_cores_to_use,
       discrete = TRUE,
