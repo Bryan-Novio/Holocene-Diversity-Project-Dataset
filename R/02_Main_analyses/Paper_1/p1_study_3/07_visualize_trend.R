@@ -20,10 +20,10 @@ library(here)
 #----------------------------------------------------------# 
 
 standardize_richness <-
-  read_rds(here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
+  readr::read_rds(here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
 study3_richness_sd <- 
-  read_rds(here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
+  readr::read_rds(here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
 
 gam_mods <- 
   list.files(
@@ -63,7 +63,7 @@ data_dummy_full <-
         mutate(region = as.character(region))
       
       tidyr::expand_grid(
-        distinct(.,region),
+        dplyr::distinct(.,region),
         age = seq(
           min(.$age),
           max(.$age),
@@ -109,7 +109,7 @@ data_back_transform <-
     .f = ~ {
       .x %>% 
         left_join(.y, by = "region") %>% 
-        mutate(
+        dplyr::mutate(
           richness = estimate*sd_richness + mean_richness,
           rich_low = conf_low*sd_richness + mean_richness,
           rich_high = conf_high*sd_richness + mean_richness) 
@@ -194,7 +194,7 @@ asia <-
     .x = data_back_transform,
     .f =  ~ {
       .x %>% 
-        filter(region == 'asia')
+        dplyr::filter(region == 'asia')
     }
   )
 
@@ -203,7 +203,7 @@ europe <-
     .x = data_back_transform,
     .f =  ~ {
       .x %>% 
-        filter(region == 'europe')
+        dplyr::filter(region == 'europe')
     }
   )
 
@@ -213,7 +213,7 @@ namerica <-
     .x = data_back_transform,
     .f =  ~ {
       .x %>% 
-        filter(region == 'namerica')
+        dplyr::filter(region == 'namerica')
     }
   )
 
