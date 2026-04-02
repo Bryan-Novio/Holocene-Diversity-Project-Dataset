@@ -1,8 +1,6 @@
-
 library(tidyverse)
 library(here)
-
-
+library(assertthat)
 
 source(
   here("R/02_Main_analyses/Paper_1/p1_study_1/00_subset_data.R")
@@ -26,9 +24,4 @@ source(
 
 source(
   here("R/02_Main_analyses/Paper_1/p1_study_1/05_visualize_trend.R")
-)
-
-
-source(
-  here("R/02_Main_analyses/Paper_1/p1_study_1/study_1_master.R")
 )
