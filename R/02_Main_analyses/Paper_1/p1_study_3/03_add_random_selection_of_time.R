@@ -69,6 +69,7 @@ data_age_uncertainty_pivot <-
 out_dir <- here("Data/Paper_1/data_rarefy/rarefied_data_with_new_ages")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
+data_merged$age_uncertainty[[1]]
 #----------------------------------------------------------#
 # 4. ITERATE ----------
 #----------------------------------------------------------#
