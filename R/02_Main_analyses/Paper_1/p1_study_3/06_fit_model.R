@@ -43,6 +43,21 @@ paths <- list.files(
   full.names = TRUE
 )
 
+#check which iteration/s is age < 50; this is to achieve sel_k = 50 for model fit
+
+check_age_50 <-   
+  purrr::map(
+    .x = paths,
+    .f = ~ {
+      .x %>% 
+        read_rds() %>% 
+        distinct(age) %>% 
+        count() 
+    }
+  ) %>% 
+  purrr::list_rbind() %>% 
+  filter(n >= 50)   #466 iters with distinct age < 50
+
 #----------------------------------------------------------#
 # 3. Output folders ----------
 #----------------------------------------------------------#
@@ -66,6 +81,7 @@ standardize_richness <- purrr::map(
                  dataset_id = as.factor(dataset_id))
            }
          )
+
 
 # Get mean and sd to back-transform 
 
