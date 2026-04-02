@@ -90,4 +90,3 @@ write_rds(data_p1_s3_counts_ages_region, here("Data/Paper_1/data_subset/datasub_
 
 write_rds(data_age_uncertainty, here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
 
-write_rds(region, here("Data/Paper_1/data_subset/data_regions.rds"))
