@@ -66,38 +66,24 @@ data_to_rarefy <-   # 1001 dataset_ids
 
 ## 3.2. Rarefy iteratively
 
-tic()
+set.seed(1234)
 
 rarefied_dataset_assembly <- 
   data_to_rarefy %>% 
-  rarefy_all_samples_iter(., n_iter = 20) %>% 
-  tidyr::nest(
-    rarefied_dataset = -c(id)
-  )
-
-toc()
+  rarefy_all_samples_iter(
+    n_iter = 1000,
+    path = here::here("Data/Paper_1/data_rarefy/iterations")) 
 
 ## 3.3. Check rarefied datasets
 
-manual_check <- TRUE
-
-if (
- manual_check == TRUE  
-) {
-  
-  waldo::compare(
-    data_with_new_age,
-    rarefied_dataset_assembly$rarefied_dataset[[2]]
-  )
-  
-  rarefied_dataset_assembly%>% filter(id == "1") %>% unnest(rarefied_dataset)
-}
+rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[1]])
+rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[2]])
 
 #----------------------------------------------------------#
 # 4. Write the rarefied data to an RDS file --------------
 #----------------------------------------------------------#
 
-##rarefied data multiple iteration (20x)
+##rarefied data multiple iteration (1000x)
 
 write_rds(rarefied_dataset_assembly, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
 

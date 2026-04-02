@@ -19,91 +19,61 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_dataset_assembly_asia_p_ages_to_bin <- 
-  read_rds(here("Data/Paper_1/data_rarefy/rarefied_dataset_assembly_asia_p_ages_to_bin.rds"))
-
-data <-
-  read_rds(here("Outputs/Data/data_assembly_2025-03-14__796c6bc270edcf0a682242164dd28a39__.rds"))
-
-data_study3_harmonised_asia <- 
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_asia.rds"))
-
-
-data_study3_harmonised_europe <-
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_europe.rds"))
-
-data_study3_harmonised_namerica <-
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_harmonised_namerica.rds"))
+paths <- list.files(
+  "Data/Paper_1/data_rarefy/rarefied_data_with_new_ages",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
 
-# Get a vector of general functions
-
-fun_list <-
-  list.files(
-    path = "R/Functions/",
-    pattern = "\\.R$",
-    recursive = TRUE
-  )
-
-# Load the function into the global environment
-
 source_files <-
   sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
 #----------------------------------------------------------#
-# 3. Bin data  at different taxo rank --
-#----------------------------------------------------------# 
+# 3. Output folder ----------
+#----------------------------------------------------------#
 
-data_binned_asia <-
-  data_study3_harmonised_asia %>% 
-  bin_data(dataset_id, 500)
+out_dir <- here("Data/Paper_1/data_bin/bin_iterations")
 
-data_binned_europe <-
-  data_study3_harmonised_europe %>% 
-  bin_data(dataset_id, 500)
+#----------------------------------------------------------#
+# 4.Bin with iterations -------------------
+#----------------------------------------------------------#
 
-data_binned_namerica <-
-  data_study3_harmonised_namerica %>% 
-  bin_data(dataset_id, 500)
-
-
-##Binning by 1000 iterations (runtime = 2-3 hrs.)
-
-
-iter <- unique(rarefied_dataset_assembly_asia_p_ages_to_bin$iter)
-
-data_binned_asia_res <- list()
-
-for (i in iter){
+for (i in seq_along(paths)) {
   
-  data_binned_asia_res[[i]] <- 
-    rarefied_dataset_assembly_asia_p_ages_to_bin %>% 
-    filter(iter == i) %>% 
-    bin_data(.,dataset_id, 500)
+  message("Processing iteration ", i)
+  
+  # ---- Load one rarefied dataset with new ages  ----
+  rarefied_data_with_new_ages <- readr::read_rds(paths[i])
+  
+  # Extract iteration id from filename
+  id <- as.integer(tools::file_path_sans_ext(basename(paths[i])))
+  
+  
+  # ---- Reshape rarefied dataset with new ages to bin ----
+  
+  data_binned <-   rarefied_data_with_new_ages %>%
+    tidyr::pivot_longer(cols = -c(sample_id,age,dataset_id),
+                        names_to = "taxa",
+                        values_to = "pollen_counts") %>% 
+    bin_data_dt(dataset_id, 500) 
+  
+  readr::write_rds(data_binned,file = paste0(out_dir,"/",id,".rds"), compress = "gz" ) # Write the binned and prepared_data to RDS files
+  
+  rm(rarefied_data_with_new_ages,id, data_binned)
+  gc(verbose = FALSE)
   
 }
 
-##transfrom back to a single dataframe
+# View a single iteration
 
-data_binned_asia_res_new <- 
-  bind_rows(data_binned_asia_res,.id = "iter")
+one <- 
+  read_rds(here::here("Data/Paper_1/data_bin/bin_iterations/1.rds"))
 
-#----------------------------------------------------------#
-# 4. Write the binned and prepared_data to RDS files
-#----------------------------------------------------------# 
-
-## binned rarefied data assembly (1000 iterations)
-
-write_rds(data_binned_asia_res_new, here("Data/Paper_1/data_bin/data_binned_asia_res_iter.rds"))
-
-## binned data single iteration
-
-write_rds(data_binned_asia, here("Data/Paper_1/data_bin/data_study3_binned_asia.rds"))
-write_rds(data_binned_europe, here("Data/Paper_1/data_bin/data_study3_binned_europe.rds"))
-write_rds(data_binned_namerica, here("Data/Paper_1/data_bin/data_study3_binned_namerica.rds"))
+## end
