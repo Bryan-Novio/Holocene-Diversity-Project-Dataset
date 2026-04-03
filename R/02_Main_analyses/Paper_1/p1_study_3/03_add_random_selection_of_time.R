@@ -71,6 +71,14 @@ rarefied_dataset_assembly_bind <-
 
 rarefied_dataset_assembly_bind$rarefied_data[[1]]
 
+rarefied_dataset_assembly_bind <- 
+rarefied_dataset_assembly %>% 
+purrr::map(
+  .f = ~ readr::read_rds(.x)) %>% 
+  tibble::enframe(name = "id", value = "rarefied_data") 
+
+rarefied_dataset_assembly_bind$rarefied_data[[1]]
+
 data_merged <- 
   dplyr::inner_join(
     rarefied_dataset_assembly_bind,
