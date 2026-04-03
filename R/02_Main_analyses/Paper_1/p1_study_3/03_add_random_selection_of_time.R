@@ -62,6 +62,14 @@ data_age_uncertainty_pivot <-
 #----------------------------------------------------------#
 # 4. Merge by iteration ------
 #----------------------------------------------------------#
+  
+  rarefied_dataset_assembly_bind <- 
+  rarefied_dataset_assembly %>% 
+  purrr::map(
+    .f = ~ readr::read_rds(.x)) %>% 
+  tibble::enframe(name = "id", value = "rarefied_data") 
+
+rarefied_dataset_assembly_bind$rarefied_data[[1]]
 
 rarefied_dataset_assembly_bind <- 
 rarefied_dataset_assembly %>% 
@@ -79,6 +87,7 @@ data_merged <-
   )
 
 data_merged$age_uncertainty[[1]]
+
 #----------------------------------------------------------#
 # 5. Add column with new age -------------
 #----------------------------------------------------------#
@@ -130,7 +139,7 @@ data_with_new_age <-
 
 data_with_new_age$data_with_new_age[[1]]
 data_with_new_age$data_with_new_age[[2]]
-
+  
 #----------------------------------------------------------#
 # 6. Save as RDS file rarefied data with new age ----------
 #----------------------------------------------------------#
