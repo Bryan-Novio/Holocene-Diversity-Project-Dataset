@@ -15,8 +15,6 @@
 library(tidyverse)
 library(here)
 library(vegan)
-library(tictoc)
-library(waldo)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
@@ -74,16 +72,5 @@ rarefied_dataset_assembly <-
     n_iter = 1000,
     path = here::here("Data/Paper_1/data_rarefy/iterations")) 
 
-## 3.3. Check rarefied datasets
 
-rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[1]])
-rlang::hash(rarefied_dataset_assembly$rarefied_dataset[[2]])
-
-#----------------------------------------------------------#
-# 4. Write the rarefied data to an RDS file --------------
-#----------------------------------------------------------#
-
-##rarefied data multiple iteration (1000x)
-
-write_rds(rarefied_dataset_assembly, here("Data/Paper_1/data_rarefy/study3_rarefied_dataset_assembly_iter.rds"))
 
