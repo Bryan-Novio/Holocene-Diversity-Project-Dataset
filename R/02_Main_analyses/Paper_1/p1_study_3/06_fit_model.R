@@ -140,7 +140,7 @@ purrr::walk2(
       time_var = "age",
       group_var = "region",
       random = "intercept_reg",
-      sel_k = 50,
+      sel_k = 12,
       error_family = scat(),
       nthreads = n_cores_to_use,
       discrete = TRUE,
@@ -167,4 +167,64 @@ one <-
 readr::write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
 readr::write_rds(study3_richness_sd,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
+
+
+
+
+###ALTERNATIVE (without iteration) --
+
+
+#Load richness
+
+richness_data <- purrr::map(
+  .x = paths,
+  .f = ~{
+    data <- .x %>% 
+      readr::read_rds()
+    }
+) %>% 
+  purrr::list_rbind()
+
+#standardize richness
+
+richness_std <- 
+  richness_data%>%
+  dplyr::group_by(region) %>%
+  dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    region = as.factor(region),
+    dataset_id = as.factor(dataset_id))
+
+# get sd
+
+richness_sd <- 
+  richness_std %>% 
+  dplyr::group_by(region) %>% 
+  dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
+    sd_richness = sd(richness, na.rm = TRUE)) %>% 
+  dplyr::ungroup()
+
+
+##fit model (k = 50)
+
+model_0 <- fit_regression_model(  #ran 5pm 4/6/2026 done 5:30 pm
+  progress = "tk",
+  data_source = richness_std,
+  y_var = "st_richness",
+  time_var = "age",
+  group_var = "region",
+  random = "intercept_reg",
+  sel_k = 50,
+  error_family = scat(),
+  nthreads = n_cores_to_use,
+  discrete = TRUE,
+  control = mgcv::gam.control(
+    trace = FALSE,
+    maxit = 500
+  ))
+
+##save model
+
+readr::write_rds(model_0, here::here("Data/Paper_1/data_model/model_0.rds"))
 
