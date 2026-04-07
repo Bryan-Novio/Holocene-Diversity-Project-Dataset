@@ -224,7 +224,8 @@ model_0 <- fit_regression_model(  #ran 5pm 4/6/2026 done 5:30 pm
     maxit = 500
   ))
 
-##save model
+##save richness_std, richness_sd, model
 
 readr::write_rds(model_0, here::here("Data/Paper_1/data_model/model_0.rds"))
-
+readr::write_rds(richness_std, here::here("Data/Paper_1/data_estimate_richness/s3_richness_std_no_iter.rds"))
+readr::write_rds(richness_sd, here::here("Data/Paper_1/data_estimate_richness/s3_richness_sd_no_iter.rds"))
