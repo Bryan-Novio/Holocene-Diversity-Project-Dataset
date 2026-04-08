@@ -146,8 +146,77 @@ one <-
   readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_1.rds"))
 
 
+
+
 #----------------------------------------------------------#
-# 5. Save  files for prediction -----
+# 6. Model predictions -----
+#----------------------------------------------------------#
+
+
+data_dummy_full <-
+  purrr::map(
+    .x = 
+      standardize_richness,
+    .f = ~ {
+      richness_chr <- .x %>%
+        mutate(region = as.character(region)) %>% 
+        tidyr::expand_grid(
+          dplyr::distinct(.,region),
+          age = seq(
+            min(.$age),
+            max(.$age),
+            length.out = 100
+          )
+        )
+    }
+    
+  )
+
+
+##Prediction
+
+data_pred_full <-
+  purrr::map2(
+    .x  = gam_mods,
+    .y  = data_dummy_full,
+    .f = ~ {
+      mods <- 
+        readr::read_rds(.x)
+      
+      preds <-
+        predict_model(
+          model = mods,
+          newdata =.y,
+          type = "response",
+          exclude_terms = "region"
+        ) %>%
+        as.data.frame() %>%
+        tibble::as_tibble() %>%
+        dplyr::relocate(
+          estimate, region, age,
+          .before = dplyr::everything()
+        )
+      
+    }
+  )
+
+data_back_transform <- 
+  purrr::map2(
+    .x = data_pred_full,
+    .y = study3_richness_sd,
+    .f = ~ {
+      .x %>% 
+        left_join(.y, by = "region") %>% 
+        dplyr::mutate(
+          richness = estimate*sd_richness + mean_richness,
+          rich_low = conf_low*sd_richness + mean_richness,
+          rich_high = conf_high*sd_richness + mean_richness) 
+      
+    }
+  )
+
+#----------------------------------------------------------#
+# 7. Save  files for prediction -----
 #----------------------------------------------------------#
 
 readr::write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
