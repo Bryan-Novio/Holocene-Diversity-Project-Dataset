@@ -51,77 +51,12 @@ source_files <-
     source
   )
 
-#----------------------------------------------------------#
-# 3. Model predictions -----
-#----------------------------------------------------------#
-
-data_dummy_full <-
-  purrr::map(
-    .x = standardize_richness,
-    .f = ~ {
-      richness_chr <- .x %>%
-        mutate(region = as.character(region))
-      
-      tidyr::expand_grid(
-        dplyr::distinct(.,region),
-        age = seq(
-          min(.$age),
-          max(.$age),
-          length.out = 100
-        )
-      )
-    }
-    
-  )
-
-##Prediction
-
-data_pred_full <-
-  purrr::map2(
-    .x  = gam_mods,
-    .y  = data_dummy_full,
-    .f = ~ {
-      mods <- 
-        readr::read_rds(.x)
-      
-      preds <-
-        predict_model(
-          model = mods,
-          newdata =.y,
-          type = "response",
-          exclude_terms = "region"
-        ) %>%
-        as.data.frame() %>%
-        tibble::as_tibble() %>%
-        dplyr::relocate(
-          estimate, region, age,
-          .before = dplyr::everything()
-        )
-      
-    }
-  )
-
-
-data_back_transform <- 
-  purrr::map2(
-    .x = data_pred_full,
-    .y = study3_richness_sd,
-    .f = ~ {
-      .x %>% 
-        left_join(.y, by = "region") %>% 
-        dplyr::mutate(
-          richness = estimate*sd_richness + mean_richness,
-          rich_low = conf_low*sd_richness + mean_richness,
-          rich_high = conf_high*sd_richness + mean_richness) 
-      
-    }
-  )
 
 #----------------------------------------------------------#
-# 4. Visualization -----
+# 3. Visualization -----
 #----------------------------------------------------------#
 
-##general plot
+## 3.1. General plot
 
 p <-
   ggplot2::ggplot(
@@ -139,7 +74,7 @@ p <-
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
   )
 
-#  4.1. Plot predictions for each region -----
+#  3.2. Plot predictions for each region -----
 
 #show continental trend in one figure
 
@@ -187,7 +122,7 @@ p1 +
   ggplot2::scale_x_reverse()
 
 
-## show individual trend for each continent
+## 3.3.Show trend by continent
 
 asia <- 
   purrr::map(
