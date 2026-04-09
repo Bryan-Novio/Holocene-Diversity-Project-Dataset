@@ -43,13 +43,15 @@ paths <- list.files(
   full.names = TRUE
 )
 
-
 #----------------------------------------------------------#
 # 3. Output folders ----------
 #----------------------------------------------------------#
 
 out_dir_mod <- 
   here("Data/Paper_1/data_model/mod_iterations")
+
+out_dir_preds <- 
+  here("Data/Paper_1/data_model/preds")
 
 #----------------------------------------------------------#
 # 4. Standardize richness  ----
@@ -145,23 +147,35 @@ purrr::walk2(
 one <- 
   readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_1.rds"))
 
+# Check model parameters
 
+mod_iters <- list.files(
+    "Data/Paper_1/data_model/mod_iterations",
+    pattern = "[.]rds$",
+    full.names = TRUE
+  )
 
+mod_param <- purrr::map(
+  .progress = TRUE,
+  .x = mod_iters,
+  .f = ~ {
+    .x %>% 
+      readr::read_rds() %>% 
+    mgcv::k.check()
+  }
+)
 
 #----------------------------------------------------------#
 # 6. Model predictions -----
 #----------------------------------------------------------#
 
-
 data_dummy_full <-
   purrr::map(
-    .x = 
-      standardize_richness,
+    .progress = TRUE,
+    .x = standardize_richness,
     .f = ~ {
-      richness_chr <- .x %>%
-        mutate(region = as.character(region)) %>% 
         tidyr::expand_grid(
-          dplyr::distinct(.,region),
+          dplyr::distinct(.,region, dataset_id),
           age = seq(
             min(.$age),
             max(.$age),
@@ -172,14 +186,30 @@ data_dummy_full <-
     
   )
 
+data_dummy_full[[1]]
 
-##Prediction
+standardize_richness[[1]]
 
-data_pred_full <-
-  purrr::map2(
+## 6.1.Prediction
+
+### 6.1.1.Load model iterations
+gam_mods <- 
+  list.files(
+    "Data/Paper_1/data_model/mod_iterations",
+    pattern = "[.]rds$",
+    full.names = TRUE
+  )
+
+### 6.1.2.Predict
+
+purrr::walk2(
+    .progress = TRUE,
     .x  = gam_mods,
     .y  = data_dummy_full,
     .f = ~ {
+      
+      out_file <- file.path(out_dir_preds, paste0("pred_", seq_along(.y), ".rds"))
+      
       mods <- 
         readr::read_rds(.x)
       
@@ -199,6 +229,8 @@ data_pred_full <-
       
     }
   )
+
+### 6.1.3.Back-transform richness
 
 data_back_transform <- 
   purrr::map2(
