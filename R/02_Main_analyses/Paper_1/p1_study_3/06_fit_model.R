@@ -17,6 +17,7 @@
 library(tidyverse)
 library(here)
 library(mgcv)
+library(tictoc)
 
 # Load the function into the global environment
 
@@ -193,6 +194,7 @@ standardize_richness[[1]]
 ## 6.1.Prediction
 
 ### 6.1.1.Load model iterations
+
 gam_mods <- 
   list.files(
     "Data/Paper_1/data_model/mod_iterations",
@@ -202,97 +204,83 @@ gam_mods <-
 
 ### 6.1.2.Predict
 
-#use for loop
+n <- length(gam_mods)
 
-
+tic()
 
 for (i in seq_along(gam_mods)) {
   
-  mods <- 
-    readr::read_rds(gam_mods[i])
+  tic(paste("Iteration", i, "of", n))
   
-  id <- as.integer(tools::file_path_sans_ext(basename(gam_mods[i])))
+  mod_path <- gam_mods[[i]]
+  data_i   <- data_dummy_full[[i]]
   
-  for (f in n) {
+  out_file <- file.path(out_dir_preds, paste0("pred_", i, ".rds"))
   
-    n <- seq_along(data_dummy_full)
-    
-    preds <-
-      predict_model(
-        model = mods,
-        newdata = as.data.frame(data_dummy_full[f]),
-        type = "response",
-        exclude_terms = "region"
-      ) %>%
-      as.data.frame() %>%
-      tibble::as_tibble() %>%
-      dplyr::relocate(
-        estimate, region, age,
-        .before = dplyr::everything()
-      )
-    
+  if (file.exists(out_file)) {
+    toc(log = TRUE)
+    next
   }
   
-  readr::write_rds(preds, file = paste(out_dir_preds, "/",id, ".rds" ), compress = "gz")
+  mods <- read_rds(mod_path)
   
-  rm(mods, id, preds)
-  gc(verbose = FALSE)
+  preds <-
+    predict_model(
+      model = mods,
+      newdata = data_i,
+      type = "response",
+      exclude_terms = "region"
+    ) %>%
+    as_tibble() %>%
+    relocate(estimate, region, age, .before = everything())
+  
+  write_rds(preds, file = out_file, compress = "gz")
+  
+  rm(mods, preds)
+  if (i %% 10 == 0) gc(FALSE)
+  
+  toc(log = TRUE)
 }
 
+toc()  
 
 
-
-###
-n <- seq_along(data_dummy_full)
-
-purrr::walk2(
-    .progress = TRUE,
-    .x  = gam_mods,
-    .y  = data_dummy_full,
-    .p  = n,
-    .f = ~ {
-      
-      out_file <- file.path(out_dir_preds, paste0("pred_", n, ".rds"))
-      
-      mods <- 
-        readr::read_rds(.x)
-      
-      preds <-
-        predict_model(
-          model = mods,
-          newdata =.y,
-          type = "response",
-          exclude_terms = "region"
-        ) %>%
-        as.data.frame() %>%
-        tibble::as_tibble() %>%
-        dplyr::relocate(
-          estimate, region, age,
-          .before = dplyr::everything()
-        )
-      
-      out_file <- file.path(out_dir_preds, paste0("pred_", n, ".rds"))
-      
-    }
-  )
+one <- read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
 
 ### 6.1.3.Back-transform richness
 
-data_back_transform <- 
-  purrr::map2(
-    .x = data_pred_full,
-    .y = study3_richness_sd,
-    .f = ~ {
-      .x %>% 
-        left_join(.y, by = "region") %>% 
-        dplyr::mutate(
-          richness = estimate*sd_richness + mean_richness,
-          rich_low = conf_low*sd_richness + mean_richness,
-          rich_high = conf_high*sd_richness + mean_richness) 
-      
-    }
-  )
+preds <- 
+  list.files(here::here("Data/Paper_1/data_model/preds"), pattern = "[.]rds$",full.names = TRUE ) 
 
+out_back <-   here("Data/Paper_1/data_model/data_back")
+
+
+for (i in seq_along(preds)) {
+  
+  # 1. Read the data
+  path <- preds[i]
+  data_back <- readr::read_rds(path)
+  
+  # 2. Join and back-transform
+  data_back <- data_back %>%
+    dplyr::left_join(study3_richness_sd[[i]], by = "region") %>%
+    dplyr::mutate(
+      richness  = estimate * sd_richness + mean_richness,
+      rich_low  = conf_low * sd_richness + mean_richness,
+      rich_high = conf_high * sd_richness + mean_richness
+    )
+ # 3. Save sd for each iteration
+  readr::write_rds(
+    data_back, 
+    file = stringr::str_glue("{out_back}/{i}.rds")
+  )
+}
+
+
+check <- read_rds(here("Data/Paper_1/data_model/data_back/1.rds"))
+
+
+View(check)
 #----------------------------------------------------------#
 # 7. Save  files for prediction -----
 #----------------------------------------------------------#
@@ -300,7 +288,4 @@ data_back_transform <-
 readr::write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
 readr::write_rds(study3_richness_sd,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
-
-
-
 
