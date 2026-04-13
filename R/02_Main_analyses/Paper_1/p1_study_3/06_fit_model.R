@@ -202,13 +202,57 @@ gam_mods <-
 
 ### 6.1.2.Predict
 
+#use for loop
+
+
+
+for (i in seq_along(gam_mods)) {
+  
+  mods <- 
+    readr::read_rds(gam_mods[i])
+  
+  id <- as.integer(tools::file_path_sans_ext(basename(gam_mods[i])))
+  
+  for (f in n) {
+  
+    n <- seq_along(data_dummy_full)
+    
+    preds <-
+      predict_model(
+        model = mods,
+        newdata = as.data.frame(data_dummy_full[f]),
+        type = "response",
+        exclude_terms = "region"
+      ) %>%
+      as.data.frame() %>%
+      tibble::as_tibble() %>%
+      dplyr::relocate(
+        estimate, region, age,
+        .before = dplyr::everything()
+      )
+    
+  }
+  
+  readr::write_rds(preds, file = paste(out_dir_preds, "/",id, ".rds" ), compress = "gz")
+  
+  rm(mods, id, preds)
+  gc(verbose = FALSE)
+}
+
+
+
+
+###
+n <- seq_along(data_dummy_full)
+
 purrr::walk2(
     .progress = TRUE,
     .x  = gam_mods,
     .y  = data_dummy_full,
+    .p  = n,
     .f = ~ {
       
-      out_file <- file.path(out_dir_preds, paste0("pred_", seq_along(.y), ".rds"))
+      out_file <- file.path(out_dir_preds, paste0("pred_", n, ".rds"))
       
       mods <- 
         readr::read_rds(.x)
@@ -226,6 +270,8 @@ purrr::walk2(
           estimate, region, age,
           .before = dplyr::everything()
         )
+      
+      out_file <- file.path(out_dir_preds, paste0("pred_", n, ".rds"))
       
     }
   )
