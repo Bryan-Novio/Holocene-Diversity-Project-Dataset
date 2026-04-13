@@ -49,15 +49,28 @@ pollen_data_study3 %>%
     ggplot(aes(x = count )) +
   geom_histogram(binwidth = 1000) +
   labs( x = " Number of samples per pollen record",
-        y = "Count")
+        y = "Count")+
+  theme_minimal()
 
 #2.4. Mean no. of samples per record
+
+pollen_data_study3 %>%
+  group_by(dataset_id, sample_id) %>%
+  summarise(pollen_counts = sum(pollen_counts, na.rm = TRUE), .groups = "drop_last") %>%
+  summarise(mean_counts = mean(pollen_counts)) %>%
+  ggplot(aes(x = mean_counts)) +
+  geom_histogram(binwidth = 100) +
+  labs(x = "Mean number of samples per pollen record", 
+       y = "Count") +
+  theme_minimal()
 
 
 #----------------------------------------------------------#
 # 3. Median age intervals b/w successive chron. points along
 # a pollen record ----
 #----------------------------------------------------------#
+
+
 
 
 
@@ -70,9 +83,23 @@ pollen_data_study3 %>%
 
 
 #----------------------------------------------------------#
-# 5. age uncertainties of chron. points ----------------
+# 5. age uncertainties per pollen record  ----------------
 #----------------------------------------------------------#
 
-data_age_uncertainty %>% 
-  filter(dataset_id == 1001) %>% 
-  unnest(age_uncertainty)
+pollen_id <- pollen_data_study3 %>% 
+  distinct(dataset_id)
+
+s3_age_un <- pollen_id %>% 
+  left_join(data_age_uncertainty, by = "dataset_id") %>% 
+  get_potential_ages() 
+  
+s3_age_un  %>% 
+  group_by(dataset_id) %>% 
+  summarise( n = n()) %>% 
+  ggplot(aes(x = n)) +
+  geom_histogram(binwidth = 1000)+
+  labs(x = "Number of ages  per pollen record", 
+       y = "Count") +
+  theme_minimal()
+  
+  
