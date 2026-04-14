@@ -176,10 +176,10 @@ data_dummy_full <-
     .x = standardize_richness,
     .f = ~ {
         tidyr::expand_grid(
-          dplyr::distinct(.,region, dataset_id),
+          dplyr::distinct(.x, region),
           age = seq(
-            min(.$age),
-            max(.$age),
+            1000,
+            20000,
             length.out = 100
           )
         )
@@ -189,7 +189,9 @@ data_dummy_full <-
 
 data_dummy_full[[1]]
 
-standardize_richness[[1]]
+summary(data_dummy_full[[1]])
+
+summary(standardize_richness[[1]])
 
 ## 6.1.Prediction
 
@@ -229,12 +231,13 @@ for (i in seq_along(gam_mods)) {
       model = mods,
       newdata = data_i,
       type = "response",
-      exclude_terms = "region"
+      exclude_terms = "dataset_id"
     ) %>%
     as_tibble() %>%
     relocate(estimate, region, age, .before = everything())
   
-  write_rds(preds, file = out_file, compress = "gz")
+  preds %>% 
+  write_rds(., file = out_file, compress = "gz")
   
   rm(mods, preds)
   if (i %% 10 == 0) gc(FALSE)
@@ -245,9 +248,39 @@ for (i in seq_along(gam_mods)) {
 toc()  
 
 
-one <- read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
+one <- read_rds(here("Data/Paper_1/data_model/preds/pred_.rds"))
+
+summary(one)
 
 ### 6.1.3.Back-transform richness
+
+data_pred_1 <- preds
+
+data_sd_1 <- study3_richness_sd[[1]]
+
+data_pred_1 %>% 
+dplyr::left_join(data_sd_1, by = "region") %>%
+  dplyr::mutate(
+    richness  = estimate * sd_richness + mean_richness,
+    rich_low  = conf_low * sd_richness + mean_richness,
+    rich_high = conf_high * sd_richness + mean_richness,
+  ) %>% 
+  split(.$region)%>% 
+  purrr::map(summary)
+
+data_plot <- 
+  data_pred_1 %>% 
+  dplyr::left_join(data_sd_1, by = "region") %>%
+  dplyr::mutate(
+    richness  = estimate * sd_richness + mean_richness,
+    rich_low  = conf_low * sd_richness + mean_richness,
+    rich_high = conf_high * sd_richness + mean_richness,
+  )
+
+
+
+summary(standardize_richness[[1]])
+
 
 preds <- 
   list.files(here::here("Data/Paper_1/data_model/preds"), pattern = "[.]rds$",full.names = TRUE ) 
