@@ -20,7 +20,7 @@ prepare_data_for_richness_estimation <- function(data_source, type){
       select(dataset_id, age, taxa, pollen_grains) %>% 
       filter(pollen_grains > 0) %>% 
       mutate(age = as.numeric(age) * 1000)
-    
+  
   } else {
     
     assertthat::assert_that(

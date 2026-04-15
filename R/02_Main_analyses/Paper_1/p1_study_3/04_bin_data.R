@@ -62,7 +62,7 @@ for (i in seq_along(paths)) {
     tidyr::pivot_longer(cols = -c(sample_id,age,dataset_id),
                         names_to = "taxa",
                         values_to = "pollen_counts") %>% 
-    bin_data_dt(dataset_id, 500) 
+    bin_data_dt(dataset_id, 500 ) 
   
   readr::write_rds(data_binned,file = paste0(out_dir,"/",id,".rds"), compress = "gz" ) # Write the binned and prepared_data to RDS files
   
@@ -74,6 +74,6 @@ for (i in seq_along(paths)) {
 # View a single iteration
 
 one <- 
-  read_rds(here::here("Data/Paper_1/data_bin/bin_iterations/1.rds"))
+  read_rds(here::here("Data/Paper_1/data_bin/bin_iterations/2.rds"))
 
 ## end
