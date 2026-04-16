@@ -176,10 +176,10 @@ data_dummy_full <-
     .x = standardize_richness,
     .f = ~ {
         tidyr::expand_grid(
-          dplyr::distinct(.x, region),
+          dplyr::distinct(., region),
           age = seq(
-            1000,
-            20000,
+            min(.$age),
+            min(.$age),
             length.out = 100
           )
         )
