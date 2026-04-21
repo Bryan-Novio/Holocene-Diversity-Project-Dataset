@@ -129,7 +129,7 @@ purrr::walk2(
       time_var = "age",
       group_var = "region",
       random = "intercept_reg",
-      sel_k = 12,
+      sel_k = 10,
       error_family = scat(),
       nthreads = n_cores_to_use,
       discrete = TRUE,
@@ -146,7 +146,7 @@ purrr::walk2(
 # View a single iteration
 
 one <- 
-  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_1.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_2.rds"))
 
 # Check model parameters
 
@@ -166,6 +166,8 @@ mod_param <- purrr::map(
   }
 )
 
+View(mod_param)
+
 #----------------------------------------------------------#
 # 6. Model predictions -----
 #----------------------------------------------------------#
@@ -179,17 +181,13 @@ data_dummy_full <-
           dplyr::distinct(., region),
           age = seq(
             min(.$age),
-            min(.$age),
+            max(.$age),
             length.out = 100
           )
         )
     }
     
   )
-
-data_dummy_full[[1]]
-
-summary(data_dummy_full[[1]])
 
 summary(standardize_richness[[1]])
 
@@ -248,13 +246,13 @@ for (i in seq_along(gam_mods)) {
 toc()  
 
 
-one <- read_rds(here("Data/Paper_1/data_model/preds/pred_.rds"))
+one <- read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
 
 summary(one)
 
 ### 6.1.3.Back-transform richness
 
-data_pred_1 <- preds
+data_pred_1 <- one
 
 data_sd_1 <- study3_richness_sd[[1]]
 
