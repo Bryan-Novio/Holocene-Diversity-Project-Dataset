@@ -19,7 +19,7 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-paths <- list.files(
+data_rarefy_new_iters <- list.files(
   "Data/Paper_1/data_rarefy/rarefied_data_with_new_ages",
   pattern = "[.]rds$",
   full.names = TRUE
@@ -28,6 +28,15 @@ paths <- list.files(
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
+
+# Get a vector of general functions
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
 
 source_files <-
   sapply(
@@ -45,15 +54,15 @@ out_dir <- here("Data/Paper_1/data_bin/bin_iterations")
 # 4.Bin with iterations -------------------
 #----------------------------------------------------------#
 
-for (i in seq_along(paths)) {
+for (i in seq_along(data_rarefy_new_iters)) {
   
   message("Processing iteration ", i)
   
   # ---- Load one rarefied dataset with new ages  ----
-  rarefied_data_with_new_ages <- readr::read_rds(paths[i])
+  rarefied_data_with_new_ages <- readr::read_rds(data_rarefy_new_iters[i])
   
   # Extract iteration id from filename
-  id <- as.integer(tools::file_path_sans_ext(basename(paths[i])))
+  id <- as.integer(tools::file_path_sans_ext(basename(data_rarefy_new_iters[i])))
   
   
   # ---- Reshape rarefied dataset with new ages to bin ----
