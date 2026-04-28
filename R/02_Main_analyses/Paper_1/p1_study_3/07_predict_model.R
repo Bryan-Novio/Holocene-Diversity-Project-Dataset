@@ -41,7 +41,7 @@ standardize_richness <-
   readr::read_rds(here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
 study3_richness_sd <- 
-  readr::read_rds(,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
+  readr::read_rds(here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
 
 #----------------------------------------------------------#
 # 2. Model predictions -----
