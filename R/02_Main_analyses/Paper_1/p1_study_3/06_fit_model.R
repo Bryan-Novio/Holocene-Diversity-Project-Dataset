@@ -39,7 +39,7 @@ source_files <-
 #----------------------------------------------------------# 
 
 paths <- list.files(
-  "Data/Paper_1/data_estimate_richness/s3_richness_inc",
+  "Data/Paper_1/data_estimate_richness/s3_richness",
   pattern = "[.]rds$",
   full.names = TRUE
 )
