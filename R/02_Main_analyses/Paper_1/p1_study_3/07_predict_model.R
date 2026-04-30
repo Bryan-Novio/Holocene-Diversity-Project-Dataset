@@ -34,7 +34,11 @@ source_files <-
   )
 
 #----------------------------------------------------------#
+<<<<<<< HEAD
 # 2. Load  files for prediction -----
+=======
+# 1. Load  files for prediction -----
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 #----------------------------------------------------------#
 
 standardize_richness <- 
@@ -44,7 +48,11 @@ study3_richness_sd <-
   readr::read_rds(here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
 
 #----------------------------------------------------------#
+<<<<<<< HEAD
 # 3. Model predictions -----
+=======
+# 2. Model predictions -----
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 #----------------------------------------------------------#
 
 data_dummy_full <-
@@ -66,9 +74,15 @@ data_dummy_full <-
 
 summary(standardize_richness[[1]])
 
+<<<<<<< HEAD
 ## 3.1.Prediction
 
 ### 3.1.1.Load model iterations
+=======
+## 2.1.Prediction
+
+### 2.1.1.Load model iterations
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 
 gam_mods <- 
   list.files(
@@ -77,11 +91,15 @@ gam_mods <-
     full.names = TRUE
   )
 
+<<<<<<< HEAD
 ##View single model
 
 gam_mods[[1]] %>% read_rds()
 
 ### 3.1.2.Predict
+=======
+### 2.1.2.Predict
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 
 n <- length(gam_mods)
 
@@ -125,13 +143,20 @@ for (i in seq_along(gam_mods)) {
 toc()  
 
 
+<<<<<<< HEAD
 # View single prediction
 
+=======
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 one <- read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
 
 summary(one)
 
+<<<<<<< HEAD
 ### 3.1.3.Back-transform richness
+=======
+### 2.1.3.Back-transform richness
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 
 data_pred_1 <- one
 
@@ -188,9 +213,17 @@ for (i in seq_along(preds)) {
   )
 }
 
+<<<<<<< HEAD
 #View single back-transformed iteration
 
 data_back <- read_rds(here("Data/Paper_1/data_model/data_back/1.rds"))
 
 print(data_back)
+=======
+
+check <- read_rds(here("Data/Paper_1/data_model/data_back/1.rds"))
+
+
+View(check)
+>>>>>>> df7a7e3fe5e9416dc270d1e13ca9639ab704128b
 

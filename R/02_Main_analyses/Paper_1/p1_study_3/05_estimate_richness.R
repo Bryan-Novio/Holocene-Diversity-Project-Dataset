@@ -117,9 +117,8 @@ one <-
   readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/1.rds"))
 
 two <- 
-  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/10.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/2.rds"))
 
 
 ## end
-
 
