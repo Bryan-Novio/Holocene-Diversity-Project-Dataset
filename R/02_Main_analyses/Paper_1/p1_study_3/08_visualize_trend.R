@@ -102,3 +102,52 @@ ggplot(richness, aes(x = age, y = richness)) +
   geom_vline(xintercept = 9800, color = "red") +
   theme_classic() +
   scale_x_reverse()
+
+
+################## use for data visualization site richness and median richness per iteration
+
+ggplot(data_back, aes(x = age, y = richness)) +
+  geom_line(data = readr::read_rds(paths[[1]]), aes(group = dataset_id), linewidth = 0.1, alpha = 0.1) +
+  geom_line(linewidth = 1, color= "red") +
+  geom_ribbon(aes(ymin = rich_low, ymax = rich_high, y = NULL), fill = "blue", alpha = 0.4) +
+  facet_wrap(~ region) +
+  theme_classic() +
+  scale_x_reverse()
+
+
+
+
+readr::read_rds(paths[[1]]) %>% summary()
+
+x <- readr::read_rds(paths[[1]])
+
+iter_1 <- data_back %>% 
+  select(region, age, richness)
+
+
+iter_2 <- data_back %>% 
+  select(region, age, richness)
+
+
+bind_rows(
+  iter_1,
+  iter_2
+) %>% 
+  group_by(region, age) %>% 
+  summarise(
+    median_richness = median(richness),
+    upr = quantile(richness, 0.975),
+    lwr = quantile(richness, 0.25)
+  )
+
+
+
+
+
+
+
+
+
+
+
+
