@@ -20,7 +20,7 @@ library(here)
 #----------------------------------------------------------# 
 
 paths <- list.files(
-  "Data/Paper_1/data_bin/bin_iterations",
+  "Data/Paper_1/data_bin/bin_iterations_inc",
   pattern = "[.]rds$",
   full.names = TRUE
 )

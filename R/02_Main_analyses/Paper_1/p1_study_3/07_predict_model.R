@@ -34,7 +34,7 @@ source_files <-
   )
 
 #----------------------------------------------------------#
-# 1. Load  files for prediction -----
+# 2. Load  files for prediction -----
 #----------------------------------------------------------#
 
 standardize_richness <- 
@@ -44,7 +44,7 @@ study3_richness_sd <-
   readr::read_rds(here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
 
 #----------------------------------------------------------#
-# 2. Model predictions -----
+# 3. Model predictions -----
 #----------------------------------------------------------#
 
 data_dummy_full <-
@@ -66,9 +66,9 @@ data_dummy_full <-
 
 summary(standardize_richness[[1]])
 
-## 2.1.Prediction
+## 3.1.Prediction
 
-### 2.1.1.Load model iterations
+### 3.1.1.Load model iterations
 
 gam_mods <- 
   list.files(
@@ -77,7 +77,11 @@ gam_mods <-
     full.names = TRUE
   )
 
-### 2.1.2.Predict
+##View single model
+
+gam_mods[[1]] %>% read_rds()
+
+### 3.1.2.Predict
 
 n <- length(gam_mods)
 
@@ -121,38 +125,13 @@ for (i in seq_along(gam_mods)) {
 toc()  
 
 
+# View single prediction
+
 one <- read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
 
 summary(one)
 
-### 2.1.3.Back-transform richness
-
-data_pred_1 <- one
-
-data_sd_1 <- study3_richness_sd[[1]]
-
-data_pred_1 %>% 
-  dplyr::left_join(data_sd_1, by = "region") %>%
-  dplyr::mutate(
-    richness  = estimate * sd_richness + mean_richness,
-    rich_low  = conf_low * sd_richness + mean_richness,
-    rich_high = conf_high * sd_richness + mean_richness,
-  ) %>% 
-  split(.$region)%>% 
-  purrr::map(summary)
-
-data_plot <- 
-  data_pred_1 %>% 
-  dplyr::left_join(data_sd_1, by = "region") %>%
-  dplyr::mutate(
-    richness  = estimate * sd_richness + mean_richness,
-    rich_low  = conf_low * sd_richness + mean_richness,
-    rich_high = conf_high * sd_richness + mean_richness,
-  )
-
-
-
-summary(standardize_richness[[1]])
+### 3.1.3.Back-transform richness
 
 
 preds <- 
@@ -183,8 +162,7 @@ for (i in seq_along(preds)) {
 }
 
 
-check <- read_rds(here("Data/Paper_1/data_model/data_back/1.rds"))
+#View single back-transformed iteration
 
-
-View(check)
+data_back <- read_rds(here("Data/Paper_1/data_model/data_back/1.rds"))
 
