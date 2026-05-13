@@ -95,6 +95,11 @@ data_richness <-
 pollen_data_study3 %>% 
   distinct(dataset_id)   # 1001 unique dataset ids or pollen records
 
+pollen_data_study3 %>% 
+  distinct(region, dataset_id) %>% 
+  group_by(region) %>% 
+  dplyr::count()
+
 # 2.2. samples
 
 pollen_data_study3 %>%  # 75,082 samples
@@ -104,12 +109,12 @@ pollen_data_study3 %>%  # 75,082 samples
 
 pollen_data_study3 %>% 
   filter(age <= 12000) %>% 
-  group_by(dataset_id) %>%
+  group_by(region,dataset_id) %>%
   summarize(samples = n_distinct(sample_id)) %>% 
   mutate(row = row_number()-1,
          group = row %% 6) %>%
   mutate(dataset_id = as_factor(dataset_id)) %>% 
-  ggplot(aes(x = reorder_within(dataset_id,samples,group), y = samples)) +
+  ggplot(aes(x = reorder_within(dataset_id,samples,group), y = samples, fill = region)) +
   geom_col() +
   labs( x = "Site ID") +
   theme_classic()
@@ -157,41 +162,105 @@ pollen_data_study3 %>% plot_data_count()
 
 
 P1 <- pollen_data_study3 %>% 
+  distinct(dataset_id) %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("1"))
 
-P2 <- data_harmonised_study3 %>% 
+get_number_of_datasets <- function(data_source, name = NULL) {
+  
+  assertthat::assert_that(
+    is.data.frame(data_source)
+  )
+  
+  assertthat::assert_that(
+    "dataset_id" %in%  names(data_source) 
+  )
+  
+  data_count <- 
+    data_source %>% 
+    distinct(dataset_id) %>% 
+    dplyr::count() 
+  
+  if(
+    isFALSE(is.null(name))
+  ) {
+    
+    assertthat::assert_that(
+      is.character(name)
+    )
+    
+    res <- 
+      data_count %>% 
+      mutate(data = as.character(name))
+      
+    
+  } else {
+    res <- 
+      data_count %>% 
+      dplyr::pull(n)
+  }
+  
+  
+  return(res)
+}
+
+get_number_of_datasets(data_harmonised_study3, "raw")
+get_number_of_datasets(data_harmonised_study3)
+
+  purrr::map_dbl(
+    .progress = TRUE,
+    .x = data_binned_study3[1:10],
+    .f = ~ readr::read_rds(.x) %>% 
+        get_number_of_datasets()
+      )
+
+get_number_of_datasets(pollen_data_study3, "binned")
+get_number_of_datasets(data_richness, "richness")
+
+
+
+P2 <- data_harmonised_study3 %>%
+  distinct(dataset_id) %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("2"))
   
 P3 <- data_rarefied %>%
+  separate_wider_delim(dataset_id_age, delim  = "_", names = c("dataset_id", "age")) %>% 
+  distinct(dataset_id) %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("3"))
 
 P4 <- data_rarefied_new_age %>% 
+  distinct(dataset_id) %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("4"))
   
 P5 <- data_binned %>% 
+  distinct(dataset_id) %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("5"))
  
-P6 <- data_richness %>%  
+P6 <- data_richness %>%
+  distinct(dataset_id) %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("6"))
 
 steps <- bind_rows(P1,P2,P3,P4,P5,P6)
 
 steps %>% 
-  ggplot(aes(x = data, y = N)) + 
-  geom_segment(aes(yend = 10197)) +
-  geom_point(size = 3) +
+  ggplot(aes(x = data, y = 0)) + 
+  geom_segment(aes(yend = N, xend = data)) +
+  geom_point(size = 3, aes(y = N)) +
   theme_classic() +
   scale_x_discrete(
   name = "step",
   labels = c("1" = "raw","2"= "harmonised","3"="rarefied",
       "4" = "rarefied_new","5"= "binned","6" = "richness")
       ) +
+  labs(
+    y= "Number of datasets"
+  ) +
+  coord_cartesian(ylim = c(990, 1010))+
   theme(
     axis.text.x = element_text(angle = 60, vjust = 1, hjust =1)
   
