@@ -156,31 +156,31 @@ pollen_data_study3 %>%
 pollen_data_study3 %>% plot_data_count()
 
 
-A <- pollen_data_study3 %>% 
+P1 <- pollen_data_study3 %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("1"))
 
-B <- data_harmonised_study3 %>% 
+P2 <- data_harmonised_study3 %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("2"))
   
-C <- data_rarefied %>%
+P3 <- data_rarefied %>%
   summarise(N = n()) %>% 
   mutate(data = as.character("3"))
 
-D <- data_rarefied_new_age %>% 
+P4 <- data_rarefied_new_age %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("4"))
   
-E <- data_binned %>% 
+P5 <- data_binned %>% 
   summarise(N = n()) %>% 
   mutate(data = as.character("5"))
  
-F <- data_richness %>%  
+P6 <- data_richness %>%  
   summarise(N = n()) %>% 
   mutate(data = as.character("6"))
 
-steps <- bind_rows(A,B,C,D,E,F)
+steps <- bind_rows(P1,P2,P3,P4,P5,P6)
 
 steps %>% 
   ggplot(aes(x = data, y = N)) + 
