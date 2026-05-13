@@ -19,11 +19,16 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_eu <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_eu.rds"))
-richness_na <- read_rds(here("Outputs/Data/paper_1_study_3/richness_data_study_3_na.rds"))
-
-model_eu_s3 <- read_rds(here("Outputs/Data/paper_1_study_3/model_eu_s3.rds"))
-model_na_s3 <- read_rds(here("Outputs/Data/paper_1_study_2/model_na_s3.rds"))
+purrr::map(1:10, 
+           .progress = TRUE,
+           .f = load_pred_richness_and_select) %>% 
+  bind_rows() %>% 
+  group_by(region, age) %>% 
+  summarise(
+    conitental_median_richness = median(richness),
+    conitental_richness_upp = quantile(richness, 0.975),
+    conitental_richness_dwn = quantile(richness, 0.025)
+  )
 
 #----------------------------------------------------------#
 # 2. Visualize trends --
