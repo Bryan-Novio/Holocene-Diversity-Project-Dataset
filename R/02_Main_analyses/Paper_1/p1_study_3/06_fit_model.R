@@ -17,6 +17,7 @@
 library(tidyverse)
 library(here)
 library(mgcv)
+library(tictoc)
 
 # Load the function into the global environment
 
@@ -43,21 +44,6 @@ paths <- list.files(
   full.names = TRUE
 )
 
-#check which iteration/s is age < 50; this is to achieve sel_k = 50 for model fit
-
-check_age_50 <-   
-  purrr::map(
-    .x = paths,
-    .f = ~ {
-      .x %>% 
-        read_rds() %>% 
-        distinct(age) %>% 
-        count() 
-    }
-  ) %>% 
-  purrr::list_rbind() %>% 
-  filter(n >= 50)   #466 iters with distinct age < 50
-
 #----------------------------------------------------------#
 # 3. Output folders ----------
 #----------------------------------------------------------#
@@ -65,36 +51,39 @@ check_age_50 <-
 out_dir_mod <- 
   here("Data/Paper_1/data_model/mod_iterations")
 
+out_dir_preds <- 
+  here("Data/Paper_1/data_model/preds")
+
 #----------------------------------------------------------#
 # 4. Standardize richness  ----
 #----------------------------------------------------------#
 
 standardize_richness <- purrr::map(
-           .x = paths,
-           .f = ~ {
-             readr::read_rds(.x) %>%
-               dplyr::group_by(region) %>%
-               dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
-               dplyr::ungroup() %>%
-               dplyr::mutate(
-                 region = as.factor(region),
-                 dataset_id = as.factor(dataset_id))
-           }
-         )
+  .x = paths,
+  .f = ~ {
+    readr::read_rds(.x) %>%
+      dplyr::group_by(region) %>%
+      dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(
+        region = as.factor(region),
+        dataset_id = as.factor(dataset_id))
+  }
+)
 
 
 # Get mean and sd to back-transform 
 
 study3_richness_sd <- purrr::map(
-            .x = standardize_richness,
-            .f = ~{
-              .x %>% 
-              dplyr::group_by(region) %>% 
-              dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
-              sd_richness = sd(richness, na.rm = TRUE)) %>% 
-              dplyr::ungroup()
-            }
-          )
+  .x = standardize_richness,
+  .f = ~{
+    .x %>% 
+      dplyr::group_by(region) %>% 
+      dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
+                       sd_richness = sd(richness, na.rm = TRUE)) %>% 
+      dplyr::ungroup()
+  }
+)
 
 #----------------------------------------------------------#
 # 5. Model fitting -----
@@ -140,7 +129,7 @@ purrr::walk2(
       time_var = "age",
       group_var = "region",
       random = "intercept_reg",
-      sel_k = 12,
+      sel_k = 10,
       error_family = scat(),
       nthreads = n_cores_to_use,
       discrete = TRUE,
@@ -157,75 +146,33 @@ purrr::walk2(
 # View a single iteration
 
 one <- 
-  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_1.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_2.rds"))
+
+# Check model parameters
+
+mod_iters <- list.files(
+  "Data/Paper_1/data_model/mod_iterations",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
+
+mod_param <- purrr::map(
+  .progress = TRUE,
+  .x = mod_iters,
+  .f = ~ {
+    .x %>% 
+      readr::read_rds() %>% 
+      mgcv::k.check()
+  }
+)
+
+View(mod_param)
 
 
 #----------------------------------------------------------#
-# 5. Save  files for prediction -----
+# 7. Save  files for prediction -----
 #----------------------------------------------------------#
 
 readr::write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
 readr::write_rds(study3_richness_sd,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
-
-
-
-
-###ALTERNATIVE (without iteration) --
-
-
-#Load richness
-
-richness_data <- purrr::map(
-  .x = paths,
-  .f = ~{
-    data <- .x %>% 
-      readr::read_rds()
-    }
-) %>% 
-  purrr::list_rbind()
-
-#standardize richness
-
-richness_std <- 
-  richness_data%>%
-  dplyr::group_by(region) %>%
-  dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(
-    region = as.factor(region),
-    dataset_id = as.factor(dataset_id))
-
-# get sd
-
-richness_sd <- 
-  richness_std %>% 
-  dplyr::group_by(region) %>% 
-  dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
-    sd_richness = sd(richness, na.rm = TRUE)) %>% 
-  dplyr::ungroup()
-
-
-##fit model (k = 50)
-
-model_0 <- fit_regression_model(  #ran 5pm 4/6/2026 done 5:30 pm
-  progress = "tk",
-  data_source = richness_std,
-  y_var = "st_richness",
-  time_var = "age",
-  group_var = "region",
-  random = "intercept_reg",
-  sel_k = 50,
-  error_family = scat(),
-  nthreads = n_cores_to_use,
-  discrete = TRUE,
-  control = mgcv::gam.control(
-    trace = FALSE,
-    maxit = 500
-  ))
-
-##save richness_std, richness_sd, model
-
-readr::write_rds(model_0, here::here("Data/Paper_1/data_model/model_0.rds"))
-readr::write_rds(richness_std, here::here("Data/Paper_1/data_estimate_richness/s3_richness_std_no_iter.rds"))
-readr::write_rds(richness_sd, here::here("Data/Paper_1/data_estimate_richness/s3_richness_sd_no_iter.rds"))

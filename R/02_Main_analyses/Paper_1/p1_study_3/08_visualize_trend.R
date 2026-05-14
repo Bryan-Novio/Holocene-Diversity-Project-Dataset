@@ -21,6 +21,17 @@ library(here)
 
 ## 1.1. Load data set
 
+purrr::map(1:10, 
+           .progress = TRUE,
+           .f = load_pred_richness_and_select) %>% 
+  bind_rows() %>% 
+  group_by(region, age) %>% 
+  summarise(
+    conitental_median_richness = median(richness),
+    conitental_richness_upp = quantile(richness, 0.975),
+    conitental_richness_dwn = quantile(richness, 0.025)
+  )
+
 data_rich <- list.files(
   "Data/Paper_1/data_estimate_richness/s3_richness",
   pattern = "[.]rds$",
