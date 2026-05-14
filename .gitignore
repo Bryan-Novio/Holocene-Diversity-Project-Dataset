@@ -49,4 +49,5 @@ Data/Paper_1/data_estimate_richness/s3_richness_inc/*.rds
 Data/Paper_1/data_estimate_richness/s3_richness/*.rds
 Data/Paper_1/data_bin/bin_iterations/*.rds
 Data/Paper_1/data_bin/bin_iterations_inc/*.rds
+Data/Paper_1/data_summary/*
 
