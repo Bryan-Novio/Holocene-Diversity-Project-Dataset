@@ -59,31 +59,31 @@ out_dir_preds <-
 #----------------------------------------------------------#
 
 standardize_richness <- purrr::map(
-           .x = paths,
-           .f = ~ {
-             readr::read_rds(.x) %>%
-               dplyr::group_by(region) %>%
-               dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
-               dplyr::ungroup() %>%
-               dplyr::mutate(
-                 region = as.factor(region),
-                 dataset_id = as.factor(dataset_id))
-           }
-         )
+  .x = paths,
+  .f = ~ {
+    readr::read_rds(.x) %>%
+      dplyr::group_by(region) %>%
+      dplyr::mutate(st_richness = scale(richness)[, 1]) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(
+        region = as.factor(region),
+        dataset_id = as.factor(dataset_id))
+  }
+)
 
 
 # Get mean and sd to back-transform 
 
 study3_richness_sd <- purrr::map(
-            .x = standardize_richness,
-            .f = ~{
-              .x %>% 
-              dplyr::group_by(region) %>% 
-              dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
-              sd_richness = sd(richness, na.rm = TRUE)) %>% 
-              dplyr::ungroup()
-            }
-          )
+  .x = standardize_richness,
+  .f = ~{
+    .x %>% 
+      dplyr::group_by(region) %>% 
+      dplyr::summarise(mean_richness = mean(richness, na.rm = TRUE), 
+                       sd_richness = sd(richness, na.rm = TRUE)) %>% 
+      dplyr::ungroup()
+  }
+)
 
 #----------------------------------------------------------#
 # 5. Model fitting -----
@@ -151,10 +151,10 @@ one <-
 # Check model parameters
 
 mod_iters <- list.files(
-    "Data/Paper_1/data_model/mod_iterations",
-    pattern = "[.]rds$",
-    full.names = TRUE
-  )
+  "Data/Paper_1/data_model/mod_iterations",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
 
 mod_param <- purrr::map(
   .progress = TRUE,
@@ -162,7 +162,7 @@ mod_param <- purrr::map(
   .f = ~ {
     .x %>% 
       readr::read_rds() %>% 
-    mgcv::k.check()
+      mgcv::k.check()
   }
 )
 
@@ -176,4 +176,3 @@ View(mod_param)
 readr::write_rds(standardize_richness,here("Data/Paper_1/data_estimate_richness/standardized_richness.rds"))
 
 readr::write_rds(study3_richness_sd,here("Data/Paper_1/data_estimate_richness/study3_richness_sd.rds"))
-
