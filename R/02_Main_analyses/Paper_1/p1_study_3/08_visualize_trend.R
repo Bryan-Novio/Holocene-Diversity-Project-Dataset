@@ -16,8 +16,10 @@ library(tidyverse)
 library(here)
 
 #----------------------------------------------------------#
-# 1. Load data set -----------------------------------------
+# 1. Set -up -----------------------------------------
 #----------------------------------------------------------# 
+
+## 1.1. Load data set
 
 purrr::map(1:10, 
            .progress = TRUE,
@@ -30,129 +32,67 @@ purrr::map(1:10,
     conitental_richness_dwn = quantile(richness, 0.025)
   )
 
+data_rich <- list.files(
+  "Data/Paper_1/data_estimate_richness/s3_richness",
+  pattern = "[.]rds$",
+  full.names = TRUE
+)
+
+data_back <- list.files(
+  "Data/Paper_1/data_model/data_back",
+   pattern = "[.]rds$",
+   full.names = TRUE)
+
+## 1.2. Load functions
+
+# Load the function into the global environment
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
+
+source_files <-
+  sapply(
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
+
 #----------------------------------------------------------#
 # 2. Visualize trends --
 #----------------------------------------------------------# 
 
-#2.1. using actual data 
+##2.1. for single iteration
 
-## without RE
+readr::read_rds(rich_data[[1]]) %>% summary()
 
-richness_eu %>%
-  ggplot(aes(x = age, y = richness)) +
-  geom_point() +
-  geom_smooth(aes(group=1), method = "gam", formula = y ~ s(x) ) +
-  scale_x_reverse() +
-  geom_vline(xintercept = 9800, color = 'red') +
-  theme_classic()
+### e.g. for iteration 1
 
-## with RE (geom_smooth does not allow RE in gam model from mgcv) (not working)
+plot_richness_iter(data_back,data_rich,1)
 
-dataset_id <-  factor(richness$dataset_id)
+##2.2. for all iterations and summarized to one trend line
 
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point() +
-  geom_smooth(method = "gam", formula = y ~ s(x) + s(dataset_id, bs="re")) +
-  scale_x_reverse() +
-  geom_vline(xintercept = 9800, color = 'red') +
-  theme_classic()
-
-## use plot_smooth from 'itsadug' package (use base R for plotting)
-
-plot(model_eu_s3, select=1)
-plot(model_na_s3, select=1)
-
-itsadug::plot_smooth(model_eu_s3, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
-itsadug::plot_smooth(model_na_s3, view = 'age', rm.ranef = TRUE, rug = FALSE, eegAxis = FALSE , xlab = "age", ylab = "richness")
-
-##reverse x-axis 
-
-p <- ggplotify::as.ggplot(
-  function() {
-    # Plot the smooth term
-    p <- plot_smooth(model_1_s2, view = 'age', rm.ranef = TRUE, rug = FALSE)
+all_data_back_iters <- purrr::map(
+  .progress = TRUE,
+  .x  = data_back,
+  .f  =  ~ {
+    iters <- .x %>% 
+      readr::read_rds()
     
-    # Add the scale_x_reverse() layer to the ggplot object 'p'
-    p  + scale_x_reverse() 
+    all_iters <- iters %>% 
+      bind_rows() %>% 
+      group_by(region, age) %>% 
+      summarise(
+        median_richness = median(richness),
+        upr = quantile(richness, 0.975),
+        lwr = quantile(richness, 0.25)
+      )
+    
   }
 )
 
-p 
-
-#2.2. using predicted data (-- fit the GAM with mgcv and plot its predictions)
-
-
-# model_1_s2
-
-newdata <- data.frame(age = seq(from = min(richness$age), to = max(richness$age), length.out = 100),
-                      dataset_id = factor(1001))
-
-predictions <- predict(model_1_s2, newdata = newdata, se.fit = TRUE, exclude = "s(dataset_id)")
-
-newdata$fit <- predictions$fit 
-newdata$se <- predictions$se.fit
-
-
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_point(alpha = 0.5) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
-
-ggplot(richness, aes(x = age, y = richness)) +
-  geom_line(data = newdata, aes(y = fit), color = "black", linewidth = 1) +
-  geom_ribbon(data = newdata, aes(ymin = fit - 1.96 * se, ymax = fit + 1.96 * se, y = NULL), fill = "grey", alpha = 0.4) +
-  geom_vline(xintercept = 9800, color = "red") +
-  theme_classic() +
-  scale_x_reverse()
-
-
-################## use for data visualization site richness and median richness per iteration
-
-ggplot(data_back, aes(x = age, y = richness)) +
-  geom_line(data = readr::read_rds(paths[[1]]), aes(group = dataset_id), linewidth = 0.1, alpha = 0.1) +
-  geom_line(linewidth = 1, color= "red") +
-  geom_ribbon(aes(ymin = rich_low, ymax = rich_high, y = NULL), fill = "blue", alpha = 0.4) +
-  facet_wrap(~ region) +
-  theme_classic() +
-  scale_x_reverse()
-
-
-
-
-readr::read_rds(paths[[1]]) %>% summary()
-
-x <- readr::read_rds(paths[[1]])
-
-iter_1 <- data_back %>% 
-  select(region, age, richness)
-
-
-iter_2 <- data_back %>% 
-  select(region, age, richness)
-
-
-bind_rows(
-  iter_1,
-  iter_2
-) %>% 
-  group_by(region, age) %>% 
-  summarise(
-    median_richness = median(richness),
-    upr = quantile(richness, 0.975),
-    lwr = quantile(richness, 0.25)
-  )
-
-
-
-
-
-
-
-
-
-
+plot_richness_iter(all_data_back_iters,data_rich,1)
 
 

@@ -40,9 +40,9 @@ fun_list <-
 
 source_files <-
   sapply(
-  paste0("R/Functions/", fun_list, sep = ""),
-  source
-)
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
 
 #----------------------------------------------------------#
 # 3. Rarefy data  fo 1000 iterations --
@@ -71,6 +71,3 @@ rarefied_dataset_assembly <-
   rarefy_all_samples_iter(
     n_iter = 1000,
     path = here::here("Data/Paper_1/data_rarefy/iterations")) 
-
-
-
