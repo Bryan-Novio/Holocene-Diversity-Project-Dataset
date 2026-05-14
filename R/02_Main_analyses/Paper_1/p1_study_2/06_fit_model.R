@@ -17,6 +17,7 @@ library(tidyverse)
 library(here)
 library(mgcv)
 
+
 # Load the function into the global environment
 
 fun_list <-
@@ -116,6 +117,9 @@ write_csv(gam_check,here("Outputs/Paper_1/study2_gam-check.csv"))
 ## 3.3. Save model as RDS files --
 
 write_rds(gam_1,here("Data/Paper_1/data_model/gam_1_na.rds"))
+
+
+gam_1 <- read_rds(here("Data/Paper_1/data_model/gam_1_na.rds"))
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
