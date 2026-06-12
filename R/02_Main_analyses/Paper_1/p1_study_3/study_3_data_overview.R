@@ -20,7 +20,7 @@ library(tidytext)
 
 #----------------------------------------------------------#
 # 1. Load data subsets ------------------------------------
-#----------------------------------------------------------# 
+#----------------------------------------------------------#
 
 ## 1.1. raw fossil pollen dataset
 
@@ -48,7 +48,6 @@ data_rarefied_study3 <-
     full.names = TRUE
   )
 
-
 ### 1.4.2. rarefied w/ new ages
 
 data_rarefied_study_new_age <- 
@@ -57,7 +56,6 @@ data_rarefied_study_new_age <-
     pattern = "[.]rds$",
     full.names = TRUE
   )
-
 
 ## 1.5. binned data
 
@@ -99,10 +97,48 @@ source_files <-
   )
 
 #----------------------------------------------------------#
-# 3. No. of pollen records for datasubset -----------------
+# 3. Basic stats for study datasubset -----------------
 #----------------------------------------------------------#
 
-# 3.1. no. of records(dataset_id)
+## 3.1. Number of dataset ID (continent)
+
+pollen_data_study3 %>% 
+  group_by(region) %>%
+  get_number_of_datasets("raw")
+
+## 3.2. Total number of samples per continent
+
+pollen_data_study3 %>% 
+  group_by(region) %>% 
+  distinct(sample_id) %>% 
+  summarize(n = n())
+
+
+## 3.3. Mean number of samples per dataset ID plus SD
+
+pollen_data_study3 %>% 
+  group_by(dataset_id) %>% 
+  distinct(sample_id) %>% 
+  summarize(n = n()) %>% 
+  summarize(mean_sample =  mean (n),
+            sd = sd(n))
+
+## 3.4. Total number of taxa
+
+pollen_data_study3 %>% 
+  distinct(taxa) %>% 
+  summarize(n = n())
+
+## 3.5.Mean number of taxa per dataset_id plus SD
+
+pollen_data_study3 %>% 
+  group_by(dataset_id) %>% 
+  distinct(taxa) %>% 
+  summarize(n = n()) %>% 
+  summarize(mean_taxa =  mean (n),
+            sd = sd(n))
+
+## 3.6. no. of records(dataset_id)
 
 pollen_data_study3 %>% 
   distinct(dataset_id)   # 1001 unique dataset ids or pollen records
@@ -112,12 +148,12 @@ pollen_data_study3 %>%
   group_by(region) %>% 
   dplyr::count()
 
-# 3.2. samples
+## 3.7. samples
 
 pollen_data_study3 %>%  # 75,082 samples
   distinct(sample_id)
 
-#3.3 No. of samples per record
+## 3.8. No. of samples per record
 
 pollen_data_study3 %>% 
   filter(age <= 12000) %>% 
@@ -131,7 +167,7 @@ pollen_data_study3 %>%
   labs( x = "Site ID") +
   theme_classic()
 
-# Number of samples per record (site ID)
+## 3.9. Number of samples per record (site ID)
 
 pollen_data_study3 %>% 
   filter(age <= 12000) %>% 
@@ -151,7 +187,7 @@ pollen_data_study3 %>%
     panel.background = element_blank(),
   )
 
-#3.4. Mean no. of pollen counts per samples per record
+## 3.10. Mean no. of pollen counts per samples per record
 
 pollen_data_study3 %>%
   group_by(dataset_id, sample_id) %>%
@@ -164,10 +200,10 @@ pollen_data_study3 %>%
   theme_bw()
 
 #----------------------------------------------------------#
-# 4. No. of datapoints in each step -----------------------
+# 4. Step -by-step overview -----------------------
 #----------------------------------------------------------#
 
-# 4.1. Get number of datapoints
+# 4.1. Get number of datapoints in each step
 ## raw
 
 step0 <- get_number_of_datasets(pollen_data_study3, "raw")
@@ -175,34 +211,33 @@ step0 <- get_number_of_datasets(pollen_data_study3, "raw")
 ## harmonized
 
 step1 <- get_number_of_datasets(data_harmonised_study3, "harmonised")
+  
+##rarefied
 
-##binned
-
-step2 <- number_datasets_binned_data <- 
+step2 <- number_datasets_rarefied_data <- 
   purrr::map_dbl(
     .progress = TRUE,
-    .x = data_binned_study3[1:10],
-    .f = ~ readr::read_rds(.x) %>% 
-        get_number_of_datasets() 
-      )
-
+    .x = data_rarefied_study3[1:1000],
+    .f = ~ 
+      readr::read_rds(.x) %>% 
+      separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","age")) %>% 
+      get_number_of_datasets()
+  )
 
 step2 <- step2 %>% 
   as_tibble() %>% 
   mutate(n = value) %>% 
   select(n) %>% 
-  distinct(n) %>% 
-  mutate(data = as.character("binned")) 
+  mutate(data = as.character("rarefied")) 
   
-##rarefied
+##rarefied with new ages
 
-step3 <- number_datasets_rarefied_data <- 
+step3 <- number_datasets_rarefied_new <- 
   purrr::map_dbl(
     .progress = TRUE,
-    .x = data_rarefied_study3[1:10],
-    .f = ~ 
+    .x = data_rarefied_study_new_age[1:1000],
+    .f = ~
       readr::read_rds(.x) %>% 
-      separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","age")) %>% 
       get_number_of_datasets()
   )
 
@@ -210,91 +245,67 @@ step3 <- step3 %>%
   as_tibble() %>% 
   mutate(n = value) %>% 
   select(n) %>% 
-  distinct(n) %>% 
-  mutate(data = as.character("rarefied")) 
-  
+  mutate(data = as.character("rarefied_new")) 
 
-##rarefied with new ages
+##binned
 
-step4 <- number_datasets_rarefied_new <- 
+step4 <- number_datasets_binned_data <- 
   purrr::map_dbl(
     .progress = TRUE,
-    .x = data_rarefied_study_new_age[1:10],
-    .f = ~
-      readr::read_rds(.x) %>% 
-      get_number_of_datasets()
+    .x = data_binned_study3[1:1000],
+    .f = ~ readr::read_rds(.x) %>% 
+      get_number_of_datasets() 
   )
 
 step4 <- step4 %>% 
   as_tibble() %>% 
   mutate(n = value) %>% 
   select(n) %>% 
-  distinct(n) %>% 
-  mutate(data = as.character("rarefied_new")) 
+  mutate(data = as.character("binned")) 
 
 ##richness
 
-step5 <- get_number_of_datasets(data_richness, "richness")
+step5 <- number_datasets_richnes <- 
+  purrr::map_dbl(
+    .progress = TRUE,
+    .x = data_richness_study3[1:1000],
+    .f = ~
+      readr::read_rds(.x) %>% 
+      get_number_of_datasets()
+  )
 
+step5 <- step5 %>% 
+  as_tibble() %>% 
+  mutate(n = value) %>% 
+  select(n) %>% 
+  mutate(data = as.character("richness")) 
 
-# 4.2. Summarize and visualize
+#4.2. Save data overview (w/ iterations) for steps 2-5 sep. csv files
+
+readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview"))
+
+readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview"))
+
+readr::write_csv(step4, here::here("Data/Paper_1/data_supplementary/study3_binned_overview"))
+
+readr::write_csv(step5, here::here("Data/Paper_1/data_supplementary/study3_richness_overview"))
+
+# 4.3. Summarize and visualize
+
+##Combine summaries in each step to a single data frame
 
 steps <- bind_rows(step0, step1, step2,step3, step4, step5)
 
-steps %>%
-  mutate(data = fct_relevel(data, "raw", "harmonised", "rarefied",
-    "rarefied_new", "binned", "richness")) %>% 
+##Plot as boxplot
+
+steps %>% 
+  mutate(data = fct_relevel(data, "raw", "harmonised", "rarefied","rarefied_new", "binned", "richness")) %>% 
   ggplot(aes(x = data, y = n)) + 
-  geom_segment(aes(yend = 0, xend = data)) +
-  geom_point(size = 3, aes(y = n)) +
+  geom_boxplot() +
+  labs(y = "N") +
   theme_classic() +
-  coord_cartesian(ylim = c(990, 1001)) +
-  theme(
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust =1)
-  )
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust =1)) 
 
-
-#Step-by-step
-
-## Number of dataset ID (continent)
-
-pollen_data_study3 %>% 
-  group_by(region) %>%
-  get_number_of_datasets("raw")
-
-## Total number of samples per continent
-
-pollen_data_study3 %>% 
-  group_by(region) %>% 
-  distinct(sample_id) %>% 
-  summarize(n = n())
-
-## Mean number of samples per dataset ID plus SD
-
-pollen_data_study3 %>% 
-  group_by(dataset_id) %>% 
-  distinct(sample_id) %>% 
-  summarize(n = n()) %>% 
-  summarize(mean_sample =  mean (n),
-            sd = sd(n))
-
-## Total number of taxa
-
-pollen_data_study3 %>% 
-  distinct(taxa) %>% 
-  summarize(n = n())
-
-## Mean number of taxa per dataset_id plus SD
-
-pollen_data_study3 %>% 
-  group_by(dataset_id) %>% 
-  distinct(taxa) %>% 
-  summarize(n = n()) %>% 
-  summarize(mean_taxa =  mean (n),
-            sd = sd(n))
-
-
-## Value for each iteration as boxplot (for Study 3 only)
 
 
 
