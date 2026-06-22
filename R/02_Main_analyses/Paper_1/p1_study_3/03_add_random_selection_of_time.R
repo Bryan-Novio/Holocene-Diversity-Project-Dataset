@@ -53,6 +53,7 @@ source_files <-
     source
   )
 
+
 #----------------------------------------------------------#
 # 3. Prep age uncertainty ----------
 #----------------------------------------------------------#
@@ -62,13 +63,12 @@ data_age_uncertainty_pivot <-
   get_potential_ages() %>% 
   tidyr::nest(age_uncertainty = !id)
 
-
 #----------------------------------------------------------#
 # 4. Output folder ----------
 #----------------------------------------------------------#
 
 out_dir <- here("Data/Paper_1/data_rarefy/rarefied_data_with_new_ages")
-dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
 
 #----------------------------------------------------------#
 # 5. Add random ages with iteration ----------
