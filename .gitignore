@@ -41,7 +41,14 @@ Data/Paper_1/data_harmonize/*.rds
 Data/Paper_1/data_rarefy/*.rds
 Data/Paper_1/data_bin/*.rds
 Data/Paper_1/data_bin/*.rds
-Data/Paper_1/data_model/*.rds
+Data/Paper_1/data_model/*
 Data/Paper_1/data_estimate_richness/*.rds
 Outputs/Paper_1/*
 Data/Paper_1/data_rarefy/iterations/
+Data/Paper_1/data_estimate_richness/s3_richness_inc/*.rds
+Data/Paper_1/data_estimate_richness/s3_richness/*.rds
+Data/Paper_1/data_bin/bin_iterations/*.rds
+Data/Paper_1/data_bin/bin_iterations_inc/*.rds
+Data/Paper_1/data_summary/*
+Data/Paper_1/data_model/*
+

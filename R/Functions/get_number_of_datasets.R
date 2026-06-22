@@ -26,7 +26,7 @@ get_number_of_datasets <- function(data_source, name = NULL) {
     res <- 
       data_count %>% 
       mutate(data = as.character(name))
-    
+      
     
   } else {
     res <- 

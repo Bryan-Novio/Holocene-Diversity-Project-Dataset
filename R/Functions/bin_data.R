@@ -46,7 +46,7 @@ bin_data <- function(data_source, binning_var, bin_size){
       BIN_int = as.factor(as.numeric(BIN_fct)), # recode bins to integer, then factor
       BIN = BIN_int
     ) %>% 
-    group_by({{binning_var}}, taxa, BIN, BIN_chr) %>% 
+    group_by({{binning_var}}, taxa, BIN) %>% 
     summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop")
   
   return(data_binned)
