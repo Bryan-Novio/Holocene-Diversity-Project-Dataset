@@ -131,13 +131,8 @@ pollen_data_study3 %>%
 
 ## 3.5.Mean number of taxa per dataset_id plus SD
 
-pollen_data_study3 %>% 
-  group_by(dataset_id) %>% 
-  distinct(taxa) %>% 
-  summarize(n = n()) %>% 
-  summarize(mean_taxa =  mean (n),
-            sd = sd(n))
-
+pollen_data_study3 %>% get_number_of_samples()
+  
 ## 3.6. no. of records(dataset_id)
 
 pollen_data_study3 %>% 
@@ -156,7 +151,6 @@ pollen_data_study3 %>%  # 75,082 samples
 ## 3.8. No. of samples per record
 
 pollen_data_study3 %>% 
-  filter(age <= 12000) %>% 
   group_by(region,dataset_id) %>%
   summarize(samples = n_distinct(sample_id)) %>% 
   mutate(row = row_number()-1,
@@ -167,10 +161,10 @@ pollen_data_study3 %>%
   labs( x = "Site ID") +
   theme_classic()
 
+
 ## 3.9. Number of samples per record (site ID)
 
 pollen_data_study3 %>% 
-  filter(age <= 12000) %>% 
   group_by(dataset_id) %>%
   summarize(samples = n_distinct(sample_id)) %>% 
   mutate(row = row_number()-1,
@@ -265,7 +259,7 @@ step4 <- step4 %>%
 
 ##richness
 
-step5 <- number_datasets_richnes <- 
+step5 <- number_datasets_richness <- 
   purrr::map_dbl(
     .progress = TRUE,
     .x = data_richness_study3[1:1000],
@@ -282,13 +276,13 @@ step5 <- step5 %>%
 
 #4.2. Save data overview (w/ iterations) for steps 2-5 sep. csv files
 
-readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview"))
+readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
 
-readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview"))
+readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
 
-readr::write_csv(step4, here::here("Data/Paper_1/data_supplementary/study3_binned_overview"))
+readr::write_csv(step4, here::here("Data/Paper_1/data_supplementary/study3_binned_overview.csv"))
 
-readr::write_csv(step5, here::here("Data/Paper_1/data_supplementary/study3_richness_overview"))
+readr::write_csv(step5, here::here("Data/Paper_1/data_supplementary/study3_richness_overview.csv"))
 
 # 4.3. Summarize and visualize
 
