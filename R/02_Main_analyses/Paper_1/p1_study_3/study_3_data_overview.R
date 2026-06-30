@@ -138,11 +138,6 @@ pollen_data_study3 %>% get_number_of_samples()
 pollen_data_study3 %>% 
   distinct(dataset_id)   # 1001 unique dataset ids or pollen records
 
-pollen_data_study3 %>% 
-  distinct(region, dataset_id) %>% 
-  group_by(region) %>% 
-  dplyr::count()
-
 ## 3.7. samples
 
 pollen_data_study3 %>%  # 75,082 samples
@@ -208,38 +203,59 @@ step1 <- get_number_of_datasets(data_harmonised_study3, "harmonised")
   
 ##rarefied
 
-step2 <- number_datasets_rarefied_data <- 
-  purrr::map_dbl(
-    .progress = TRUE,
-    .x = data_rarefied_study3[1:1000],
-    .f = ~ 
-      readr::read_rds(.x) %>% 
-      separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","age")) %>% 
-      get_number_of_datasets()
-  )
+step2 <- if (file.exists( here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))) 
+  {step2 <- read_csv( here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
+  step2} else 
+    {
+    # do the load and calculation
+    
+    step2 <-  purrr::map_dbl(
+      .progress = TRUE,
+      .x = data_rarefied_study3[1:1000],
+      .f = ~ 
+        readr::read_rds(.x) %>% 
+        separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","age")) %>% 
+        get_number_of_datasets()
+    )
+    
+    # and save
+    
+    readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
+    
+    return(step2)
+  }
 
-step2 <- step2 %>% 
-  as_tibble() %>% 
-  mutate(n = value) %>% 
-  select(n) %>% 
-  mutate(data = as.character("rarefied")) 
+step2
   
 ##rarefied with new ages
 
-step3 <- number_datasets_rarefied_new <- 
-  purrr::map_dbl(
+step3 <- if (file.exists( here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))) 
+  
+{step3 <- read_csv( here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
+step3} else 
+{
+  # do the load and calculation
+  
+  step3 <-  purrr::map_dbl(
     .progress = TRUE,
     .x = data_rarefied_study_new_age[1:1000],
-    .f = ~
+    .f = ~ 
       readr::read_rds(.x) %>% 
-      get_number_of_datasets()
+      get_number_of_datasets() 
   )
+  
+  step3 <- step3 %>% 
+    as_tibble() %>% 
+    mutate(n = value) %>% 
+    select(n) %>% 
+    mutate(data = as.character("rarefied_new"))
+  # and save
+  
+  readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
 
-step3 <- step3 %>% 
-  as_tibble() %>% 
-  mutate(n = value) %>% 
-  select(n) %>% 
-  mutate(data = as.character("rarefied_new")) 
+}
+
+step3
 
 ##binned
 
