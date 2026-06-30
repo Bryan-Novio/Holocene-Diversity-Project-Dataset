@@ -75,7 +75,7 @@ data_p1_s1_sub_region <- data_p1_s1  %>%
 
 data_p1_s1_sub_region %>% distinct(dataset_id)
 
-data_p1_s1_sub_region %>% 
+data_p1_s1_sub_region_sample <- data_p1_s1_sub_region %>% 
   unnest(levels) %>%
   relocate(age,sample_id)
 
@@ -166,3 +166,5 @@ View(data_p1_s1_subregion_counts_ages_subregion)
 #----------------------------------------------------------# 
 
 write_rds(data_p1_s1_subregion_counts_ages_subregion_filtered, here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
+
+write_rds(data_p1_s1_sub_region_sample, here("Data/Paper_1/data_subset/data_p1_s1_sub_region_sample.rds"))

@@ -72,7 +72,8 @@ data_p1_s3_counts_ages %>%
   head(10) # max. age
 
 data_p1_s3_counts_ages_region <- 
-  inner_join(data_p1_s3_counts_ages, region, by = "dataset_id") 
+  inner_join(data_p1_s3_counts_ages, region, by = "dataset_id") %>% 
+  filter(age >= 100 & age <= 11700)
 
 #----------------------------------------------------------#
 # 4. Extract age uncertainties from full dataset --------
