@@ -48,6 +48,8 @@ data_rarefied_study3 <-
     full.names = TRUE
   )
 
+data_rarefied_study3[1] %>% read_rds() %>% colnames()
+
 ### 1.4.2. rarefied w/ new ages
 
 data_rarefied_study_new_age <- 
@@ -56,6 +58,8 @@ data_rarefied_study_new_age <-
     pattern = "[.]rds$",
     full.names = TRUE
   )
+
+data_rarefied_study_new_age[1] %>% read_rds()
 
 ## 1.5. binned data
 
@@ -66,6 +70,8 @@ data_binned_study3 <-
     full.names = TRUE
   )
 
+data_binned_study3[1] %>% read_rds()
+
 ## 1.6.richness
 
 data_richness_study3 <- 
@@ -74,6 +80,8 @@ data_richness_study3 <-
     pattern = "[.]rds$",
     full.names = TRUE
   )
+
+data_richness_study3[1] %>%  read_rds()
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -131,7 +139,7 @@ pollen_data_study3 %>%
 
 ## 3.5.Mean number of taxa per dataset_id plus SD
 
-pollen_data_study3 %>% get_number_of_samples()
+pollen_data_study3 %>% get_mean_number_of_samples()
   
 ## 3.6. no. of records(dataset_id)
 
@@ -192,7 +200,7 @@ pollen_data_study3 %>%
 # 4. Step -by-step overview -----------------------
 #----------------------------------------------------------#
 
-# 4.1. Get number of datapoints in each step
+# 4.1. Get number of datasets in each step
 ## raw
 
 step0 <- get_number_of_datasets(pollen_data_study3, "raw")
@@ -290,7 +298,26 @@ step5 <- step5 %>%
   select(n) %>% 
   mutate(data = as.character("richness")) 
 
-#4.2. Save data overview (w/ iterations) for steps 2-5 sep. csv files
+
+# 4.2. Get number of samples in each step
+
+sample0 <- pollen_data_study3 %>% get_number_of_samples("raw") # raw
+
+samples <- pollen_data_study3 %>% distinct(dataset_id,sample_id)
+  
+sample1 <- data_harmonised_study3 %>% 
+  left_join(samples, by = c("dataset_id", "sample_id"))
+
+
+
+#4.3. Get number of taxa in each step
+
+taxa0 <- pollen_data_study3 %>% get_number_of_taxa("raw") # raw
+
+
+
+
+#4.3. Save data overview (w/ iterations) for steps 2-5 sep. csv files
 
 readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
 
@@ -300,7 +327,7 @@ readr::write_csv(step4, here::here("Data/Paper_1/data_supplementary/study3_binne
 
 readr::write_csv(step5, here::here("Data/Paper_1/data_supplementary/study3_richness_overview.csv"))
 
-# 4.3. Summarize and visualize
+# 4.4. Summarize and visualize
 
 ##Combine summaries in each step to a single data frame
 

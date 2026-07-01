@@ -1,18 +1,18 @@
-#function to get number of samples
+#function to get number of taxa
 
-get_number_of_samples <- function(data_source, name = NULL) {
+get_number_of_taxa <- function(data_source, name = NULL) {
   
   assertthat::assert_that(
     is.data.frame(data_source)
   )
   
   assertthat::assert_that(
-    "sample_id" %in%  names(data_source) 
+    "taxa" %in%  names(data_source) 
   )
   
-  data_sample <- 
+  data_taxa <- 
     data_source %>% 
-    distinct(sample_id) %>% 
+    distinct(taxa) %>% 
     dplyr::count() 
   
   if(
@@ -24,13 +24,13 @@ get_number_of_samples <- function(data_source, name = NULL) {
     )
     
     res <- 
-      data_sample %>% 
+      data_taxa %>% 
       mutate(data = as.character(name))
     
     
   } else {
     res <- 
-      data_sample %>% 
+      data_taxa %>% 
       dplyr::pull(n)
   }
   
