@@ -27,6 +27,7 @@ library(tidytext)
 pollen_data_study3 <- 
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s3_counts_ages.rds"))
 
+
 ## 1.2. age_uncertainty dataset
 
 data_age_uncertainty <-
@@ -48,7 +49,15 @@ data_rarefied_study3 <-
     full.names = TRUE
   )
 
-data_rarefied_study3[1] %>% read_rds() %>% colnames()
+
+data_rarefied_study3[1] %>%
+  read_rds() %>%  
+  pivot_longer(cols = -c(dataset_id_age_sample_id), 
+               names_to = "taxa",
+               values_to = "pollen_count") %>% 
+  separate_wider_delim(dataset_id_age_sample_id,
+                       delim = "_",
+                       names = c("dataset_id", "age", "sample_id")) %>% get_number_of_taxa()
 
 ### 1.4.2. rarefied w/ new ages
 
@@ -59,7 +68,11 @@ data_rarefied_study_new_age <-
     full.names = TRUE
   )
 
-data_rarefied_study_new_age[1] %>% read_rds()
+data_rarefied_study_new_age[1] %>% 
+  read_rds() %>% 
+  pivot_longer(cols = -c(sample_id,age,dataset_id), 
+               names_to = "taxa",
+               values_to = "pollen_count")
 
 ## 1.5. binned data
 
@@ -314,7 +327,7 @@ sample1 <- data_harmonised_study3 %>%
 
 taxa0 <- pollen_data_study3 %>% get_number_of_taxa("raw") # raw
 
-
+taxa1 <- data_harmonised_study3 %>% get_number_of_taxa("raw") # harmonized
 
 
 #4.3. Save data overview (w/ iterations) for steps 2-5 sep. csv files
