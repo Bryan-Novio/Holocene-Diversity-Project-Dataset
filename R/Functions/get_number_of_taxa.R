@@ -1,15 +1,14 @@
-#function to get number of datasets
+#function to get number of taxa
 
-get_number_of_datasets <- function(data_source, group_var = NULL, name = NULL) {
+get_number_of_taxa <- function(data_source, group_var = NULL, name = NULL) {
   
   assertthat::assert_that(
     is.data.frame(data_source)
   )
   
   assertthat::assert_that(
-    "dataset_id" %in%  names(data_source) 
+    "taxa" %in%  names(data_source) 
   )
-  
   
   if (
     !is.null(group_var)
@@ -23,10 +22,9 @@ get_number_of_datasets <- function(data_source, group_var = NULL, name = NULL) {
       dplyr::group_by(get(group_var))
   }
   
-  
-  data_count <- 
+  data_taxa <- 
     data_source %>% 
-    distinct(dataset_id) %>% 
+    distinct(taxa) %>% 
     dplyr::count() 
   
   if(
@@ -38,16 +36,15 @@ get_number_of_datasets <- function(data_source, group_var = NULL, name = NULL) {
     )
     
     res <- 
-      data_count %>% 
+      data_taxa %>% 
       mutate(data = as.character(name))
-      
+    
     
   } else {
     res <- 
-      data_count 
+      data_taxa 
   }
   
   
   return(res)
 }
-

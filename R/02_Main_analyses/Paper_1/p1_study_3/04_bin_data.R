@@ -48,7 +48,7 @@ source_files <-
 # 3. Output folder ----------
 #----------------------------------------------------------#
 
-out_dir <- here::here("Data/Paper_1/data_bin/bin_iterations")
+out_dir <- here::here("Data/Paper_1/data_bin/bin_iterations_new")
 
 #----------------------------------------------------------#
 # 4.Bin with iterations -------------------

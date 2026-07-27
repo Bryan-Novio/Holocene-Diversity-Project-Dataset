@@ -66,8 +66,13 @@ data_to_rarefy <-   # 1001 dataset_ids
 
 set.seed(1234)
 
+
+
 rarefied_dataset_assembly <- 
   data_to_rarefy %>% 
   rarefy_all_samples_iter(
-    n_iter = 1000,
-    path = here::here("Data/Paper_1/data_rarefy/iterations")) 
+    n_iter = n_iter,
+    path = here::here("Data/Paper_1/data_rarefy/iterations_clean")) 
+
+
+

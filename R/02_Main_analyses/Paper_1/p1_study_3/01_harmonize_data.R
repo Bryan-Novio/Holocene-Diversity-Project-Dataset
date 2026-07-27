@@ -249,7 +249,7 @@ data_harmonised_merge <-
 target_dir <- 
   "Data/Paper_1/data_supplementary"
 
-data_harmonised_merge%>%
+data_harmonised_merge %>%
   group_by(region) %>%
   nest() %>% 
   walk2(.x, .y = .$region, ~ {

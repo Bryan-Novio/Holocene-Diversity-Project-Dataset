@@ -15,7 +15,7 @@ rarefy_all_samples <- function(data_source, n_grains) {
   data_prepared <-
     data_source %>%
     dplyr::mutate(
-      dataset_id_age = paste0(dataset_id,"_", age)
+      dataset_id_age= paste0(dataset_id,"_", age)
     ) %>%
     dplyr::select(-c(dataset_id,age)) %>% 
     dplyr::mutate(

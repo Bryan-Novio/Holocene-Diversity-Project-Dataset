@@ -66,7 +66,7 @@ harmonize_taxa <- function(data_to_harmonize, harmonisation_table, level) {
       harmonisation_table_prep,
       by = "taxon_name"
     ) %>%
-    dplyr::group_by(dataset_id, age, taxa_harmonised) %>%
+    dplyr::group_by(sample_id,dataset_id, age, taxa_harmonised) %>%
     dplyr::summarize(
       pollen_sum = sum(pollen_counts),
       .groups = "drop"
