@@ -19,7 +19,7 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-paths <- list.files(
+bins <- list.files(
   "Data/Paper_1/data_bin/bin_iterations_inc",
   pattern = "[.]rds$",
   full.names = TRUE

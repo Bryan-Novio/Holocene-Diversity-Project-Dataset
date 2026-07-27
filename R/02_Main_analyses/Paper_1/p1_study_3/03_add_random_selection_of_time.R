@@ -22,10 +22,11 @@ library(here)
 #----------------------------------------------------------#
 
 paths <- list.files(
-  "Data/Paper_1/data_rarefy/iterations",
+  "Data/Paper_1/data_rarefy/iterations_clean",
   pattern = "[.]rds$",
   full.names = TRUE
 )
+
 
 data_age_uncertainty <- 
   readr::read_rds(
@@ -53,7 +54,6 @@ source_files <-
     source
   )
 
-
 #----------------------------------------------------------#
 # 3. Prep age uncertainty ----------
 #----------------------------------------------------------#
@@ -68,7 +68,6 @@ data_age_uncertainty_pivot <-
 #----------------------------------------------------------#
 
 out_dir <- here("Data/Paper_1/data_rarefy/rarefied_data_with_new_ages")
-
 
 #----------------------------------------------------------#
 # 5. Add random ages with iteration ----------
@@ -113,16 +112,22 @@ for (i in seq_along(paths)) {
       by = "dataset_id"
     ) %>% 
       dplyr::mutate(
-        data = purrr::map2(
-          data_pollen,
-          data_age,
-          ~ dplyr::bind_cols(.x, .y)
+      data = purrr::map2(
+       data_pollen,
+       data_age,
+      ~ {                                                      
+        max_rows <-  max(nrow(.x), nrow(.y))                             
+        x_padded <-  .x[seq_len(max_rows), , drop = FALSE]          
+        y_padded <-  .y[seq_len(max_rows), , drop = FALSE]                                                                                
+        dplyr::bind_cols(x_padded,y_padded)
+      }
         )
       ) %>% 
       dplyr::select(dataset_id, data) %>% 
       tidyr::unnest(data) %>% 
       dplyr::relocate(sample_id, potential_age) %>% 
-      dplyr::rename(age = potential_age)
+      dplyr::rename(age = potential_age)%>% 
+      tidyr::drop_na()
   }
   
   # ---- Save ----

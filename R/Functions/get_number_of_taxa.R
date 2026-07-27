@@ -1,6 +1,6 @@
 #function to get number of taxa
 
-get_number_of_taxa <- function(data_source, name = NULL) {
+get_number_of_taxa <- function(data_source, group_var = NULL, name = NULL) {
   
   assertthat::assert_that(
     is.data.frame(data_source)
@@ -9,6 +9,18 @@ get_number_of_taxa <- function(data_source, name = NULL) {
   assertthat::assert_that(
     "taxa" %in%  names(data_source) 
   )
+  
+  if (
+    !is.null(group_var)
+  ) {
+    assertthat::assert_that(
+      group_var %in%  names(data_source) 
+    )
+    
+    data_source <- 
+      data_source %>% 
+      dplyr::group_by(get(group_var))
+  }
   
   data_taxa <- 
     data_source %>% 
@@ -30,8 +42,7 @@ get_number_of_taxa <- function(data_source, name = NULL) {
     
   } else {
     res <- 
-      data_taxa %>% 
-      dplyr::pull(n)
+      data_taxa 
   }
   
   

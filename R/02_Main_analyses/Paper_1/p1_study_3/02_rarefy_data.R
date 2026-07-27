@@ -52,7 +52,7 @@ source_files <-
 
 data_to_rarefy <-   # 1001 dataset_ids
   data_harmonised_merge %>% 
-  dplyr::select(dataset_id, sample_id,age, taxa, pollen_counts ) %>% 
+  dplyr::select(dataset_id, age, taxa, pollen_counts ) %>% 
   dplyr::rename(taxon_name = taxa) %>% 
   dplyr::mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
   )  %>% 
@@ -66,10 +66,13 @@ data_to_rarefy <-   # 1001 dataset_ids
 
 set.seed(1234)
 
+
+
 rarefied_dataset_assembly <- 
   data_to_rarefy %>% 
   rarefy_all_samples_iter(
-    n_iter = 10,
-    path = here::here("Data/Paper_1/data_rarefy/iterations")) 
+    n_iter = n_iter,
+    path = here::here("Data/Paper_1/data_rarefy/iterations_clean")) 
+
 
 
