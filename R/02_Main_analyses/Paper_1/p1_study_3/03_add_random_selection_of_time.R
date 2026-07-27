@@ -140,32 +140,3 @@ for (i in seq_along(paths)) {
   rm(rarefied_data, result)
   gc(verbose =FALSE)
 }
-
-
-
-
-
-
-hey2 <- dplyr::inner_join(
-  data_pollen_nested,
-  data_age_nested,
-  by = "dataset_id"
-) %>% 
-  dplyr::mutate(
-    data = purrr::map2(
-      data_pollen,
-      data_age,
-      ~ {                                                             
-        
-        max_rows <-  max(nrow(.x), nrow(.y))                             
-      x_padded <-  .x[seq_len(max_rows), , drop = FALSE]                  
-      y_padded <-  .y[seq_len(max_rows), , drop = FALSE]                                                                                          
-      dplyr::bind_cols(x_padded,y_padded)
-      }
-      )
-    ) %>% 
-  dplyr::select(dataset_id, data) %>% 
-  tidyr::unnest(data) %>% 
-  dplyr::relocate(sample_id, potential_age) %>% 
-  dplyr::rename(age = potential_age) %>% 
-  tidyr::drop_na()
