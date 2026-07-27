@@ -140,6 +140,41 @@ pollen_data_study3 %>% get_mean_number_of_samples()
 pollen_data_study3 %>% 
   distinct(dataset_id)   # 1001 unique dataset ids or pollen records
 
+  group_by(region) %>%
+  get_number_of_datasets("raw")
+
+## 3.2. Total number of samples per continent
+
+pollen_data_study3 %>% 
+  group_by(region) %>% 
+  distinct(sample_id) %>% 
+  summarize(n = n())
+
+
+## 3.3. Mean number of samples per dataset ID plus SD
+
+pollen_data_study3 %>% 
+  group_by(dataset_id) %>% 
+  distinct(sample_id) %>% 
+  summarize(n = n()) %>% 
+  summarize(mean_sample =  mean (n),
+            sd = sd(n))
+
+## 3.4. Total number of taxa
+
+pollen_data_study3 %>% 
+  distinct(taxa) %>% 
+  summarize(n = n())
+
+## 3.5.Mean number of taxa per dataset_id plus SD
+
+pollen_data_study3 %>% get_number_of_samples()
+  
+## 3.6. no. of records(dataset_id)
+
+pollen_data_study3 %>% 
+  distinct(dataset_id)   # 1001 unique dataset ids or pollen records
+
 ## 3.7. samples
 
 pollen_data_study3 %>%  # 75,082 samples
@@ -153,6 +188,8 @@ pollen_data_study3 %>%
   rlang::set_names(
     c("dataset_id", "n")
   ) %>% 
+  group_by(region,dataset_id) %>%
+  summarize(samples = n_distinct(sample_id)) %>% 
   mutate(row = row_number()-1,
          group = row %% 6) %>%
   mutate(dataset_id = as_factor(dataset_id)) %>% 
@@ -198,6 +235,10 @@ pollen_data_study3 %>%
 #----------------------------------------------------------#
 
 # 4.1. Get number of datasets in each step
+# 4. Step -by-step overview -----------------------
+#----------------------------------------------------------#
+
+# 4.1. Get number of datapoints in each step
 ## raw
 
 step0 <- get_number_of_datasets(pollen_data_study3, name = "raw")
@@ -349,6 +390,69 @@ step2 <-
       
       return(step2)
     }
+
+step2
+  
+##rarefied with new ages
+
+step3 <- if (file.exists( here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))) 
+  
+{step3 <- read_csv( here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
+step3} else 
+{
+  # do the load and calculation
+  
+  step3 <-  purrr::map_dbl(
+    .progress = TRUE,
+    .x = data_rarefied_study_new_age[1:1000],
+    .f = ~ 
+      readr::read_rds(.x) %>% 
+      get_number_of_datasets() 
+  )
+  
+  step3 <- step3 %>% 
+    as_tibble() %>% 
+    mutate(n = value) %>% 
+    select(n) %>% 
+    mutate(data = as.character("rarefied_new"))
+  # and save
+  
+  readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
+
+}
+
+step3
+
+##binned
+
+step4 <- number_datasets_binned_data <- 
+  purrr::map_dbl(
+    .progress = TRUE,
+step1 <- get_number_of_datasets(data_harmonised_study3, "harmonised")
+  
+##rarefied
+
+step2 <- if (file.exists( here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))) 
+  {step2 <- read_csv( here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
+  step2} else 
+    {
+    # do the load and calculation
+    
+    step2 <-  purrr::map_dbl(
+      .progress = TRUE,
+      .x = data_rarefied_study3[1:1000],
+      .f = ~ 
+        readr::read_rds(.x) %>% 
+        separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","age")) %>% 
+        get_number_of_datasets()
+    )
+    
+    # and save
+    
+    readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
+    
+    return(step2)
+  }
 
 step2
   
@@ -557,6 +661,33 @@ readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_raref
 readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
 
 readr::write_csv(step4, here::here("Data/Paper_1/data_supplementary/study3_binned_overview.csv"))
+
+#4.2. Save data overview (w/ iterations) for steps 2-5 sep. csv files
+
+readr::write_csv(step2, here::here("Data/Paper_1/data_supplementary/study3_rarefied_overview.csv"))
+
+readr::write_csv(step3, here::here("Data/Paper_1/data_supplementary/study3_rarefied_newages_overview.csv"))
+
+readr::write_csv(step4, here::here("Data/Paper_1/data_supplementary/study3_binned_overview.csv"))
+
+readr::write_csv(step5, here::here("Data/Paper_1/data_supplementary/study3_richness_overview.csv"))
+
+# 4.3. Summarize and visualize
+
+##Combine summaries in each step to a single data frame
+
+steps <- bind_rows(step0, step1, step2,step3, step4, step5)
+
+##Plot as boxplot
+
+steps %>% 
+  mutate(data = fct_relevel(data, "raw", "harmonised", "rarefied","rarefied_new", "binned", "richness")) %>% 
+  ggplot(aes(x = data, y = n)) + 
+  geom_boxplot() +
+  labs(y = "N") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust =1)) 
+
 
 readr::write_csv(step5, here::here("Data/Paper_1/data_supplementary/study3_richness_overview.csv"))
 
