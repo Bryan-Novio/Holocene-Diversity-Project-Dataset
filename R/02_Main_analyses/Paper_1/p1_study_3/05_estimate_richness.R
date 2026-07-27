@@ -20,7 +20,7 @@ library(here)
 #----------------------------------------------------------# 
 
 bins <- list.files(
-  "Data/Paper_1/data_bin/bin_iterations_inc",
+  "Data/Paper_1/data_bin/bin_iterations_new",
   pattern = "[.]rds$",
   full.names = TRUE
 )
@@ -53,19 +53,19 @@ source_files <-
 #----------------------------------------------------------#
 
 out_dir <- 
-  here::here("Data/Paper_1/data_estimate_richness/s3_richness")
+  here::here("Data/Paper_1/data_estimate_richness/richness_iters")
 
 #----------------------------------------------------------#
 # 4. Estimate richness  at different taxo rank -- at 12 cal yr bp 
 #----------------------------------------------------------# 
 
-for (i in seq_along(paths)) {
+for (i in seq_along(bins)) {
   
   # ---- Load binned dataset for each iteration  ----
-  data_binned <- readr::read_rds(paths[i])
+  data_binned <- readr::read_rds(bins[i])
   
   # Extract iteration id from filename
-  id <- as.integer(tools::file_path_sans_ext(basename(paths[i])))
+  id <- as.integer(tools::file_path_sans_ext(basename(bins[i])))
   
   # ---- 4.1. Reshape rarefied dataset with new ages to bin ----
   
@@ -114,10 +114,10 @@ for (i in seq_along(paths)) {
 # View a single iteration
 
 one <- 
-  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/1.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/richness_iters/1.rds"))
 
 two <- 
-  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness/2.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/richness_iters/2.rds"))
 
 
 ## end
