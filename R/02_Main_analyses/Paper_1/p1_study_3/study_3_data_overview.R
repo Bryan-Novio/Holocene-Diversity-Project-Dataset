@@ -60,6 +60,7 @@ vec_names_rarefied_study_new_age <-
 
 ## 1.5. binned data
 
+
 vec_names_binned_study3 <-
   list.files(
     "Data/Paper_1/data_bin/bin_iterations_new",
@@ -71,7 +72,7 @@ vec_names_binned_study3 <-
 
 vec_names_richness_study3 <- 
   list.files(
-    "Data/Paper_1/data_estimate_richness/richness_iter",
+    "Data/Paper_1/data_estimate_richness/richness_iters",
     pattern = "[.]rds$",
     full.names = TRUE
   )
@@ -189,152 +190,245 @@ pollen_data_study3 %>%
 # 4. Step-by-step overview -----------------------
 #----------------------------------------------------------#
 
-# 4.1. Get number of datasets in each step
-# 4. Step -by-step overview -----------------------
-#----------------------------------------------------------#
-
 # 4.1. Get number of datapoints in each step
 ## raw
 
-step0 <- get_number_of_datasets(pollen_data_study3, name = "raw")
+raw_n_datasets <- 
+  pollen_data_study3 %>% 
+  get_number_of_datasets(group_var = "region", name = "raw") %>% 
+  rlang::set_names(
+    nm = c("region", "n", "step")
+  )
+
+
+raw_n_samples <- 
+  pollen_data_study3 %>% 
+  get_number_of_samples(name = "raw", group_var = "region")  %>% 
+  rlang::set_names(
+    nm = c("region", "n", "step")
+  )
+
+raw_n_taxa <- 
+  pollen_data_study3 %>%
+  get_number_of_taxa(name = "raw", group_var = "region") %>% 
+  rlang::set_names(
+    nm = c("region", "n", "step")
+  )
+
+data_overview_raw <- 
+  raw_n_datasets %>% 
+  dplyr::left_join(
+    raw_n_samples,
+    by = join_by(region, step),
+    suffix = c("_datasets", "_samples")
+  ) %>% 
+  dplyr::left_join(
+    raw_n_taxa %>% 
+      dplyr::rename(
+        n_taxa = n
+      ),
+    by = join_by(region, step),
+  ) %>% 
+  relocate(step, .before = n_datasets)
+
+
 
 ## harmonized
 
-step1 <- get_number_of_datasets(data_harmonised_study3, name =  "harmonised")
-  
+harm_n_datasets <- 
+  data_harmonised_study3 %>% 
+  get_number_of_datasets(group_var = "region", name = "harm") %>% 
+  rlang::set_names(
+    nm = c("region", "n", "step")
+  )
 
-purrr::walk(
-  .progress = TRUE,
-  .x = seq_along(vec_names_rarefied_study3),
-  .f = ~ {
-    
-    dir_path <- 
-      here::here(
-        "Data/Paper_1/data_supplementary/study3/rarefied/iterations"
-      )
+harm_n_samples <- 
+  data_harmonised_study3 %>% 
+  get_number_of_samples(name = "harm", group_var = "region")  %>% 
+  rlang::set_names(
+    nm = c("region", "n", "step")
+  )
 
-    dir.create(
-      dir_path,
-      showWarnings = FALSE,
-      recursive = TRUE
+harm_n_taxa <- 
+  data_harmonised_study3 %>%
+  get_number_of_taxa(name = "harm", group_var = "region") %>% 
+  rlang::set_names(
+    nm = c("region", "n", "step")
+  )
+
+data_overview_harm <- 
+  harm_n_datasets %>% 
+  dplyr::left_join(
+    harm_n_samples,
+    by = join_by(region, step),
+    suffix = c("_datasets", "_samples")
+  ) %>% 
+  dplyr::left_join(
+    harm_n_taxa %>% 
+      dplyr::rename(
+        n_taxa = n
+      ),
+    by = join_by(region, step),
+  ) %>% 
+  relocate(step, .before = n_datasets) 
+
+
+data_overview_harm <-  # update North_America
+  data_overview_harm %>% 
+  rows_update(tibble(n_datasets = 474,
+                     region = "North America"))
+
+
+
+data_overview_harm %>% 
+  rename_all(replace = c("_", " "))
+
+                                  
+##For steps 2 - 5 (See p1_study3/data_overview scripts)
+
+##Load results
+
+vec_rarefied_res <- 
+  list.files(
+    "Data/Paper_1/data_supplementary/study3/rarefied",
+    pattern = "[.]csv$",
+    full.names = TRUE
+  )
+
+vec_rarefied_new_age_res <- 
+  list.files(
+    "Data/Paper_1/data_supplementary/study3/rarefied_new_age",
+    pattern = "[.]csv$",
+    full.names = TRUE
+  )
+
+vec_binned_res <- 
+  list.files(
+    "Data/Paper_1/data_supplementary/study3/binned",
+    pattern = "[.]csv$",
+    full.names = TRUE
+  )
+
+vec_richness_res <- 
+  list.files(
+    "Data/Paper_1/data_supplementary/study3/richness",
+    pattern = "[.]csv$",
+    full.names = TRUE
+  )
+
+### Show results as data frame
+
+data_overv_rarefied_res <- 
+  purrr::map(
+    .progress = TRUE,
+    .x = seq_along(vec_rarefied_res),
+    .f = ~ {
+      iter <- vec_rarefied_res[[.x]] %>% 
+        read_csv()
       
-    )
-    
-          
-    file_name <- 
-        stringr::str_glue(
-          "{dir_path}/{.x}.csv"
-        )
-    
-    
-    if (
-    file.exists(file_name)
-    ) {
+    }
+  )
+
+data_overv_rarefied_res <- 
+  bind_rows(data_overv_rarefied_res)
+
+###
+
+data_overv_rarefied_new_age_res <- 
+  purrr::map(
+    .progress = TRUE,
+    .x = seq_along(vec_rarefied_new_age_res),
+    .f = ~ {
+      iter <- vec_rarefied_new_age_res[[.x]] %>% 
+        read_csv()
       
-      return()
-    } 
-    
-    data_temp_rarefied <- 
-      vec_names_rarefied_study3[[.x]] %>% 
-        readr::read_rds() %>% 
-        dplyr::mutate(
-          dataset_id = stringr::str_extract(dataset_id_age , "^[^_]+"),
-          sample_id = stringr::str_extract(dataset_id_age , "(?<=_)\\d+(?=_)"),
-          .before = dataset_id_age
-        ) %>% 
-        dplyr::left_join(data_region, by = "dataset_id") %>% 
-        dplyr::select(-dataset_id_age)
+    }
+  )
+
+data_overv_rarefied_new_age_res <- 
+  bind_rows(data_overv_rarefied_new_age_res)
+
+###
+
+data_overv_vec_binned_res  <- 
+  purrr::map(
+    .progress = TRUE,
+    .x = seq_along(vec_binned_res),
+    .f = ~ {
+      iter <- vec_binned_res[[.x]] %>% 
+        read_csv()
       
-    n_datasets <- 
-        data_temp_rarefied %>% 
-        get_number_of_datasets(group_var = "region", name = "rarefied") %>% 
-      rlang::set_names(
-        nm = c("region", "n", "step")
-      )
-    
-    assertthat::assert_that(
-      is.data.frame(n_datasets),
-      nrow(n_datasets) > 0,
-      "n" %in%  names(n_datasets) 
-    )
-    
+    }
+  )
+
+data_overv_vec_binned_res <- 
+  bind_rows(data_overv_vec_binned_res)
+
+###
+
+data_overv_vec_richness_res  <- 
+  purrr::map(
+    .progress = TRUE,
+    .x = seq_along(vec_richness_res),
+    .f = ~ {
+      iter <- vec_richness_res[[.x]] %>% 
+        read_csv()
       
-    n_samples <- 
-      data_temp_rarefied %>% 
-      get_number_of_samples(name = "rarefied", group_var = "region")  %>% 
-      rlang::set_names(
-        nm = c("region", "n", "step")
-      )
+    }
+  )
 
-    
-    assertthat::assert_that(
-      is.data.frame(n_samples),
-      nrow(n_samples) > 0,
-      "n" %in%  names(n_samples) 
-    )
-    
-        
-    n_taxa <- 
-      data_temp_rarefied %>%
-      tidyr::pivot_longer(
-        col = -c(sample_id, dataset_id, region),
-        names_to = "taxa"
-      ) %>% 
-      get_number_of_taxa(name = "rarefied", group_var = "region") %>% 
-      rlang::set_names(
-        nm = c("region", "n", "step")
-      )
-    
-    
-    assertthat::assert_that(
-      is.data.frame(n_taxa),
-      nrow(n_taxa) > 0,
-      "n" %in%  names(n_taxa) 
-    )
-    
-    data_overview_one_iteration <- 
-      n_datasets %>% 
-      dplyr::left_join(
-        n_samples,
-        by = join_by(region, step),
-        suffix = c("_datasets", "_samples")
-      ) %>% 
-      dplyr::left_join(
-        n_taxa %>% 
-          dplyr::rename(
-            n_taxa = n
-          ),
-        by = join_by(region, step),
-      ) 
-    
-    write_csv(
-      x = data_overview_one_iteration,
-      file = file_name
-    )
-    
-})
+data_overv_vec_richness_res  <- 
+  bind_rows(data_overv_vec_richness_res )
 
-
-# Check one iteration of data overview
-
-data_overview_one_iter <-
-  read_csv(here("Data/Paper_1/data_supplementary/study3/rarefied/iterations/1.csv"))
-
-
-
-# 4.4. Summarize and visualize
+#----------------------------------------------------------#
+# 5.  Summarize and visualize -----------------------
+#----------------------------------------------------------#
 
 ##Combine summaries in each step to a single data frame
 
+step0 <- data_overview_raw
+step1 <- data_overview_harm
+step2 <- data_overv_rarefied_res
+step3 <- data_overv_rarefied_new_age_res
+step4 <- data_overv_vec_binned_res
+step5 <- data_overv_vec_richness_res
+
+
 steps <- bind_rows(step0, step1, step2,step3, step4, step5)
+
 
 ##Plot as boxplot
 
 steps %>% 
-  mutate(data = fct_relevel(data, "raw", "harmonised", "rarefied","rarefied_new", "binned", "richness")) %>% 
-  ggplot(aes(x = data, y = n)) + 
-  geom_boxplot() +
-  labs(y = "N") +
+    ggplot(aes(x = step, y =  n_datasets)) + 
+    geom_boxplot(aes(colour = step)) +
+    facet_wrap(~region) +
+    labs(y = "No. of Datasets") +
+    xlab(element_blank()) +
+    theme_classic() +
+  theme(axis.text.x = element_blank()
+  )  
+  
+  
+steps %>% 
+  ggplot(aes(x = step, y =  n_samples)) + 
+  geom_boxplot(aes(colour = step)) +
+  facet_wrap(~region) +
+  labs(y = "No. of Samples") +
+  xlab(element_blank()) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust =1)) 
+  theme(axis.text.x = element_blank()
+        ) 
+
+
+steps %>% 
+  ggplot(aes(x = step, y =  n_taxa)) + 
+  geom_boxplot(aes(colour = step)) +
+  facet_wrap(~region) +
+  labs(y = "No.of Taxa" ) +
+  xlab(element_blank()) +
+  theme_classic() +
+  theme(axis.text.x = element_blank()
+  ) 
+
 
