@@ -1,11 +1,4 @@
 
-samples <-  
-  data_harmonised_study3 %>% 
-  distinct(dataset_id,sample_id)
-
-taxa <- data_harmonised_study3 %>% 
-  distinct(dataset_id,taxa)
-  
 
 ##RICHNESS ESTIMATION
 
@@ -42,8 +35,7 @@ purrr::walk(
     data_temp_richness <- 
       vec_names_richness_study3[[1]] %>% 
       readr::read_rds() %>% 
-      left_join(samples, by = "dataset_id") %>% 
-      left_join(taxa, by = "dataset_id")
+      tidyr::unite("sample_id", c(dataset_id,age), sep = "_", remove = FALSE )
     
     n_datasets <- 
       data_temp_richness %>% 
@@ -73,34 +65,13 @@ purrr::walk(
       "n" %in%  names(n_samples) 
     )
     
-    
-    n_taxa <- 
-      data_temp_richness %>%
-      get_number_of_taxa(name = "richness", group_var = "region") %>% 
-      rlang::set_names(
-        nm = c("region", "n", "step")
-      )
-    
-    
-    assertthat::assert_that(
-      is.data.frame(n_taxa),
-      nrow(n_taxa) > 0,
-      "n" %in%  names(n_taxa) 
-    )
-    
+
     data_overview_one_iteration <- 
       n_datasets %>% 
       dplyr::left_join(
         n_samples,
         by = join_by(region, step),
         suffix = c("_datasets", "_samples")
-      ) %>% 
-      dplyr::left_join(
-        n_taxa %>% 
-          dplyr::rename(
-            n_taxa = n
-          ),
-        by = join_by(region, step),
       ) %>% 
       relocate(step, .before = n_datasets)
     
@@ -114,7 +85,7 @@ purrr::walk(
 # Check one iteration
 
 data_overview_one_iter_data_temp_richness <-
-  read_csv(here("Data/Paper_1/data_supplementary/study3/richness/995.csv"))
+  read_csv(here("Data/Paper_1/data_supplementary/study3/richness/80.csv"))
 
 
 

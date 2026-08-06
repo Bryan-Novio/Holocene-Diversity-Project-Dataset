@@ -1,6 +1,5 @@
 ##BINNED
 
-samples <- pollen_data_study3 %>% distinct(dataset_id,sample_id)
 
 purrr::walk(
   .progress = TRUE,
@@ -33,10 +32,12 @@ purrr::walk(
     } 
     
     data_temp_binned <- 
-      vec_names_binned_study3 [[.x]]%>% 
+      vec_names_binned_study3 [[1]]%>% 
       readr::read_rds() %>% 
-      dplyr::left_join(samples, by = "dataset_id") %>% 
-      dplyr::left_join(data_region, by = "dataset_id") 
+      dplyr::left_join(data_region, by = "dataset_id") %>%
+      tidyr::unite("sample_id", c(dataset_id,BIN), sep = "_", remove = FALSE) %>% 
+      select(-c("BIN", "summed_pollen_count"))
+      
     
     n_datasets <- 
       data_temp_binned %>% 
@@ -51,7 +52,6 @@ purrr::walk(
       "n" %in%  names(n_datasets) 
     )
     
-    
     n_samples <- 
       data_temp_binned %>% 
       get_number_of_samples(name = "binned", group_var = "region")  %>% 
@@ -59,17 +59,16 @@ purrr::walk(
         nm = c("region", "n", "step")
       )
     
-    
     assertthat::assert_that(
       is.data.frame(n_samples),
       nrow(n_samples) > 0,
       "n" %in%  names(n_samples) 
     )
     
-    
     n_taxa <- 
-      data_temp_binned %>%
-      select(region, taxa) %>% 
+      data_temp_binned %>% 
+      select(taxa) %>%
+      left_join(all_taxa_harm, by = "taxa", relationship = "many-to-many") %>% 
       get_number_of_taxa(name = "binned", group_var = "region") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
@@ -110,5 +109,5 @@ purrr::walk(
 
 
 data_overview_one_iter_bin <-
-  read_csv(here("Data/Paper_1/data_supplementary/study3/binned/1000.csv"))
+  read_csv(here("Data/Paper_1/data_supplementary/study3/binned/79.csv"))
 

@@ -35,8 +35,21 @@ data_age_uncertainty <-
 
 ## 1.3. harmonized dataset
 
-data_harmonised_study3 <-
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds"))
+data_harmonised_study3   <-
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds")) %>% 
+  mutate(region = str_replace_all(region, "North_America", "North America"))
+
+taxa_harm_Asia <- 
+  data_harmonised_study3 %>% filter(region == "Asia") %>% distinct(taxa, region)
+
+taxa_harm_Europe <- 
+  data_harmonised_study3 %>% filter(region == "Europe") %>% distinct(taxa, region)
+
+taxa_harm_NAmerica <- 
+  data_harmonised_study3 %>% filter(region == "North America") %>% distinct(taxa,region) 
+
+all_taxa_harm <- 
+  bind_rows(taxa_harm_Asia, taxa_harm_Europe, taxa_harm_NAmerica)
 
 ## 1.4. rarefied datasets
 
@@ -200,7 +213,6 @@ raw_n_datasets <-
     nm = c("region", "n", "step")
   )
 
-
 raw_n_samples <- 
   pollen_data_study3 %>% 
   get_number_of_samples(name = "raw", group_var = "region")  %>% 
@@ -271,17 +283,6 @@ data_overview_harm <-
     by = join_by(region, step),
   ) %>% 
   relocate(step, .before = n_datasets) 
-
-
-data_overview_harm <-  # update North_America
-  data_overview_harm %>% 
-  rows_update(tibble(n_datasets = 474,
-                     region = "North America"))
-
-
-
-data_overview_harm %>% 
-  rename_all(replace = c("_", " "))
 
                                   
 ##For steps 2 - 5 (See p1_study3/data_overview scripts)

@@ -31,10 +31,11 @@ purrr::walk(
     } 
     
     data_temp_rarefied_new_age <- 
-      vec_names_rarefied_study_new_age[[.x]] %>% 
+      vec_names_rarefied_study_new_age[[1]] %>% 
       readr::read_rds() %>% 
       dplyr::left_join(data_region, by = "dataset_id") %>% 
       relocate(region)
+    
     
     n_datasets <- 
       data_temp_rarefied_new_age %>% 
@@ -49,9 +50,7 @@ purrr::walk(
       "n" %in%  names(n_datasets) 
     )
     
-    
     n_samples <- 
-      
       data_temp_rarefied_new_age %>% 
       get_number_of_samples(name = "rarefied_new_age", group_var = "region")  %>% 
       rlang::set_names(
@@ -67,12 +66,13 @@ purrr::walk(
     
     
     n_taxa <- 
-      
       data_temp_rarefied_new_age %>%
       tidyr::pivot_longer(
         col = -c(sample_id, dataset_id, region, age),
         names_to = "taxa"
       ) %>% 
+      select(-region) %>% 
+      left_join(all_taxa_harm, by = "taxa", relationship = "many-to-many") %>% 
       get_number_of_taxa(name = "rarefied_new_age", group_var = "region") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
