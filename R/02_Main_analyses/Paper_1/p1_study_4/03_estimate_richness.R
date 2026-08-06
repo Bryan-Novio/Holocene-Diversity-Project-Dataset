@@ -72,4 +72,4 @@ summary(richness4)
 # 4. Write the richness data to an RDS file
 #----------------------------------------------------------#
 
-write_rds(richness4, here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
+write_csv(richness4, here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
