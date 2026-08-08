@@ -111,5 +111,7 @@ purrr::walk(
 
 # Check one iteration 
 
+# -------------------------------------------------------------------------
+
 data_overview_one_iter_rarefied_new_age <-
-  read_csv(here("Data/Paper_1/data_supplementary/study3/rarefied_new_age/7.csv"))
+  read_csv(here("Data/Paper_1/data_supplementary/study3/rarefied_new_age/999.csv"))

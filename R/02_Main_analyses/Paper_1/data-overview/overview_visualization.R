@@ -72,9 +72,10 @@ data_overview_all_studies %>%
   ggplot(aes(x = step, y = Count, colour = step)) +
   labs(x = "Step", color = "Step") +
   geom_point(size = 2) +
-  theme (axis.text.x = element_blank(),
+  theme_bw()+
+  theme(axis.text.x = element_blank(),
          axis.title.x = element_blank(),
          legend.position = "bottom") + 
-  guides(colour = guide_legend(nrow = 1)) +
+  guides(colour = guide_legend(nrow = 1)) + 
   facet_grid(cols = vars(study_reg), rows = vars(metric), scales = "free", space = "free_x") 
 
