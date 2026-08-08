@@ -243,8 +243,6 @@ data_overview_raw <-
   ) %>% 
   relocate(step, .before = n_datasets)
 
-
-
 ## harmonized
 
 harm_n_datasets <- 
@@ -395,7 +393,14 @@ step4 <- data_overv_vec_binned_res
 step5 <- data_overv_vec_richness_res
 
 
-steps <- bind_rows(step0, step1, step2,step3, step4, step5)
+study3_data_overview <- 
+  bind_rows(step0, step1, step2,step3, step4, step5) %>% 
+  mutate(study = "Study 3") %>% 
+  relocate(study)
+
+## Save data overview as dataframe
+
+write_csv(study3_data_overview,here("Data/Paper_1/data_supplementary/data_overview/study3_data_overview.csv"))
 
 
 ##Plot as boxplot

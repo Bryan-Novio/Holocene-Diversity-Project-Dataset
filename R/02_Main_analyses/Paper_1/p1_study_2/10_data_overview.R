@@ -39,6 +39,12 @@ data_study2_binned <-
 data_richness_study2 <- 
   read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
 
+
+data_only_woody_study2 <-  
+  read_csv(
+  here("Data/Paper_1/data_supplementary/data_only_woody.csv")
+)
+
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -64,7 +70,7 @@ source_files <-
 # 3. Data overview  -----------------
 #----------------------------------------------------------#
 
-#3.1.raw data ----
+##3.1.raw data ----
 
 raw_n_datasets <- 
   pollen_data_study2 %>% 
@@ -75,7 +81,6 @@ raw_n_datasets <-
 
 raw_n_samples <- 
   pollen_data_study2 %>% 
-  tidyr::unite("sample_id", c("dataset_id","age"), sep = "_", remove = FALSE ) %>% 
   get_number_of_samples(name = "raw", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
@@ -105,7 +110,7 @@ data_overview_raw <-
   relocate(step, .before = n_datasets) 
 
 
-#3.2 harmonized ----
+##3.2 harmonized ----
 
 harm_n_datasets <- 
   data_harmonised_study2 %>% 
@@ -147,7 +152,7 @@ data_overview_harm <-
   relocate(step, .before = n_datasets) 
 
 
-# 3.3. rarefied ----
+## 3.3. rarefied ----
 
 rarefied_n_datasets <- 
   data_rarefied_study2 %>% 
@@ -190,7 +195,7 @@ data_overview_rarefied <-
   relocate(step, .before = n_datasets) 
 
 
-#3.4. binned ----
+##3.4. binned ----
 
 binned_n_datasets <- 
   data_study2_binned %>% 
@@ -231,7 +236,7 @@ data_overview_binned <-
   relocate(step, .before = n_datasets) 
 
 
-#3.5.richness ----
+##3.5.richness ----
 
 richness_n_datasets <- 
   data_richness_study2 %>% 
@@ -258,15 +263,61 @@ data_overview_richness <-
   relocate(step, .before = n_datasets) 
 
 
-#3.6. Merge all steps' overview
+##3.6. Selected woody taxa ----
 
-all_data_overview <- 
-  bind_rows(data_overview_raw, data_overview_harm,data_overview_rarefied,  data_overview_binned,data_overview_richness )
+select_woody_taxa_n_datasets <- 
+  data_only_woody_study2 %>% 
+  get_number_of_datasets(group_var = NULL, name = "select_woody_taxa") %>% 
+  rlang::set_names(
+    nm = c( "n", "step")
+  )
+
+select_woody_taxa_richness_n_samples <- 
+  data_only_woody_study2  %>% 
+  tidyr::unite("sample_id", c("dataset_id","BIN"), sep = "_", remove = TRUE) %>% 
+  get_number_of_samples(name = "select_woody_taxa", group_var = NULL)  %>% 
+  rlang::set_names(
+    nm = c("n", "step")
+  )
+
+select_woody_taxa_n_taxa <- 
+  data_only_woody_study2 %>%
+  get_number_of_taxa(name = "select_woody_taxa", group_var = NULL) %>% 
+  rlang::set_names(
+    nm = c("n", "step")
+  )
+
+data_overview_select_woody_taxa <- 
+  select_woody_taxa_n_datasets  %>% 
+  dplyr::left_join(
+    select_woody_taxa_richness_n_samples,
+    by = join_by(step),
+    suffix = c("_datasets", "_samples")
+  ) %>% 
+  dplyr::left_join(
+    select_woody_taxa_n_taxa%>% 
+      dplyr::rename(
+        n_taxa = n
+      ),
+    by = join_by(step),
+  ) %>% 
+  relocate(step, .before = n_datasets) 
+
+##3.7. Merge all steps' overview ----
+
+study2_data_overview <- 
+  bind_rows(data_overview_raw, data_overview_harm,data_overview_rarefied,  data_overview_binned, data_overview_select_woody_taxa ,data_overview_richness) %>% 
+mutate(study = "Study 2") %>% 
+relocate(study)
+
+## Save data overview as dataframe
+
+write_csv(study2_data_overview,here("Data/Paper_1/data_supplementary/data_overview/study2_data_overview.csv"))
 
 #4. Plotting -----
 
 all_data_overview_long <- 
-  all_data_overview %>% 
+  study2_data_overview %>% 
   pivot_longer(
     cols = c(n_datasets,n_samples, n_taxa),
     names_to = "variable",

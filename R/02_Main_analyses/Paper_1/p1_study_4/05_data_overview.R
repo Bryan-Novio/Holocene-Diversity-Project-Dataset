@@ -13,8 +13,6 @@
 
 library(tidyverse)
 library(here)
-library(patchwork)
-library(tidytext)
 
 #----------------------------------------------------------#
 # 1. Load data subsets ------------------------------------
@@ -210,13 +208,21 @@ data_overview_richness <-
 
 #3.6. Merge all steps' overview
 
-all_data_overview <- 
-  bind_rows(data_overview_raw, data_overview_harm,data_overview_rarefied,  data_overview_richness )
+study4_data_overview <- 
+  bind_rows(data_overview_raw, data_overview_harm,data_overview_rarefied,  data_overview_richness) %>% 
+  mutate(study = "Study 4") %>% 
+  relocate(study)
+
+
+## Save data overview as dataframe
+
+write_csv(study4_data_overview,here("Data/Paper_1/data_supplementary/data_overview/study4_data_overview.csv"))
+
 
 #4. Plotting -----
 
 all_data_overview_long <- 
-  all_data_overview %>% 
+  study4_data_overview %>% 
   pivot_longer(
     cols = c(n_datasets,n_samples, n_taxa),
     names_to = "variable",
@@ -229,7 +235,7 @@ all_data_overview_long %>%
   geom_col(position = "dodge") +
   labs(
     x = "Step",
-    y = "Count",
+    y = "N",
     fill = "Metric"
   ) +
   theme_classic(
