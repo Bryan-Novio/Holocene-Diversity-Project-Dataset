@@ -427,7 +427,8 @@ step3
 
 step4 <- number_datasets_binned_data <- 
   purrr::map_dbl(
-    .progress = TRUE,
+    .progress = TRUE)
+
 step1 <- get_number_of_datasets(data_harmonised_study3, "harmonised")
   
 ##rarefied
