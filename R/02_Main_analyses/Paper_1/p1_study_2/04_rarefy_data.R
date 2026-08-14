@@ -57,6 +57,7 @@ data_to_rarefy <-
   )
   
 set.seed(1234)
+
 rarefied_data <-
   rarefy_all_samples(
     data_source = data_to_rarefy,

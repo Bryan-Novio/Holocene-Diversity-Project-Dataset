@@ -45,7 +45,7 @@ fit_regression_model <- function(
 
   random <-
     match.arg(random,
-      choices = c("intercept", "slope","intercept_reg" )
+      choices = c("intercept", "slope", "slope_rand_id", "slope_rand_id_2", "intercept_reg", "hgam_GI" )
     )
 
   assertthat::assert_that(
@@ -71,10 +71,26 @@ fit_regression_model <- function(
         stringr::str_glue(
           "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'cr') + s({time_var}, {group_var}, k = {sel_k}, bs = 'fs', xt = list(bs = 'cr'))"
         ),
+      
+      "slope_rand_id" =
+        stringr::str_glue(
+          "{y_var} ~ s({time_var}, k = {sel_k}, bs = 'cr') + s({time_var}, {group_var}, k = {sel_k}, bs = 'fs', xt = list(bs = 'cr')) + s(dataset_id, bs = 're')"
+        ),
+      
+      "slope_rand_id_2" =
+        stringr::str_glue(
+          "{y_var} ~ s({time_var}) + s({time_var}, {group_var}, k = {sel_k}, bs = 'fs') +  s(dataset_id, bs = 're')"
+          ), 
+      
       "intercept_reg" = 
         stringr::str_glue(
           "{y_var} ~ {group_var} + s({time_var}, by = {group_var}, bs = 'fs', k = {sel_k}) + s(dataset_id, bs = 're')" 
         ),
+      
+      "hgam_GI" =  stringr::str_glue(
+        "{y_var} ~ s({time_var}, by = {group_var}, m=1, bs = 'tp', k = {sel_k}) + s(dataset_id, bs = 're')" 
+      )
+        
       ) |>
     as.formula()
  

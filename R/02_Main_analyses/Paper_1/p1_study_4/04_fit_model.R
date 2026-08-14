@@ -82,15 +82,15 @@ n_cores_to_use <-
 
 set.seed(19900723)
 
-gam_s4 <-
+gam_s4 <-                                # fREML
   fit_regression_model(
     data = richness_data4,
     y_var = "richness",
     time_var = "age",
     group_var = "dataset_id",
-    random = "slope",
-    sel_k = 30, 
-    error_family = stats::poisson(link = "log"),
+    random = "hgam_GI",
+    sel_k = 10, 
+    error_family = mgcv::tw(),
     nthreads = n_cores_to_use,
     discrete = TRUE,
     control = mgcv::gam.control(
@@ -113,7 +113,7 @@ data_dummy_full <-
     age = seq(
       min(richness_data4$age),
       max(richness_data4$age),
-      length.out = 100
+      length.out = 1000
     )
   )
 
@@ -122,7 +122,7 @@ data_dummy_general <-
     age = seq(
       min(richness_data4$age),
       max(richness_data4$age),
-      length.out = 100
+      length.out = 1000
     )
   )
 

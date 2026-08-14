@@ -18,6 +18,7 @@ library(here)
 library(mgcv)
 
 
+
 # Load the function into the global environment
 
 fun_list <-
@@ -92,15 +93,15 @@ n_cores_to_use <-
 
 set.seed(19900723)
 
-gam_s2 <-
+gam_s2 <-                               #method = REML
   fit_regression_model(
     data_source = richness_data,
     y_var = "richness",
     time_var = "age",
     group_var = "dataset_id",
-    random = "slope",
-    sel_k = 20, 
-    error_family = stats::poisson(link = "log"),
+    random = "slope_rand_id_2",
+    sel_k = 10, 
+    error_family = stats::gaussian(),
     nthreads = n_cores_to_use,
     discrete = TRUE,
     control = mgcv::gam.control(
@@ -140,7 +141,7 @@ data_dummy_general <-
     age = seq(
       min(richness_data$age),
       max(richness_data$age),
-      length.out = 10000
+      length.out = 1000
     )
   )
 

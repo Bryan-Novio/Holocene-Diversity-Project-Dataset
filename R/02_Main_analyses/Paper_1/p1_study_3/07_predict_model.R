@@ -47,6 +47,9 @@ study3_richness_sd <-
 # 3. Model predictions -----
 #----------------------------------------------------------#
 
+out_dir_preds <- 
+  here("Data/Paper_1/data_model/preds_50")
+
 data_dummy_full <-
   purrr::map(
     .progress = TRUE,
@@ -72,7 +75,7 @@ summary(standardize_richness[[1]])
 
 gam_mods <- 
   list.files(
-    "Data/Paper_1/data_model/mod_iterations",
+    "Data/Paper_1/data_model/mod_iters_50",
     pattern = "[.]rds$",
     full.names = TRUE
   )
@@ -86,6 +89,7 @@ gam_mods[[1]] %>% read_rds()
 n <- length(gam_mods)
 
 tic()
+
 
 for (i in seq_along(gam_mods)) {
   
@@ -127,7 +131,8 @@ toc()
 
 # View single prediction
 
-one <- read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
+one <-
+  read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
 
 summary(one)
 
@@ -135,9 +140,9 @@ summary(one)
 
 
 preds <- 
-  list.files(here::here("Data/Paper_1/data_model/preds"), pattern = "[.]rds$",full.names = TRUE ) 
+  list.files(here::here("Data/Paper_1/data_model/preds_50"), pattern = "[.]rds$",full.names = TRUE ) 
 
-out_back <-   here("Data/Paper_1/data_model/data_back")
+out_back <- here("Data/Paper_1/data_model/data_back_2")
 
 
 for (i in seq_along(preds)) {
@@ -164,4 +169,5 @@ for (i in seq_along(preds)) {
 
 #View single back-transformed iteration
 
-data_back <- read_rds(here("Data/Paper_1/data_model/data_back/1.rds"))
+data_back <- 
+  read_rds(here("Data/Paper_1/data_model/data_back_2/1.rds"))

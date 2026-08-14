@@ -38,8 +38,9 @@ source_files <-
 # 2. Load richness  -----------------------------------------
 #----------------------------------------------------------# 
 
-paths <- list.files(
-  "Data/Paper_1/data_estimate_richness/s3_richness",
+paths <- 
+  list.files(
+  "Data/Paper_1/data_estimate_richness/richness_iters",
   pattern = "[.]rds$",
   full.names = TRUE
 )
@@ -49,16 +50,14 @@ paths <- list.files(
 #----------------------------------------------------------#
 
 out_dir_mod <- 
-  here("Data/Paper_1/data_model/mod_iterations")
-
-out_dir_preds <- 
-  here("Data/Paper_1/data_model/preds")
+  here("Data/Paper_1/data_model/mod_iters_50")
 
 #----------------------------------------------------------#
 # 4. Standardize richness  ----
 #----------------------------------------------------------#
 
-standardize_richness <- purrr::map(
+standardize_richness <- 
+  purrr::map(
   .x = paths,
   .f = ~ {
     readr::read_rds(.x) %>%
@@ -74,7 +73,8 @@ standardize_richness <- purrr::map(
 
 # Get mean and sd to back-transform 
 
-study3_richness_sd <- purrr::map(
+study3_richness_sd <- 
+  purrr::map(
   .x = standardize_richness,
   .f = ~{
     .x %>% 
@@ -130,7 +130,7 @@ purrr::walk2(
       group_var = "region",
       random = "intercept_reg",
       sel_k = 10,
-      error_family = scat(),
+      error_family = gaussian(),
       nthreads = n_cores_to_use,
       discrete = TRUE,
       control = mgcv::gam.control(
@@ -146,12 +146,12 @@ purrr::walk2(
 # View a single iteration
 
 one <- 
-  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations/model_2.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iters_50/model_1000.rds"))
 
 # Check model parameters
 
 mod_iters <- list.files(
-  "Data/Paper_1/data_model/mod_iterations",
+  "Data/Paper_1/data_model/mod_iters_50",
   pattern = "[.]rds$",
   full.names = TRUE
 )
@@ -166,7 +166,7 @@ mod_param <- purrr::map(
   }
 )
 
-View(mod_param)
+View(mod_param[[801]])
 
 
 #----------------------------------------------------------#

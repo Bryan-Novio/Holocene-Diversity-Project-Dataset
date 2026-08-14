@@ -22,6 +22,7 @@ library(here)
 richness <-
   read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
 
+
 data_p1_s1_counts_ages_subregion <- 
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
 
@@ -53,6 +54,7 @@ median_richness_15k <-
   median_richness_data %>% filter(age <= 15000)
 
 summary(median_richness_15k)
+
 
 ## same
 

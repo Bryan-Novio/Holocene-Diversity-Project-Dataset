@@ -29,46 +29,96 @@ fun_list <-
     recursive = TRUE
   )
 
+
 source_files <-
   sapply(
     paste0("R/Functions/", fun_list, sep = ""),
     source
   )
 
-## 1.2. Load data set
+#----------------------------------------------------------#
+# 2. Load datasets -----------------------------------------
+#----------------------------------------------------------# 
+
+##2.0. Load back transformed richness datasets
+
+data_back <- 
+  list.files(
+    "Data/Paper_1/data_model/data_back_2",
+    pattern = "[.]rds$",
+    full.names = TRUE)
+
+
+## 2.1. Batch loading of back-transformed richness dataset (1000)
+
+### 2.1.1. Batches of 50
+
+batch_size <- 50
+
+file_groups <- 
+  split(1:1000, ceiling(1:1000 / batch_size))
+
+### 2.1.2. Initialize an empty list to collect batches
+
+all_batches <- list()
+
+### 2.1.3. Process each batch
+
+for (i in seq_along(file_groups)) {
+  
+  all_batches[[i]] <-
+    file_groups[[i]] %>%
+    map(load_pred_richness_and_select) %>%
+    list_rbind()
+  
+  gc()
+}
+
+### 2.1.4. Combine all batches
+
+combined_data <-
+  list_rbind(all_batches)
+
+
+rm(all_batches)
+gc()
+
+### 2.1.5. Load all batches
 
 median_richness_back <- 
-  purrr::map(1:1000, 
-           .progress = TRUE,
-           .f = load_pred_richness_and_select) %>% 
-  bind_rows() %>% 
-  group_by(region, age) %>% 
+  combined_data %>%
+  group_by(region, age) %>%
   summarise(
-    continental_median_richness = median(richness),
-    continental_richness_upp = quantile(richness, 0.975),
-    continental_richness_dwn = quantile(richness, 0.025)
+    continental_median_richness = median(richness, na.rm = TRUE),
+    continental_richness_upp = quantile(richness, 0.975, na.rm = TRUE),
+    continental_richness_dwn = quantile(richness, 0.025, na.rm = TRUE),
+    .groups = "drop"
   )
 
-data_rich <- list.files(
-  "Data/Paper_1/data_estimate_richness/s3_richness",
+rm(combined_data)
+gc()
+
+
+##2.2. Load richness datasets
+
+data_rich <-
+  list.files(
+  "Data/Paper_1/data_estimate_richness/richness_iters",
   pattern = "[.]rds$",
   full.names = TRUE
 )
 
-data_back <- list.files(
-  "Data/Paper_1/data_model/data_back",
-  pattern = "[.]rds$",
-  full.names = TRUE)
+
 
 #----------------------------------------------------------#
-# 2. Visualise continental trends -------------------------
+# 3. Visualise continental trends -------------------------
 #----------------------------------------------------------# 
 
 # All continents in one plot
 
 median_richness_back %>% 
   ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 1, color = "red") + 
+  geom_line(linewidth = 2, color = "red") + 
   geom_ribbon(aes(ymin = continental_richness_dwn, 
               ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   facet_wrap(~region) +
@@ -81,7 +131,7 @@ median_richness_back %>%
 median_richness_back %>% 
   filter(region == "Europe") %>% 
   ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 1, color = "red") + 
+  geom_line(linewidth = 4, color = "red") + 
   geom_ribbon(aes(ymin = continental_richness_dwn, 
                   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   labs(x = "Age(cal yr BP)" , y = "Richness") +
@@ -93,7 +143,7 @@ median_richness_back %>%
 median_richness_back %>% 
   filter(region == "Asia") %>% 
   ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 1, color = "red") + 
+  geom_line(linewidth = 4, color = "red") + 
   geom_ribbon(aes(ymin = continental_richness_dwn, 
                   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   labs(x = "Age(cal yr BP)" , y = "Richness") +
@@ -106,7 +156,7 @@ median_richness_back %>%
 median_richness_back %>% 
   filter(region == "North America") %>% 
   ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 1, color = "red") + 
+  geom_line(linewidth = 4, color = "red") + 
   geom_ribbon(aes(ymin = continental_richness_dwn, 
                   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   labs(x = "Age(cal yr BP)" , y = "Richness") +
@@ -115,10 +165,10 @@ median_richness_back %>%
 
 
 #----------------------------------------------------------#
-# 3. Visualize trends per iteration with site-level trends --
+# 4. Visualize trends per iteration with site-level trends --
 #----------------------------------------------------------# 
 
-##2.1. for single iteration
+##4.1. for single iteration
 
 readr::read_rds(data_rich[[1]]) %>% summary()
 
@@ -126,7 +176,7 @@ readr::read_rds(data_rich[[1]]) %>% summary()
 
 plot_richness_iter(data_back,data_rich,1)
 
-##2.2. for all iterations and summarized to one trend line
+##4.2. for all iterations and summarized to one trend line
 
 all_data_back_iters <- purrr::map(
   .progress = TRUE,

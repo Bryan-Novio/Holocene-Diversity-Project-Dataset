@@ -72,6 +72,7 @@ data_p1_s2_12k <-
   ) %>%
   filter(age_span >= 12000)
 
+
 # 304 fossil pollen records
 
 # alternative
@@ -124,6 +125,7 @@ data_binned_filtered <-
     data_binned_400,
     n_bins = 11
   )
+
 
 data_binned_filtered %>% distinct(dataset_id) # 286 pollen cores
 
