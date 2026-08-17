@@ -88,9 +88,9 @@ gam_s4 <-                                # fREML
     y_var = "richness",
     time_var = "age",
     group_var = "dataset_id",
-    random = "hgam_GI",
+    random = "intercept",
     sel_k = 10, 
-    error_family = mgcv::tw(),
+    error_family = mgcv::Tweedie( p = 1.1),
     nthreads = n_cores_to_use,
     discrete = TRUE,
     control = mgcv::gam.control(

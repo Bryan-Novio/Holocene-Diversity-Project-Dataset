@@ -47,7 +47,7 @@ source_files <-
 )
 
 #----------------------------------------------------------#
-# 3. Subset data for Paper 1, Study 1
+# 3. Subset data for Paper 1, Study 2
 #----------------------------------------------------------#
 
 # 3.1.Filter on length and time

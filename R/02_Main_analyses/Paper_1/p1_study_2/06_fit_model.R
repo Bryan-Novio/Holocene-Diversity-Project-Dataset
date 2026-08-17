@@ -18,7 +18,6 @@ library(here)
 library(mgcv)
 
 
-
 # Load the function into the global environment
 
 fun_list <-
@@ -234,12 +233,17 @@ p1 +
     ggplot2::aes(x = age, y = estimate),
     linewidth = 2,
     color = "black"
-  ) +
+  )  +
   ggplot2::theme(
     legend.position = "none"
   ) +
   ggplot2::coord_cartesian(
-    ylim = c(10,14)
+    ylim = c(6,14)
   ) +
-  ggplot2::scale_x_reverse()
+  ggplot2::scale_x_reverse() +
+  ggplot2::geom_vline(xintercept = 9500, linetype = "dashed", color ="black")
+
+
+ 
+
   

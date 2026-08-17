@@ -14,6 +14,7 @@
 
 library(tidyverse)
 library(here)
+library(assertthat)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------

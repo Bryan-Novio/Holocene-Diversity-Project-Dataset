@@ -82,15 +82,17 @@ study_2_taxa <- inner_join(
 ) %>%
   distinct(neotoma_names)
 
+
+# remove taxa not from Simova woody taxa list
+
 woody_taxa_match <- 
-  inner_join(
+  left_join(
   woody_taxa_renamed,
   study_2_taxa,
   by = join_by("taxa" == "neotoma_names")
 )
 
 # -> It now has 123 woody match
-
 
 unclassified_if_woody_taxa <- 
   anti_join(
@@ -149,6 +151,8 @@ data_only_woody <-
     data_taxa_all_woody,
     by = "taxa"
   )
+
+data_only_woody %>% distinct(taxa)
 
 #----------------------------------------------------------#
 # 6. Save reclassified harmonized taxa  ------------------

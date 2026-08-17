@@ -57,10 +57,44 @@ data_prepared_richness_estimation <-
   prepare_data_for_richness_estimation(type = "binned")
 
 
-## 3.2. Estimate richness
+
+#Recheck if taxa is found in Simova list/ correct assignment of taxa based on this list (additional check)
+
+data_prepared_richness_estimation_taxa <- 
+  data_prepared_richness_estimation2 %>% distinct(taxa)
+
+Not_is_simova_list <-
+  read_csv(here("Data/Paper_1/data_supplementary/Not_is_simova_list.csv"))
+
+
+data_prepared_richness_estimation2 <- 
+  anti_join(data_prepared_richness_estimation,Not_is_simova_list, by = "taxa")
+
+
+data_prepared_richness_estimation2 %>% filter(taxa == "Ephedra")
+
+# some additional corrections with pollen-type to taxa conversion based on Simova et al 2023
+
+
+data_prepared_richness_estimation2 <- 
+  data_prepared_richness_estimation2 %>% 
+  mutate(taxa = str_replace(taxa, "Ephedraceae", "Ephedra"),
+         taxa = str_replace(taxa, "Ulmaceae", "Ulmus"),
+         taxa = str_replace(taxa, "Sorbus", "Prunus/Sorbus"),
+         taxa = str_replace(taxa, "Carpinus", "Ostrya/Carpinus"),
+         taxa = str_replace(taxa, "Comptonia", "Myrica/Comptonia"),
+         taxa = str_replace(taxa, "Thuja", "Juniperus/Thuja"),
+         taxa = str_replace(taxa, "Toxicodendron", "Rhus/Toxicodendron"),
+         taxa = str_replace(taxa, "Rhus", "Rhus/Toxicodendron"),
+         taxa = str_replace(taxa, "Juniperus", "Juniperus/Thuja"),
+         taxa = str_replace(taxa, "Prunus", "Prunus/Sorbus"),
+         taxa = str_replace(taxa, "Ostrya", "Ostrya/Carnipus"),
+         taxa = str_replace(taxa, "Myrica", "Myrica/Comptonia")
+         )
+
 
 richness <- 
-  data_prepared_richness_estimation %>% 
+  data_prepared_richness_estimation2 %>% 
   estimate_richness() %>% 
   mutate(age = as.numeric(age))
 

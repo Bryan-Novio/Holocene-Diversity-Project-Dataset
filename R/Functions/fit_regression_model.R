@@ -88,7 +88,7 @@ fit_regression_model <- function(
         ),
       
       "hgam_GI" =  stringr::str_glue(
-        "{y_var} ~ s({time_var}, by = {group_var}, m=1, bs = 'tp', k = {sel_k}) + s(dataset_id, bs = 're')" 
+        "{y_var} ~ s({time_var}, bs = 'tp', k = {sel_k}) + s({time_var},  by = {group_var}, m =1, bs = 'tp', k = {sel_k}) +  s(dataset_id, bs = 're')" 
       )
         
       ) |>
