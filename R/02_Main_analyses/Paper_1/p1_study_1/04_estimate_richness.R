@@ -18,10 +18,9 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data1 <- 
-  read_rds(here("Data/Paper_1/data_rarefy/data_study1_rarefied.rds"))
+data_binned <- 
+  read_rds(here("Data/Paper_1/data_bin/data_study1_binned.rds"))
 
-View(rarefied_data1)
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
 #----------------------------------------------------------#
@@ -49,21 +48,18 @@ source_files <-
 
 ## 3.1. Prepare data for richness_estimation
 
-data_prepared_richness_estimation <- 
-  rarefied_data1  %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", 
-                       names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = -c(dataset_id, BIN), 
-               names_to = "taxa", values_to = "summed_pollen_count") %>% 
+data_prepared_richness_estimation <-  
+  data_binned %>% 
   prepare_data_for_richness_estimation(type = "binned")
 
 
 ## 3.2. Estimate richness
 
-richness <- 
+richness  <- 
   data_prepared_richness_estimation %>% 
   estimate_richness() %>% 
-  mutate(age = as.numeric(age))
+  mutate(age = as.numeric(age),
+         dataset_id = as.character(dataset_id))
 
 summary(richness)
 

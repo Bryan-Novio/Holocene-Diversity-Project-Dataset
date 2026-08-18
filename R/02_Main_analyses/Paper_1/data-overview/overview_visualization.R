@@ -54,6 +54,9 @@ min(taxa$n_taxa)
 
 # Plot all three
 
+
+this_order <- c("raw", "select_woody_taxa", "harm", "rarefied", "rarefied_new_age", "binned", "richness")
+
 data_overview_all_studies %>% 
   select(study, step, n_datasets,  n_samples, n_taxa, region) %>% 
   tidyr::unite("study_reg", c(study, region), sep = "_", remove = TRUE) %>% 
@@ -66,12 +69,11 @@ data_overview_all_studies %>%
   mutate(study_reg = stringr::str_replace(study_reg,"_NA",""),
          study_reg = stringr::str_replace(study_reg,"_North America","_NA"),
          study_reg = stringr::str_replace(study_reg,"_Europe","_EU"),
-         study_reg = stringr::str_replace(study_reg,"_Asia","_AS")
-         )%>% 
+         study_reg = stringr::str_replace(study_reg,"_Asia","_AS")) %>% 
   drop_na() %>%
-  ggplot(aes(x = step, y = Count, colour = step)) +
+  ggplot(aes(x = factor(step, levels = this_order), y = Count, colour = step)) +
   labs(x = "Step", color = "Step") +
-  geom_point(size = 2) +
+  geom_point(size = 4) +
   theme_bw()+
   theme(axis.text.x = element_blank(),
          axis.title.x = element_blank(),

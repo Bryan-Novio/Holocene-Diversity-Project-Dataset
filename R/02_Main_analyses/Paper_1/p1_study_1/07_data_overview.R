@@ -277,6 +277,8 @@ all_data_overview_long <-
   )
  
 
+all_data_overview_long %>% filter(variable == "n_samples")
+
 all_data_overview_long %>%  
   ggplot(aes(x = step, y = value, fill = variable)) +
   geom_col(position = "dodge") +
