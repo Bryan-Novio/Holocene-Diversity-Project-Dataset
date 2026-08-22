@@ -55,6 +55,8 @@ median_richness_15k <-
 
 summary(median_richness_15k)
 
+write_csv(median_richness_15k,here("Data/Paper_1/data_model/model_csvs/S1_Richness.csv") )
+
 
 ## same
 

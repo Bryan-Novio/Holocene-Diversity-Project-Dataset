@@ -47,12 +47,63 @@ source_files <-
 # 3. Subset data for Paper 1, Study 1
 #----------------------------------------------------------# 
 
-
 data_p1_s4 <- 
   data %>% 
   filter(region =="Asia") %>% 
   relocate(region)
 
+## Data filtering (based on Study4)
+
+### 1. Retain records with only chron.point => 2
+
+data_p1_s4 %>% 
+  filter(n_chron_control >=2)
+
+### 2. Discard records if age of youngest sample was > 1600 cal BP; or age of oldest sample < 5800 cal BP
+ 
+data_p1_s4 %>%
+  unnest(levels)%>% 
+  relocate(age_min) %>% 
+  filter(age_min > 1600) %>% 
+  distinct(dataset_id) # 2: dataset_ids 4548, 52268
+
+data_p1_s4 %>%
+  unnest(levels)%>% 
+  relocate(age_min) %>% 
+  filter(age_max < 5800) %>% 
+  distinct(dataset_id)    # none
+
+
+data_p1_s4_filter <- data_p1_s4 %>% 
+  filter(dataset_id != 4548 & dataset_id != 52268) # 53 records
+
+
+###3. discard samples with < 25 pollen grains
+
+data_p1_s4_filter_sample <- 
+  data_p1_s4_filter %>% 
+  unnest(levels) %>% 
+  filter(n_sample_counts > 25)  #45 records
+
+data_p1_s4_filter_sample %>% 
+  relocate(sample_id,x50_percent)
+
+  relocate(n_sample_counts) %>% 
+  filter(n_sample_counts < 25)
+
+data_p1_s4_filter %>% 
+  relocate(n_sample_counts) %>% 
+  filter(n_sample_counts < 25)
+  unnest(levels) %>% 
+  relocate(n_sample_counts) %>% 
+  filter(n_sample_counts < 25)
+
+
+
+
+  unnest(raw_counts)
+  mutate(raw_counts = as.double(raw_counts)) %>% 
+  filter(raw_counts < 25)
 
 #####3.1. get pollen counts with ages
 

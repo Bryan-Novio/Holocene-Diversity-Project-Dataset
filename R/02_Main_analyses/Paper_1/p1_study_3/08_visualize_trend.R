@@ -99,6 +99,8 @@ rm(combined_data)
 gc()
 
 
+write_csv(median_richness_back,here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv"))
+
 ##2.2. Load richness datasets
 
 data_rich <-
@@ -107,8 +109,6 @@ data_rich <-
   pattern = "[.]rds$",
   full.names = TRUE
 )
-
-
 
 #----------------------------------------------------------#
 # 3. Visualise continental trends -------------------------
@@ -128,6 +128,7 @@ median_richness_back %>%
 
 #Europe
 
+
 median_richness_back %>% 
   filter(region == "Europe") %>% 
   ggplot(aes(x = age, y = continental_median_richness)) +
@@ -135,8 +136,13 @@ median_richness_back %>%
   geom_ribbon(aes(ymin = continental_richness_dwn, 
                   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme_classic()+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20)) +
   scale_x_reverse()
+
+
 
 # Asia
 
@@ -147,7 +153,10 @@ median_richness_back %>%
   geom_ribbon(aes(ymin = continental_richness_dwn, 
                   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme_classic()+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20)) +
   scale_x_reverse()
 
 # N. America
@@ -160,7 +169,10 @@ median_richness_back %>%
   geom_ribbon(aes(ymin = continental_richness_dwn, 
                   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme_classic()+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20)) +
   scale_x_reverse()
 
 

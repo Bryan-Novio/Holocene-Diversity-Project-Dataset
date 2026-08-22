@@ -41,6 +41,9 @@ source_files <-
 richness_data4 <- 
   read_rds(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
 
+
+
+lab <- c(0,2.5, 5, 7.5, 10, 12.5)
 p <-
   ggplot2::ggplot(
     richness_data4,
@@ -48,16 +51,11 @@ p <-
   ) +
   ggplot2::labs(y = "Pollen Richness", x = "Age"
   ) +
-  ggplot2::theme_classic(
-  )+
-  ggplot2::theme(legend.position = "none",
-                 plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f", size = 22),
-                 axis.text  = element_text(color = "#2a707f", size = 6),
-                 axis.ticks = element_line(color = "#2a707f"),
-                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
-  )
-
+  theme (axis.title.x = element_text(size = 30),
+         axis.title.y = element_text(size = 30),
+         axis.text.x = element_text(size = 25)) +
+  scale_x_continuous(labels = lab )
+  
 #----------------------------------------------------------#
 # 3. Model fitting -----
 #----------------------------------------------------------#
@@ -90,7 +88,7 @@ gam_s4 <-                                # fREML
     group_var = "dataset_id",
     random = "intercept",
     sel_k = 10, 
-    error_family = mgcv::Tweedie( p = 1.1),
+    error_family = mgcv::Tweedie(p = 1.1),
     nthreads = n_cores_to_use,
     discrete = TRUE,
     control = mgcv::gam.control(
@@ -102,6 +100,9 @@ gam_s4 <-                                # fREML
 ## 3.3. Save model as an RDS file --
 
 write_rds(gam_s4, here("Data/Paper_1/data_model/gam_s4.rds"))
+
+
+gam_s4 <- read_rds(here("Data/Paper_1/data_model/gam_s4.rds"))
 
 #----------------------------------------------------------#
 # 4. Model prediction -----
@@ -156,6 +157,9 @@ data_pred_general <-
     .before = dplyr::everything()
   )
 
+write_csv(data_pred_general, here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv"))
+
+
 #----------------------------------------------------------#
 # 4. Visualization -----
 #----------------------------------------------------------#
@@ -206,18 +210,18 @@ p +
       ymin = conf_low,
       ymax = conf_high
     ),
-    fill = "gray",
+    fill = "blue",
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
     linewidth = 4,
-    color = "black"
+    color = "red"
   ) +
   ggplot2::theme(
     legend.position = "none",
-    axis.text  = element_text(color = "#2a707f", size = 24,  hjust = 0.8)
+    axis.text  = element_text(color = "black", size = 24,  hjust = 0.8)
   ) +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),
