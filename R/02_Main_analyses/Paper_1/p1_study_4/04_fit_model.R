@@ -42,8 +42,8 @@ richness_data4 <-
   read_rds(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
 
 
-
 lab <- c(0,2.5, 5, 7.5, 10, 12.5)
+
 p <-
   ggplot2::ggplot(
     richness_data4,
