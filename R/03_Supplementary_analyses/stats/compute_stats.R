@@ -16,10 +16,11 @@ library(tidyverse)
 library(here)
 
 #----------------------------------------------------------#
-# 1. Load csv files -----------------------------------------
+# 1. Load csv files ----------------------------------
 #----------------------------------------------------------# 
 
-# Data from original study
+# Data from Replicated Studies
+
 
 s1 <- read_csv(here("Data/Paper_1/data_digitise/s1.csv"))
 s2 <- read_csv(here("Data/Paper_1/data_digitise/s2.csv"))
@@ -28,7 +29,18 @@ s3_na <- read_csv(here("Data/Paper_1/data_digitise/s3_na.csv"))
 s3_as <- read_csv(here("Data/Paper_1/data_digitise/s3_as.csv"))
 s4 <- read_csv(here("Data/Paper_1/data_digitise/s4.csv"))
 
-# Reformat data- original
+# Data from Replication
+
+s1_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S1_Richness.csv"))
+s2_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S2_Preds.csv")) 
+s3_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv"))
+s4_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv"))
+
+#----------------------------------------------------------#
+# 2. Reformat data files from each study ---------------
+#----------------------------------------------------------# 
+
+# 2.1. Data from Replicated Studies
 
 s1_new <- s1 %>% 
   rename(age = x, richness = y, site = id) %>% 
@@ -81,7 +93,8 @@ s4_new <- s4 %>%
   mutate(age = age*1000) %>% 
   pivot_wider(names_from = id, values_from = "estimate")
 
-# Data from Replication
+
+# 2.2. Data from Replication
 
 s1_rep <- 
   read_csv(here("Data/Paper_1/data_model/model_csvs/S1_Richness.csv")) %>% 
@@ -94,27 +107,31 @@ s2_rep <-
   select(estimate, age, conf_high, conf_low)
 
 s3_rep <- 
-  read_csv(here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv"))
+  read_csv(here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv")) %>%    
+  rename(richness = median_richness,
+       site = subregion) %>%
+  relocate(site)
 
 s4_rep <- 
-  read_csv(here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv"))
+  read_csv(here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv")) %>%    
+  rename(richness = estimate) 
+
+s4_rep %>% colnames()
 
 #----------------------------------------------------------#
-# 2. Check if point estimate in rep is within CIs of original -----------------------------------------
+# 3. Re estimate Effect Sizes and CI ------------
 #----------------------------------------------------------# 
 
-#study 2
+# Check if point estimate in rep is within CIs of original
 
-# round to neareas thousands
+##study 2
 
 s2_rep_round <- 
   s2_rep %>%
   mutate(age = round(age, -3)) 
 
-
 s2_rep_round %>%
   group_by(age) %>%  # overall predicted : (9.8 - 12.61, CI 10.61 - 11.79) -replicated
-  
   summary()
 
 s2_rep_round_summ <- s2_rep_round %>%  
@@ -128,11 +145,7 @@ s2_rep_round_summ_join <-
 
 s2_rep_round_summ_join %>%  summary()
 
-
-write_csv(s2_rep_round_summ_join, here("Data/Paper_1/data_supplementary/s2_est_ci.csv"))
-
 # original (8.61 - 12.92, CI 10.59 - 11.33)
-
 
 s2_bind <- s2_new %>%
   left_join(s2_rep_round , by = "age") %>% 
@@ -145,18 +158,15 @@ s2_bind_rep<- s2_rep_round %>%
            mean_upp = mean(conf_high),
            mean_low = mean(conf_low))
 
-
 s2_bind_rep_1 <- s2_new %>%
   left_join(s2_bind_rep , by = "age") %>% 
   select(age, mean_richness, mean_upp, mean_low) %>% 
   rename(est = mean_richness, upp = mean_upp, low = mean_low)
 
-
-
 labs <-  c(0,5,10,15,20)
 
 s2_bind %>% 
-  ggplot(aes(x = age, y = estimate)) +
+  ggplot(aes(x = age, y = richness)) +
   geom_point(size = 4, colour = "red", shape = 4) +
   geom_ribbon(aes(ymin = low, ymax = upp), fill = "blue", alpha = 0.3) +
   labs(y = "Estimate", x = "cal yr BP") +
@@ -201,7 +211,7 @@ s3_eu_new %>%  summary() # original (16.12 - 26.30, CI 15.81 - 26.64)
 s3_eu_rep_summ_join <- 
   left_join(s3_eu_new,s3_eu_rep_new_2, by = "age") # estimate + CI per time
 
-write_csv(s3_eu_rep_summ_join, here("Data/Paper_1/data_supplementary/s3_eu_est_ci.csv"))
+
 
 labs_eu <-  c(0,2.5,5,7.5,10,12.5) 
 
@@ -258,13 +268,9 @@ s3_na_rep_new_2 %>% summary() #replicated (19.08 - 22.96, CI 18.89 - 23.25)
 s3_na_rep_summ_join <- 
   left_join(s3_na_new,s3_na_rep_new_2, by = "age") # estimate + CI per time
 
-write_csv(s3_na_rep_summ_join, here("Data/Paper_1/data_supplementary/s3_na_est_ci.csv"))
-
-
 s3_na_bind <- 
   left_join(s3_na_new, s3_na_rep_new, by = "age") %>% 
   select(age, richness, upp, low)
-
 
 s3_na_bind %>% 
   ggplot(aes(x = age, y = richness)) +
@@ -313,7 +319,7 @@ s3_as_new %>% summary() # original (16.49 - 17.48, CI 16.40 - 17.80)
 s3_as_rep_round_summ_join <- 
   left_join(s3_as_new,s3_as_rep_new_2 , by = "age") # estimate + CI per time
 
-write_csv(s3_as_rep_round_summ_join, here("Data/Paper_1/data_supplementary/s3_as_est_ci.csv"))
+
 
 
 s3_as_bind <- 
@@ -382,14 +388,12 @@ bind_s4 %>%
         panel.border = element_rect(colour = "black")) +
   scale_x_reverse()
 
-  
-
 s4_rep_round_summ_join %>% summary() 
 #original (12.20 - 12.67, CI 11.69 - 14.89)
 
 s4_rep_round %>% summary() # replicated (14.06 - 16.50, CI 12.77 - 18.16)
 
-write_csv(s4_rep_round_summ_join, here("Data/Paper_1/data_supplementary/s4_est_ci.csv"))
+
 
 s4_bind <- s4_new %>%
   left_join(s4_rep_round , by = "age") %>% 
@@ -426,7 +430,12 @@ all_studies <-
   select(-`fct_recode(...)`) %>% 
   relocate(study)
 
-#Combined plot
+
+#----------------------------------------------------------#
+#4. Plotting Estimate + CIs for orig. & rep. studies-------
+#----------------------------------------------------------#
+
+# 4.1. Plot all estimates
 
 ci_pt <- all_studies %>% 
   ggplot(aes(x = age, y = richness)) +
@@ -446,9 +455,25 @@ ci_pt <- all_studies %>%
 ci_pt + facet_grid(rows = vars(study))
 
 
-#----------------------------------------------------------#
-#3. Compute overall mean and p is within CIs of original -----------------------------------------
-#----------------------------------------------------------#
+#4.22 Plot combined studies (Estimates + CI)
+
+ci_pt <- all_studies %>% 
+  ggplot(aes(x = age, y = richness)) +
+  geom_point(size = 5, colour = "red", shape = 4) +
+  geom_ribbon(aes(ymin = low, ymax = upp), fill = "blue", alpha = 0.3) +
+  labs(y = "Estimate (Rarefied Richness)", x = "cal yr BP") +
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.text.y  = element_text(size = 20),
+        panel.background = element_blank(),
+        panel.border =  element_rect(colour = "black"),
+        legend.position = "bottom") +
+  scale_x_reverse() 
+
+
+ci_pt + facet_grid(rows = vars(study))
+
 
 ##combined plot for per time point estimate and interval for replicated and original
 
@@ -464,22 +489,6 @@ bind_s2 <-  bind_rows(s2_new,
          chi = upp,
          clow = low) %>% 
   mutate(Study = "Study 2") 
-
-
-#sudy 3
-
-#Asia
-
-
-
-
-#Europe
-
-
-#NAmerica
-
-
-
 
 #study 4
 
@@ -508,7 +517,20 @@ bind_s2 %>%
         panel.border = element_rect(colour = "black")) +
   scale_x_reverse()
 
+#----------------------------------------------------------#
+# 5. Save estimates with CI as csv files --------------------
+#----------------------------------------------------------#
 
+est_ci_all <- 
+ list("s2_rep_round_summ_join", "s3_na_rep_summ_join",
+       "s3_as_rep_round_summ_join", "s3_eu_rep_summ_join", "s4_rep_round_summ_join")
 
+purrr::map(est_ci_all, readr::write_csv)
+
+write_csv(s2_rep_round_summ_join, here("Data/Paper_1/data_supplementary/s2_est_ci.csv"))
+write_csv(s3_na_rep_summ_join, here("Data/Paper_1/data_supplementary/s3_na_est_ci.csv"))
+write_csv(s3_as_rep_round_summ_join, here("Data/Paper_1/data_supplementary/s3_as_est_ci.csv"))
+write_csv(s3_eu_rep_summ_join, here("Data/Paper_1/data_supplementary/s3_eu_est_ci.csv"))
+write_csv(s4_rep_round_summ_join, here("Data/Paper_1/data_supplementary/s4_est_ci.csv"))
 
 

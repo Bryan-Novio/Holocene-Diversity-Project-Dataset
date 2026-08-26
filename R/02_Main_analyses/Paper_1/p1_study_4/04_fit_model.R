@@ -221,7 +221,9 @@ p +
   ) +
   ggplot2::theme(
     legend.position = "none",
-    axis.text  = element_text(color = "black", size = 24,  hjust = 0.8)
+    axis.text  = element_text(color = "black", size = 24,  hjust = 0.8),
+    theme(panel.background = element_blank(),
+          panel.border = element_rect(colour = "black"))
   ) +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),
