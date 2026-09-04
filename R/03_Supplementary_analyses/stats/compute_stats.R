@@ -55,6 +55,45 @@ s1_new <- s1 %>%
   rename(site = `fct_recode(...)`) %>% 
   relocate(site)
 
+
+# Plot S1
+
+s1_new %>% 
+  ggplot(aes(x = age, y = richness, color = site))  +
+  annotate("rect", xmin = Inf, xmax = 11500, ymin = -Inf, ymax = Inf, fill = "green", alpha = 0.2) +
+  annotate("rect", xmin = 11500, xmax = 8500, ymin = -Inf, ymax = Inf, fill = "lightgreen", alpha = 0.2) +
+  annotate("rect", xmin = 8500, xmax = 4500, ymin = -Inf, ymax = Inf, fill = "lightyellow", alpha = 0.2) +
+  annotate("rect", xmin = 4500, xmax = 0, ymin = -Inf, ymax = Inf, fill = "orange", alpha = 0.2) +
+  geom_line(linewidth = 1.5) +
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
+  ) +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+         theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.text.y  = element_text(size = 20),
+        panel.background = element_blank(),
+        panel.border =  element_rect(colour = "black"))) +
+  labs(y = expression(Median~site~richness~(ET[500]))) +
+  labs(x = "Age in years ago")
+
+
+# Plot S2
+
+
+
 s2_new <- s2 %>% 
   rename(time = x, diversity = y) %>% 
   select(id, time, diversity) %>% 
@@ -63,18 +102,25 @@ s2_new <- s2 %>%
   pivot_wider(names_from = id, values_from = "estimate") %>% 
   mutate(age = age *1000)
 
-s3_eu_new <- s3_eu %>% 
-  rename(age = x, richness = y) %>% 
-  select(id, age, richness) %>% 
-  mutate(age = round(age, -3)) %>% 
-  pivot_wider(names_from = id, values_from = "richness")
+s2_new %>% 
+ggplot2::ggplot(aes(x = age, y = est)) +
+  ggplot2::labs(
+    y = "Pollen Richness", x = "Age (cal yr BP)"
+  )+ 
+  ggplot2::geom_line(color = "black", linewidth = 1
+  ) +
+  geom_ribbon(aes(ymin = low, ymax = upp), colour = "gray",alpha = 0.5
+  ) +
+  ggplot2::theme_classic(
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(6,14)
+  ) +
+  ggplot2::scale_x_reverse() +
+  ggplot2::geom_vline(xintercept = 9500, linetype = "dashed", color ="black")
 
-s3_na_new <- s3_na %>% 
-  rename(age = x, richness = y) %>% 
-  select(id, age, richness) %>% 
-  mutate(age = round(age, -3)) %>% 
-  pivot_wider(names_from = id, values_from = "richness")
 
+#Plot S3-Asia
 
 s3_as_new <- s3_as %>% 
   rename(age = x, richness = y) %>% 
@@ -85,6 +131,77 @@ s3_as_new <- s3_as %>%
   pivot_wider(names_from = id, values_from = "richness")
 
 
+s3_as_new %>% 
+  ggplot(aes(x = age, y = col)) +
+  geom_line(linewidth = 4, color = "red") + 
+  geom_ribbon(aes(ymin = low, 
+                  ymax = upp),  fill = "red", alpha = 0.1) +
+  labs(x = "Age(cal yr BP)" , y = "Richness") +
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 15, hjust = 0.15),
+        axis.text.y = element_text(size = 15),
+        panel.background = element_blank(),
+        axis.line.y.left = element_line(color = "black", linewidth = 1),
+        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
+  scale_x_reverse()
+
+
+#Plot S3-Europe
+
+s3_eu_new <- s3_eu %>% 
+  rename(age = x, richness = y) %>% 
+  select(id, age, richness) %>% 
+  mutate(age = round(age, -3)) %>% 
+  distinct(age, id, .keep_all = TRUE) %>%
+  mutate(richness = num(richness, digits = 4)) %>% 
+  pivot_wider(names_from = id, values_from = "richness") %>% 
+  drop_na()
+
+
+
+s3_eu_new %>% 
+  ggplot(aes(x = age, y = est)) +
+  geom_line(linewidth = 4, color = "purple") + 
+  geom_ribbon(aes(ymin = low, 
+                  ymax = upp),  fill = "purple", alpha = 0.1) +
+  labs(x = "Age(cal yr BP)" , y = "Richness") +
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 15, hjust = 0.15),
+        axis.text.y = element_text(size = 15),
+        panel.background = element_blank(),
+        axis.line.y.left = element_line(color = "black", linewidth = 1),
+        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
+  scale_x_reverse()
+
+
+#Plot S3-NAmerica
+
+s3_na_new <- s3_na %>% 
+  rename(age = x, richness = y) %>% 
+  select(id, age, richness) %>% 
+  mutate(age = round(age, -3)) %>% 
+  pivot_wider(names_from = id, values_from = "richness")
+
+s3_na_new %>% 
+  ggplot(aes(x = age, y = est)) +
+  geom_line(linewidth = 4, color = "orange") + 
+  geom_ribbon(aes(ymin = low, 
+                  ymax = upp),  fill = "orange", alpha = 0.1) +
+  labs(x = "Age(cal yr BP)" , y = "Richness") +
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 15, hjust = 0.15),
+        axis.text.y = element_text(size = 15),
+        panel.background = element_blank(),
+        axis.line.y.left = element_line(color = "black", linewidth = 1),
+        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
+  scale_x_reverse()
+
+
+#Plot S4
+
 s4_new <- s4 %>% 
   rename(age = x, richness = y) %>% 
   select(id,age, richness) %>% 
@@ -92,6 +209,27 @@ s4_new <- s4 %>%
   mutate(age = round(age)) %>% 
   mutate(age = age*1000) %>% 
   pivot_wider(names_from = id, values_from = "estimate")
+
+
+
+s4_new  %>% 
+  ggplot(aes(x = age, y = est)) +
+  geom_line(linewidth = 4, color = "black") + 
+  geom_ribbon(aes(ymin = low, 
+                  ymax = upp),  fill = "gray", alpha = 0.4) +
+  labs(x = "Age(cal yr BP)" , y = "Richness") +
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text.x = element_text(size = 15, hjust = 0.9),
+        axis.text.y = element_text(size = 15),
+        panel.background = element_blank(),
+        axis.line.y.left = element_line(color = "black", linewidth = 1),
+        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
+  coord_cartesian(ylim = c(10.3,14.9))
+  scale_x_reverse()
+
+
+
 
 
 # 2.2. Data from Replication

@@ -143,7 +143,6 @@ median_richness_back %>%
   scale_x_reverse()
 
 
-
 # Asia
 
 median_richness_back %>% 

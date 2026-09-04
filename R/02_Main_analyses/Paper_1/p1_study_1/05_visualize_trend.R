@@ -23,6 +23,7 @@ richness <-
   read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
 
 
+
 data_p1_s1_counts_ages_subregion <- 
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
 

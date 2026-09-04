@@ -548,3 +548,54 @@ add_each_data_point <-
 
 add_each_data_point
 
+
+
+
+############ spatial distribution of site ids 
+
+
+# RaW (bigger circ)
+
+
+raw <- data %>% 
+  filter(region == "Europe") %>% 
+  select(dataset_id, long, lat)
+
+
+# Analyzed (smaller circ)
+
+richness <-
+  read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
+
+
+an <- richness %>% 
+  distinct(dataset_id) %>% 
+  mutate(dataset_id = as.character(dataset_id))
+
+an_coord <- 
+  left_join(an, raw, by = "dataset_id")
+
+raw_plus_an <- bind_rows(raw,an_coord,.id = "data")
+
+raw_plus_an <- raw_plus_an %>% 
+  mutate(data = fct_recode(data ,  Raw = "1", Analyzed = "2"))
+
+
+# Plot #raw 472- analyzed 451
+
+
+raw_plus_an %>% 
+  ggplot(aes(x = long, y = lat)) + 
+  borders(fill= "white") +
+  geom_point(aes(colour = data, alpha = 0.1, size = factor(data,levels = c("Analyzed","Raw")))) +
+  coord_quickmap(xlim = c(-11, 35), ylim = c(36, 70))+
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "gray"),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "none")
+
+
+
+
+

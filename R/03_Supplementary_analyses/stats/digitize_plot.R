@@ -23,7 +23,7 @@ library(metaDigitise)
 # 1.1. set directory
 
 data_dig <-
-  metaDigitise::metaDigitise(here("Data/Paper_1/data_digitise/re_dig/"), summary = FALSE)
+  metaDigitise::metaDigitise(here("Data/Paper_1/data_digitise/eu_re"), summary = FALSE)
 
 
 #----------------------------------------------------------#
@@ -45,7 +45,7 @@ s2
 
 #Study 3
 
-s3_eu <- data_dig$Fig_S3_EU.png %>% 
+s3_eu <- data_dig$Fig_S3_EU %>% 
   as_tibble()
 
 s3_eu
