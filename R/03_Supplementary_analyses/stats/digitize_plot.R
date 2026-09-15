@@ -23,10 +23,10 @@ library(metaDigitise)
 # 1.1. set directory
 
 data_dig <-
-  metaDigitise::metaDigitise(here("Data/Paper_1/data_digitise/eu_re"), summary = FALSE)
+  metaDigitise::metaDigitise(here("Data/Paper_1/data_digitise/s1_re"), summary = FALSE)
 
 
-#----------------------------------------------------------#
+1#----------------------------------------------------------#
 # 2. Load data from digitized figures --------------------
 #----------------------------------------------------------# 
 
