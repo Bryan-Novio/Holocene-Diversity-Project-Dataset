@@ -154,3 +154,16 @@ raw_plus_an %>%
         axis.title.x = element_blank(),
         legend.position = "none")
 
+an_coord %>% 
+  ggplot(aes(x = long, y = lat)) + 
+  borders(fill= "gray") +
+  geom_point( colour = "blue", size = 2) +
+  coord_quickmap(xlim = c(-172, -56), ylim = c(28,74))+
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "gray"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size =  12),
+        axis.text.y =  element_text(size =  12),
+        axis.title.x = element_blank(),
+        legend.position = "none")
+

@@ -581,6 +581,9 @@ raw_plus_an <- raw_plus_an %>%
   mutate(data = fct_recode(data ,  Raw = "1", Analyzed = "2"))
 
 
+
+
+
 # Plot #raw 472- analyzed 451
 
 
@@ -597,5 +600,16 @@ raw_plus_an %>%
 
 
 
-
+an_coord %>% 
+  ggplot(aes(x = long, y = lat)) + 
+  borders(fill= "gray") +
+  geom_point( colour = "blue", size = 2) +
+  coord_quickmap(xlim = c(-11, 35), ylim = c(36, 70))+
+  theme(panel.background = element_blank(),
+        panel.border = element_rect(colour = "gray"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size =  12),
+        axis.text.y =  element_text(size =  12),
+        axis.title.x = element_blank(),
+        legend.position = "none")
 
