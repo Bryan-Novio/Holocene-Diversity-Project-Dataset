@@ -127,6 +127,7 @@ richness_data <-
   read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
 
 
+
 an <- richness_data %>% 
   distinct(dataset_id) %>% 
   mutate(dataset_id = as.character(dataset_id))
@@ -160,10 +161,12 @@ an_coord %>%
   geom_point( colour = "blue", size = 2) +
   coord_quickmap(xlim = c(-172, -56), ylim = c(28,74))+
   theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "gray"),
+        panel.border = element_blank(),
         axis.title.y = element_blank(),
-        axis.text.x = element_text(size =  12),
-        axis.text.y =  element_text(size =  12),
+        axis.text.x = element_blank(),
+        axis.text.y =  element_blank(),
         axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
         legend.position = "none")
 

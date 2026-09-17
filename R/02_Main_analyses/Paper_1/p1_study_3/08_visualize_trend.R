@@ -101,6 +101,10 @@ gc()
 
 write_csv(median_richness_back,here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv"))
 
+
+median_richness_back <- read_csv(here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv"))
+
+
 ##2.2. Load richness datasets
 
 data_rich <-
@@ -126,53 +130,50 @@ median_richness_back %>%
   scale_x_reverse()
 
 
+
 #Europe
 
 
-median_richness_back %>% 
+eu_s3 <- median_richness_back %>% 
   filter(region == "Europe") %>% 
-  ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 4, color = "red") + 
-  geom_ribbon(aes(ymin = continental_richness_dwn, 
-                  ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
-  labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme(axis.title.x = element_text(size = 20),
-        axis.title.y = element_text(size = 20),
-        axis.text.x = element_text(size = 20),
-        axis.text.y = element_text(size = 20)) +
-  scale_x_reverse()
+  rename(est= continental_median_richness,
+         low = continental_richness_dwn,
+         upp = continental_richness_upp)
+
+gen_trend_eu_s3 <- 
+  plot_trend_general(eu_s3 , "darkorchid3") 
+
+gen_trend_eu_s3  + coord_cartesian(ylim = c(17.5,36))
+
 
 
 # Asia
 
-median_richness_back %>% 
+as_s3 <- 
+  median_richness_back %>% 
   filter(region == "Asia") %>% 
-  ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 4, color = "red") + 
-  geom_ribbon(aes(ymin = continental_richness_dwn, 
-                  ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
-  labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme(axis.title.x = element_text(size = 20),
-        axis.title.y = element_text(size = 20),
-        axis.text.x = element_text(size = 20),
-        axis.text.y = element_text(size = 20)) +
-  scale_x_reverse()
+  rename(est= continental_median_richness,
+         low = continental_richness_dwn,
+         upp = continental_richness_upp)
+
+gen_trend_as_s3 <- 
+  plot_trend_general(as_s3 , "red") 
+
+gen_trend_as_s3  + coord_cartesian(ylim = c(10.3,23))
 
 # N. America
 
 
-median_richness_back %>% 
+na_s3 <- median_richness_back %>% 
   filter(region == "North America") %>% 
-  ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 4, color = "red") + 
-  geom_ribbon(aes(ymin = continental_richness_dwn, 
-                  ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
-  labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme(axis.title.x = element_text(size = 20),
-        axis.title.y = element_text(size = 20),
-        axis.text.x = element_text(size = 20),
-        axis.text.y = element_text(size = 20)) +
-  scale_x_reverse()
+  rename(est= continental_median_richness,
+         low = continental_richness_dwn,
+         upp = continental_richness_upp)
+
+gen_trend_as_s3 <- 
+  plot_trend_general(na_s3 , "orange") 
+
+gen_trend_as_s3  + coord_cartesian(ylim = c(12,23))
 
 
 #----------------------------------------------------------#

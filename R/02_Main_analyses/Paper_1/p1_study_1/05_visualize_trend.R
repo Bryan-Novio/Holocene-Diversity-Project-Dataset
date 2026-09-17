@@ -105,3 +105,33 @@ ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)
   labs(y = expression(Median~site~richness~(ET[500]))) +
   labs(x = "Age in years ago")
 
+
+
+##plot anew
+
+median_richness_15k %>% 
+  ggplot2::ggplot(aes(x = age , y = median_richness)) +
+  ggplot2::geom_line(aes(colour = subregion), linewidth = 3)  +
+  ggplot2::theme(axis.text.x = element_text(size = 25, color = "black", angle = 90, vjust = 0.5),
+                 axis.text.y.right = element_text(size = 25, color = "black", angle = 90, vjust = 0.5, hjust = 0.5),
+                 axis.title.x = element_blank(),
+                 axis.title.y = element_blank(),
+                 panel.background = element_blank(),
+                 axis.line.y.right  = element_line(color = "black", linewidth = 1),
+                 axis.line.x.bottom  = element_line(color = "black", linewidth = 1),
+                 axis.ticks.x = element_line(linewidth = 1),
+                 axis.ticks.y = element_line(linewidth = 1),
+                 axis.ticks.length.y.right = unit(.25, "cm"),
+                 axis.ticks.length.x.bottom = unit(.25, "cm"),
+                 legend.text = element_blank(),
+                 legend.position = "none")   +
+  scale_y_continuous(breaks = y_labels, position = "right") +
+  ggplot2::scale_x_continuous(breaks = c(0,5000,10000,15000), limits =c(0,15000)) +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  ))
+

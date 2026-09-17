@@ -562,10 +562,12 @@ raw <- data %>%
   select(dataset_id, long, lat)
 
 
+
 # Analyzed (smaller circ)
 
 richness <-
   read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
+
 
 
 an <- richness %>% 
@@ -606,10 +608,12 @@ an_coord %>%
   geom_point( colour = "blue", size = 2) +
   coord_quickmap(xlim = c(-11, 35), ylim = c(36, 70))+
   theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "gray"),
+        panel.border = element_blank(),
         axis.title.y = element_blank(),
-        axis.text.x = element_text(size =  12),
-        axis.text.y =  element_text(size =  12),
+        axis.text.x = element_blank(),
+        axis.text.y =  element_blank(),
         axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
         legend.position = "none")
 

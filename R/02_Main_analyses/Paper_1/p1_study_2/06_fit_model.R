@@ -62,8 +62,6 @@ p1 <-
   ggplot2::theme(legend.position = "none",
                  plot.title = element_text(color = "#2a707f"),
                  axis.title = element_text(color = "#2a707f", size = 18),
-                 axis.text  = element_text(color = "#2a707f", size = 18),
-                 axis.ticks = element_line(color = "#2a707f"),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
                  )
 
@@ -158,7 +156,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_s2,
+    model = gam_1,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -174,8 +172,6 @@ data_pred_general <-
   )
 
 write_csv(data_pred_general,here("Data/Paper_1/data_model/model_csvs/S2_Preds.csv"))
-
-
 
 #----------------------------------------------------------#
 # 5. Visualization -----
@@ -219,34 +215,16 @@ p1 +
 
 # 4.2. Plot general trend-----
 
-p1 +
-  ggplot2::geom_ribbon(
-    data = data_pred_general,
-    ggplot2::aes(
-      x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high
-      ),
-      fill = "gray",
-      alpha = 0.1
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_general,
-    ggplot2::aes(x = age, y = estimate),
-    linewidth = 2,
-    color = "black"
-  )  +
-  ggplot2::theme(
-    legend.position = "none"
-  ) +
-  ggplot2::coord_cartesian(
-    ylim = c(6,14)
-  ) +
-  ggplot2::scale_x_reverse() +
-  ggplot2::geom_vline(xintercept = 9500, linetype = "dashed", color ="black")
+data_pred_general <- 
+  read_csv(here("Data/Paper_1/data_model/model_csvs/S2_Preds.csv"))
 
+data_pred_s2 <- data_pred_general %>% 
+  select(estimate, age, conf_low, conf_high) %>% 
+  rename(est = estimate,
+         low = conf_low,
+         upp = conf_high)
 
- 
+data_pred_s2 %>%
+  plot_trend_study_2()
 
   

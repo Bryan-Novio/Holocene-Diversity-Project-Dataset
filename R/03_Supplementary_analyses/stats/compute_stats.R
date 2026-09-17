@@ -36,17 +36,40 @@ s2_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S2_Preds.csv"))
 s3_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S3_Preds.csv"))
 s4_rep <- read_csv(here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv"))
 
+
+
 #----------------------------------------------------------#
-# 2. Reformat data files from each study ---------------
+# 2. Load functions ---------------------------------------
+#----------------------------------------------------------#
+
+# Get a vector of general functions
+
+fun_list <-
+  list.files(
+    path = "R/Functions/",
+    pattern = "\\.R$",
+    recursive = TRUE
+  )
+
+# Load the function into the global environment
+
+source_files <- 
+  sapply(
+    paste0("R/Functions/", fun_list, sep = ""),
+    source
+  )
+
+#----------------------------------------------------------#
+# 3. Reformat data files from each study ---------------
 #----------------------------------------------------------# 
 
-# 2.1. Data from Replicated Studies
+# 3.1. Data from Replicated Studies
 
 s1_new <- s1 %>% 
   rename(age = x, richness = y, site = id) %>% 
   select(site, age, richness, group) %>% 
   mutate(site = as_factor(site)) %>% 
-  mutate(site, fct_recode(site, "Alps" = "col",
+  mutate(site, fct_recode(site, "Alps" = "black",
                                 "Boreal" = "green",
                                 "Temperate Oceanic" = "blue",
                                 "Meridional/Submeridional"= "red",
@@ -91,24 +114,34 @@ s1_new %>%
 
 # Revise S1 plot
 
-y_labels <- c(20, 25, 30)
+y_labels <- c(0,20, 25, 30)
 
 s1_new %>% 
   ggplot2::ggplot(aes(x = age, y = richness)) +
-  ggplot2::labs(
-    y = "Pollen Richness", x = "Age (cal yr BP)"
-  )+ 
-  ggplot2::geom_line(aes(colour = site), linewidth = 3
-  )  +
-  ggplot2::theme_classic(
-  ) +   
-  ggplot2::scale_x_reverse() +
-  scale_y_continuous(breaks = c(20,25,30), labels = c("20", "25", "30"))
+  ggplot2::geom_line(aes(colour = site), linewidth = 3)  +
+  ggplot2::theme(axis.text.x = element_text(size = 25, color = "black", angle = 90, vjust = 0.5),
+                 axis.text.y.right = element_text(size = 25, color = "black", angle = 90, vjust = 0.5, hjust = 0.5),
+                 axis.title.x = element_blank(),
+                 axis.title.y = element_blank(),
+                 panel.background = element_blank(),
+                 axis.line.y.right  = element_line(color = "black", linewidth = 1),
+                 axis.line.x.bottom  = element_line(color = "black", linewidth = 1),
+                 axis.ticks.x = element_line(linewidth = 1),
+                 axis.ticks.y = element_line(linewidth = 1),
+                 axis.ticks.length.y.right = unit(.25, "cm"),
+                 axis.ticks.length.x.bottom = unit(.25, "cm"),
+                 legend.text = element_blank(),
+                 legend.position = "none")   +
+  scale_y_continuous(breaks = y_labels, position = "right") +
+  ggplot2::scale_x_continuous(breaks = c(0,5000,10000,15000), limits =c(0,15000)) +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  ))
 
-
-
-
-breaks = seq(0, 15000, by = 1000)
 
 
 # Plot S2
@@ -129,19 +162,22 @@ ggplot2::ggplot(aes(x = age, y = est))+
   ) +
   geom_ribbon(aes(ymin = low, ymax = upp), colour = "gray",alpha = 0.5
   ) +
-  ggplot2::theme(axis.text.x = element_text(size = 25, color = "black"),
-                 axis.text.y = element_text(size = 25, color = "black"),
+  ggplot2::theme(axis.text.x = element_text(size = 25, color = "black",angle = 90, vjust = 0.7),
+                 axis.text.y.right = element_text(size = 25, color = "black",angle = 90, vjust = 0.7, hjust = 0.5),
                  axis.title.x = element_blank(),
                  axis.title.y = element_blank(),
                  panel.background = element_blank(),
-                 axis.line.y.left = element_line(color = "black", linewidth = 1),
+                 axis.line.y.right  = element_line(color = "black", linewidth = 1),
                  axis.line.x.bottom = element_line(color = "black", linewidth = 1),
                  axis.ticks.x = element_line(linewidth = 1),
-                 axis.ticks.y = element_line(linewidth = 1))  +
+                 axis.ticks.y = element_line(linewidth = 1),
+                 axis.ticks.length.y.right = unit(.25, "cm"),
+                 axis.ticks.length.x.bottom = unit(.25, "cm"))  +
   ggplot2::coord_cartesian(
     ylim = c(6,14)
   ) +
-  ggplot2::scale_x_reverse() +
+  ggplot2::scale_x_continuous() +   
+  scale_y_continuous(position = "right") +
   ggplot2::geom_vline(xintercept = 9500, color ="red", size = 2)
 
 
@@ -263,7 +299,7 @@ s4_new  %>%
     ggplot(aes(x = age, y = est)) +
     geom_line(linewidth = 3, color = "black") + 
     geom_ribbon(aes(ymin = low, 
-                    ymax = upp),  fill = "gray", alpha = 0.1) +
+                    ymax = upp),  fill = "azure4", alpha = 0.1) +
     theme(axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           axis.ticks.x = element_line(linewidth = 1),
@@ -273,7 +309,7 @@ s4_new  %>%
           panel.background = element_blank(),
           axis.line.y.left = element_line(color = "black", linewidth = 1),
           axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
-    coord_cartesian(ylim = c(10.3,14.9)) +
+    coord_cartesian(ylim = c(10.3,23))  +
     scale_x_reverse(breaks = c(12000,8000, 4000, 0)) 
   
   
