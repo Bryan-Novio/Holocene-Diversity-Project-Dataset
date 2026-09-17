@@ -143,7 +143,7 @@ eu_s3 <- median_richness_back %>%
 gen_trend_eu_s3 <- 
   plot_trend_general(eu_s3 , "darkorchid3") 
 
-gen_trend_eu_s3  + coord_cartesian(ylim = c(17.5,36))
+gen_trend_eu_s3  + coord_cartesian(ylim = c(15,36))
 
 
 
@@ -159,7 +159,7 @@ as_s3 <-
 gen_trend_as_s3 <- 
   plot_trend_general(as_s3 , "red") 
 
-gen_trend_as_s3  + coord_cartesian(ylim = c(10.3,23))
+gen_trend_as_s3  + coord_cartesian(ylim = c(15,23))
 
 # N. America
 

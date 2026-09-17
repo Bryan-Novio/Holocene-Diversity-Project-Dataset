@@ -229,3 +229,21 @@ p +
     ylim = c(10.3, 17),
     xlim = c(0, 12000)
     ) 
+
+
+data_pred_general_s4 <- 
+  read_csv( here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv"))
+
+
+s4 <- data_pred_general_s4%>% 
+  rename(est= estimate,
+         low = conf_low,
+         upp = conf_high)
+
+gen_trend_s4 <- 
+  plot_trend_general(s4 , "black") 
+
+gen_trend_s4 + coord_cartesian(ylim = c(10.3,23))
+
+
+

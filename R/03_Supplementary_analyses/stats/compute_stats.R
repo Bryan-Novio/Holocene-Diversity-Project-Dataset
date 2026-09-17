@@ -157,28 +157,7 @@ s2_new <- s2 %>%
   mutate(age = age *1000)
 
 s2_new %>% 
-ggplot2::ggplot(aes(x = age, y = est))+ 
-  ggplot2::geom_line(color = "black", linewidth = 3
-  ) +
-  geom_ribbon(aes(ymin = low, ymax = upp), colour = "gray",alpha = 0.5
-  ) +
-  ggplot2::theme(axis.text.x = element_text(size = 25, color = "black",angle = 90, vjust = 0.7),
-                 axis.text.y.right = element_text(size = 25, color = "black",angle = 90, vjust = 0.7, hjust = 0.5),
-                 axis.title.x = element_blank(),
-                 axis.title.y = element_blank(),
-                 panel.background = element_blank(),
-                 axis.line.y.right  = element_line(color = "black", linewidth = 1),
-                 axis.line.x.bottom = element_line(color = "black", linewidth = 1),
-                 axis.ticks.x = element_line(linewidth = 1),
-                 axis.ticks.y = element_line(linewidth = 1),
-                 axis.ticks.length.y.right = unit(.25, "cm"),
-                 axis.ticks.length.x.bottom = unit(.25, "cm"))  +
-  ggplot2::coord_cartesian(
-    ylim = c(6,14)
-  ) +
-  ggplot2::scale_x_continuous() +   
-  scale_y_continuous(position = "right") +
-  ggplot2::geom_vline(xintercept = 9500, color ="red", size = 2)
+  plot_trend_study_2()
 
 
 #Plot S3-Asia
@@ -192,25 +171,13 @@ s3_as_new <- s3_as %>%
   pivot_wider(names_from = id, values_from = "richness")
 
 
-as_labs <-  c(0,4,8,12)
+s3_as_new <- s3_as_new %>% 
+  rename(est = col)
 
-s3_as_new %>% 
-  ggplot(aes(x = age, y = col)) +
-  geom_line(linewidth = 3, color = "red") + 
-  geom_ribbon(aes(ymin = low, 
-                  ymax = upp),  fill = "red", alpha = 0.1) +
-  labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.x = element_text(size = 25, colour = "black"),
-        axis.text.y = element_text(size = 25, colour = "black"),
-        axis.ticks.x = element_line(linewidth = 1),
-        axis.ticks.y = element_line(linewidth = 1),
-        panel.background = element_blank(),
-        axis.line.y.left = element_line(color = "black", linewidth = 1),
-        axis.line.x.bottom = element_line(color = "black", linewidth = 1))  +
-  coord_cartesian(ylim = c(15,23)) +
-  scale_x_reverse(breaks = c(12000,8000, 4000, 0)) 
+gen_trend <- plot_trend_general(s3_as_new, "red") 
+
+gen_trend + coord_cartesian(ylim = c(15,23)) 
+
 
 
 #Plot S3-Europe
@@ -225,22 +192,11 @@ s3_eu_new <- s3_eu %>%
   drop_na()
 
 
+gen_trend_eu <- plot_trend_general(s3_eu_new, "darkorchid3") 
 
-s3_eu_new %>% 
-  ggplot(aes(x = age, y = est)) +
-  geom_line(linewidth = 3, color = "darkorchid3") + 
-  geom_ribbon(aes(ymin = low, 
-                  ymax = upp),  fill = "darkorchid3", alpha = 0.1) +
-  labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.x = element_text(size = 25, color = "black"),
-        axis.text.y = element_text(size = 25, color = "black"),
-        panel.background = element_blank(),
-        axis.line.y.left = element_line(color = "black", linewidth = 1),
-        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
-  coord_cartesian(ylim = c(15,36)) +
-  scale_x_reverse(breaks = c(12000,8000, 4000, 0)) 
+gen_trend_eu + coord_cartesian(ylim = c(15,36)) 
+
+
 
 #Plot S3-NAmerica
 
@@ -250,22 +206,13 @@ s3_na_new <- s3_na %>%
   mutate(age = round(age, -3)) %>% 
   pivot_wider(names_from = id, values_from = "richness")
 
-s3_na_new %>% 
-  ggplot(aes(x = age, y = est)) +
-  geom_line(linewidth = 3, color = "orange") + 
-  geom_ribbon(aes(ymin = low, 
-                  ymax = upp),  fill = "orange", alpha = 0.1) +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.ticks.x = element_line(linewidth = 1),
-        axis.ticks.y = element_line(linewidth = 1),
-        axis.text.x = element_text(size = 25, color = "black"),
-        axis.text.y = element_text(size = 25,color = "black"),
-        panel.background = element_blank(),
-        axis.line.y.left = element_line(color = "black", linewidth = 1),
-        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
-  coord_cartesian(ylim = c(12,23)) +
-  scale_x_reverse(breaks = c(12000,8000, 4000, 0)) 
+
+gen_trend_na <- 
+  plot_trend_general(s3_na_new , "orange") 
+
+gen_trend_na + coord_cartesian(ylim = c(12,23))
+
+
 
 #Plot S4
 
@@ -277,46 +224,10 @@ s4_new <- s4 %>%
   mutate(age = age*1000) %>% 
   pivot_wider(names_from = id, values_from = "estimate")
 
-
-
-s4_new  %>% 
-  ggplot(aes(x = age, y = est)) +
-  geom_line(linewidth = 4, color = "black") + 
-  geom_ribbon(aes(ymin = low, 
-                  ymax = upp),  fill = "gray", alpha = 0.4) +
-  labs(x = "Age(cal yr BP)" , y = "Richness") +
-  theme(axis.title.x = element_text(size = 20),
-        axis.title.y = element_text(size = 20),
-        axis.text.x = element_text(size = 15, hjust = 0.9),
-        axis.text.y = element_text(size = 15),
-        panel.background = element_blank(),
-        axis.line.y.left = element_line(color = "black", linewidth = 1),
-        axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
-  coord_cartesian(ylim = c(10.3,14.9))
-  scale_x_reverse()
-
-  s4_new %>% 
-    ggplot(aes(x = age, y = est)) +
-    geom_line(linewidth = 3, color = "black") + 
-    geom_ribbon(aes(ymin = low, 
-                    ymax = upp),  fill = "azure4", alpha = 0.1) +
-    theme(axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
-          axis.ticks.x = element_line(linewidth = 1),
-          axis.ticks.y = element_line(linewidth = 1),
-          axis.text.x = element_text(size = 25, color = "black"),
-          axis.text.y = element_text(size = 25,color = "black"),
-          panel.background = element_blank(),
-          axis.line.y.left = element_line(color = "black", linewidth = 1),
-          axis.line.x.bottom = element_line(color = "black", linewidth = 1)) +
-    coord_cartesian(ylim = c(10.3,23))  +
-    scale_x_reverse(breaks = c(12000,8000, 4000, 0)) 
+gen_trend_as_2 <- 
+  plot_trend_general( s4_new , "black") 
   
-  
-  
-  
-  
-  
+gen_trend_as_2  +  coord_cartesian(ylim = c(10.3,23)) 
   
   
   

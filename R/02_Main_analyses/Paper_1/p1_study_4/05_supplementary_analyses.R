@@ -46,6 +46,7 @@ an <- richness_data4 %>%
   distinct(dataset_id) %>% 
   mutate(dataset_id = as.character(dataset_id))
 
+
 an_coord <- 
   left_join(an, raw, by = "dataset_id")
 
@@ -79,11 +80,13 @@ an_coord %>%
   geom_point( colour = "blue", size = 2) +
   coord_quickmap(xlim = c(28, 180), ylim = c(20,80))+
   theme(panel.background = element_blank(),
-        panel.border = element_rect(colour = "gray"),
+        panel.border = element_blank(),
         axis.title.y = element_blank(),
-        axis.text.x = element_text(size =  12),
-        axis.text.y =  element_text(size =  12),
+        axis.text.x = element_blank(),
+        axis.text.y =  element_blank(),
         axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.tick.y = element_blank(),
         legend.position = "none")
 
 
