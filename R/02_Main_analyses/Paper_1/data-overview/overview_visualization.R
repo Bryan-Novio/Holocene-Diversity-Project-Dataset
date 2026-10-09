@@ -3,10 +3,8 @@
 #
 #                        Paper01
 #
+#                   Study 1, 2, 3 & 4
 #
-#
-# North America & Europe, site-based richness (dataset_id,age, 
-# 500 bins - rarefy 300 
 #
 #
 #          ----  DATA OVERVIEW VISUALIZATION ----
@@ -19,45 +17,34 @@ library(here)
 # 1. Load data overview subsets ---------------------------
 #----------------------------------------------------------#
 
-study1_data_overview <- 
-  read_csv(here("Data/Paper_1/data_supplementary/data_overview/study1_data_overview.csv"))
-
-study2_data_overview <- 
-  read_csv(here("Data/Paper_1/data_supplementary/data_overview/study2_data_overview.csv"))
-
-study3_data_overview <- 
-  read_csv(here("Data/Paper_1/data_supplementary/data_overview/study3_data_overview.csv"))
-
-study4_data_overview <- 
-  read_csv(here("Data/Paper_1/data_supplementary/data_overview/study4_data_overview.csv"))
+study_data_overview <- list.files(
+  "Data/Paper_1/data_supplementary/data_overview",
+  pattern = "[.]csv$",
+  full.names = TRUE
+)
 
 #----------------------------------------------------------#
 # 2. Combine data overview subsets -----------------------
 #----------------------------------------------------------#
 
-data_overview_all_studies <- 
-  bind_rows(study1_data_overview, study2_data_overview,
-            study3_data_overview, study4_data_overview )
-
-max(data_overview_all_studies$n_datasets)
-min(data_overview_all_studies$n_datasets)
-
-max(data_overview_all_studies$n_samples)
-min(data_overview_all_studies$n_samples)
-
-max(taxa$n_taxa)
-min(taxa$n_taxa)
+overview_all <- bind_rows(study_data_overview %>% 
+            purrr::map(
+              .f = ~ {
+                overview <- read_csv(.x) 
+              }
+           )
+          )
 
 #----------------------------------------------------------#
-# 3. Visualize  -----------------------
+# 3. Visualize data overview  -----------------------------
 #----------------------------------------------------------#
 
-# Plot all three
 
+order_vec <-
+  c("raw", "select_woody_taxa", "harm", "rarefied",
+    "rarefied_new_age", "binned", "richness")
 
-this_order <- c("raw", "select_woody_taxa", "harm", "rarefied", "rarefied_new_age", "binned", "richness")
-
-data_overview_all_studies %>% 
+overview_all %>% 
   select(study, step, n_datasets,  n_samples, n_taxa, region) %>% 
   tidyr::unite("study_reg", c(study, region), sep = "_", remove = TRUE) %>% 
   pivot_longer(
@@ -71,13 +58,14 @@ data_overview_all_studies %>%
          study_reg = stringr::str_replace(study_reg,"_Europe","_EU"),
          study_reg = stringr::str_replace(study_reg,"_Asia","_AS")) %>% 
   drop_na() %>%
-  ggplot(aes(x = factor(step, levels = this_order), y = Count, colour = step)) +
+  ggplot(aes(x = factor(step, levels = order_vec), y = Count, colour = step)) +
+  geom_boxplot() +
   labs(x = "Step", color = "Step") +
-  geom_point(size = 4) +
   theme_bw()+
   theme(axis.text.x = element_blank(),
          axis.title.x = element_blank(),
-         legend.position = "bottom") + 
+         legend.position = "bottom",
+         legend.text = element_text(size = 6)) + 
   guides(colour = guide_legend(nrow = 1)) + 
   facet_grid(cols = vars(study_reg), rows = vars(metric), scales = "free", space = "free_x") 
 

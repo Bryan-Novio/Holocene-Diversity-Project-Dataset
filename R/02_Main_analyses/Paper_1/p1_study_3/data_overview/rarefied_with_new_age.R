@@ -31,7 +31,7 @@ purrr::walk(
     } 
     
     data_temp_rarefied_new_age <- 
-      vec_names_rarefied_study_new_age[[1]] %>% 
+      vec_names_rarefied_study_new_age[[.x]] %>% 
       readr::read_rds() %>% 
       dplyr::left_join(data_region, by = "dataset_id") %>% 
       relocate(region)
@@ -114,4 +114,4 @@ purrr::walk(
 # -------------------------------------------------------------------------
 
 data_overview_one_iter_rarefied_new_age <-
-  read_csv(here("Data/Paper_1/data_supplementary/study3/rarefied_new_age/999.csv"))
+  read_csv(here("Data/Paper_1/data_supplementary/study3/rarefied_new_age/6.csv"))

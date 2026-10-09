@@ -57,11 +57,23 @@ study3_data  <-
   filter(region %in% c("North America", "Europe", "Asia")
          )
 
+
 region <- 
   study3_data %>%  
   distinct(region, dataset_id)
+
+
+#3.1. Data filter
+
+study3_data %>% 
+  select(dataset_id, levels) %>% 
+  unnest(levels) %>% 
+  group_by(dataset_id) %>% 
+  summarise(n_samples  = n_distinct(sample_id)) %>% 
+  filter(n_samples  >= 5) 
+
   
-#3.1. get pollen counts with ages
+#3.2. get pollen counts with ages
 
 data_p1_s3_counts_ages <- 
   study3_data %>%
@@ -73,7 +85,10 @@ data_p1_s3_counts_ages %>%
 
 data_p1_s3_counts_ages_region <- 
   inner_join(data_p1_s3_counts_ages, region, by = "dataset_id") %>% 
-  filter(age >= 100 & age <= 11700)
+  filter(age >= 100 & age <= 11700) # samples older that 100 yrBP and younger 11700 BP
+
+min(data_p1_s3_counts_ages_region$age)
+max(data_p1_s3_counts_ages_region$age)
 
 #----------------------------------------------------------#
 # 4. Extract age uncertainties from full dataset --------

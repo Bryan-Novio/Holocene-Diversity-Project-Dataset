@@ -15,81 +15,52 @@
 
 library(tidyverse)
 library(here)
-library(patchwork)
-library(tidytext)
+
 
 #----------------------------------------------------------#
 # 1. Load data subsets ------------------------------------
 #----------------------------------------------------------#
 
-## 1.1. raw fossil pollen dataset
-
+## Raw fossil pollen dataset
 pollen_data_study3 <- 
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s3_counts_ages.rds"))
 
-
-## 1.2. age_uncertainty dataset
-
+## Age_uncertainty dataset
 data_age_uncertainty <-
   read_rds(here("Data/Paper_1/data_subset/data_age_uncertainty.rds"))
 
-## 1.3. harmonized dataset
-
+## Harmonised dataset
 data_harmonised_study3   <-
-  read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds")) %>% 
-  mutate(region = str_replace_all(region, "North_America", "North America"))
+  read_rds(here("Data/Paper_1/data_harmonize/
+                data_study3_data_harmonised_merge.rds")) %>% 
+  mutate(region = str_replace_all(region, "North_America", 
+          "North America"))
 
-taxa_harm_Asia <- 
-  data_harmonised_study3 %>% filter(region == "Asia") %>% distinct(taxa, region)
-
-taxa_harm_Europe <- 
-  data_harmonised_study3 %>% filter(region == "Europe") %>% distinct(taxa, region)
-
-taxa_harm_NAmerica <- 
-  data_harmonised_study3 %>% filter(region == "North America") %>% distinct(taxa,region) 
-
-all_taxa_harm <- 
-  bind_rows(taxa_harm_Asia, taxa_harm_Europe, taxa_harm_NAmerica)
-
-## 1.4. rarefied datasets
-
-### 1.4.1. rarefied
-
-vec_names_rarefied_study3 <- 
-  list.files(
-    "Data/Paper_1/data_rarefy/iterations_clean",
-    pattern = "[.]rds$",
-    full.names = TRUE
-  )
-
-### 1.4.2. rarefied w/ new ages
-
+## Rarefied w/ new ages
 vec_names_rarefied_study_new_age <- 
   list.files(
-    "Data/Paper_1/data_rarefy/rarefied_data_with_new_ages",
+    "Data/Paper_1/data_rarefy/rarefied_data_test",
     pattern = "[.]rds$",
     full.names = TRUE
   )
 
-## 1.5. binned data
-
-
-vec_names_binned_study3 <-
+## Rarefied
+vec_names_rarefied_study3 <- 
   list.files(
-    "Data/Paper_1/data_bin/bin_iterations_new",
+    "Data/Paper_1/data_rarefy/rarefied_testing",
     pattern = "[.]rds$",
     full.names = TRUE
   )
 
-## 1.6.richness
-
+## Richness
 vec_names_richness_study3 <- 
   list.files(
-    "Data/Paper_1/data_estimate_richness/richness_iters",
+    "Data/Paper_1/data_estimate_richness/s3_richness_test",
     pattern = "[.]rds$",
     full.names = TRUE
   )
 
+## Region
 data_region <- 
   readr::read_rds(here("Data/Paper_1/data_subset/data_regions.rds"))
 
@@ -106,6 +77,7 @@ fun_list <-
     recursive = TRUE
   )
 
+
 # Load the function into the global environment
 
 source_files <-
@@ -115,100 +87,22 @@ source_files <-
   )
 
 #----------------------------------------------------------#
-# 3. Basic stats for study datasubset -----------------
+# 3.Get number of datapoints in each step ----------
 #----------------------------------------------------------#
 
-## 3.1. Number of dataset ID (continent)
+## Raw
+
 
 pollen_data_study3 %>% 
-  get_number_of_datasets(group_var = "region", name = "raw")
+  get_number_of_metric( name = "raw", group_var = "region",  "dataset_id")
 
-## 3.2. Total number of samples per continent
 
 pollen_data_study3 %>% 
-  get_number_of_samples(group_var = "region")
-
-
-## 3.3. Mean number of samples per dataset ID plus SD
-
-pollen_data_study3 %>% 
-  get_number_of_samples(group_var = "dataset_id") %>% 
-  dplyr::ungroup() %>% 
-  summarize(mean_sample =  mean (n),
-            sd = sd(n))
-
-## 3.4. Total number of taxa
-
-pollen_data_study3 %>%
-  get_number_of_taxa(group_var = "region")
-
-## 3.5.Mean number of taxa per dataset_id plus SD
-
-pollen_data_study3 %>% get_mean_number_of_samples()
-  
-## 3.6. no. of records(dataset_id)
-
-pollen_data_study3 %>% get_number_of_datasets(group_var = "region", name = "raw")  # 1001 unique dataset ids or pollen records
-
-## 3.7. samples
-
-pollen_data_study3 %>%  # 66,179 samples
-  get_number_of_samples()
-
-## 3.8. No. of samples per record
-
-pollen_data_study3 %>% 
-  get_number_of_samples(group_var = "dataset_id") %>%   dplyr::ungroup() %>%
-  rlang::set_names(
-    c("dataset_id", "n")) %>% 
-  mutate(dataset_id = as_factor(dataset_id)) %>% 
-  ggplot(aes(x = dataset_id, y = n)) +
-  geom_col() +
-  labs( x = "Site ID") +
-  theme_classic()
-
-
-## 3.9. Number of samples per record (site ID)
-
-pollen_data_study3 %>% 
-  group_by(dataset_id) %>%
-  summarize(samples = n_distinct(sample_id)) %>% 
-  mutate(row = row_number()-1,
-         group = row %% 6) %>%
-  mutate(dataset_id = as_factor(dataset_id)) %>% 
-  ggplot(aes(x = reorder_within(dataset_id,samples,group), y = samples)) +
-  geom_col() +
-  facet_wrap(~group, nrow = 6, scales = "free_x") + 
-  labs( x = "site ID",
-        y = "Number of samples") +
-  theme(
-    axis.text.x = element_text(size = 5, angle = 90, vjust = .5, hjust  = 1),
-    strip.text = element_blank(),
-    panel.background = element_blank(),
-  )
-
-## 3.10. Mean no. of pollen counts per samples per record
-
-pollen_data_study3 %>%
-  group_by(dataset_id, sample_id) %>%
-  summarise(pollen_counts = sum(pollen_counts, na.rm = TRUE), .groups = "drop_last") %>%
-  summarise(mean_counts = mean(pollen_counts)) %>%
-  ggplot(aes(x = mean_counts)) +
-  geom_histogram(binwidth = 100) +
-  labs(x = "Mean number of  pollen counts per sample", 
-       y = "Count") +
-  theme_bw()
-
-#----------------------------------------------------------#
-# 4. Step-by-step overview -----------------------
-#----------------------------------------------------------#
-
-# 4.1. Get number of datapoints in each step
-## raw
+  get_number_of_metric( name = "raw", group_var = "region",  "sample_id")
 
 raw_n_datasets <- 
   pollen_data_study3 %>% 
-  get_number_of_datasets(group_var = "region", name = "raw") %>% 
+  get_number_of_datasets( name = "raw", group_var = "region") %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
@@ -285,14 +179,11 @@ data_overview_harm <-
                                   
 ##For steps 2 - 5 (See p1_study3/data_overview scripts)
 
-##Load results
 
-vec_rarefied_res <- 
-  list.files(
-    "Data/Paper_1/data_supplementary/study3/rarefied",
-    pattern = "[.]csv$",
-    full.names = TRUE
-  )
+#----------------------------------------------------------#
+# 4.Load results for all three measures in each step 
+# (1000 iters) -------
+#----------------------------------------------------------#
 
 vec_rarefied_new_age_res <- 
   list.files(
@@ -301,9 +192,9 @@ vec_rarefied_new_age_res <-
     full.names = TRUE
   )
 
-vec_binned_res <- 
+vec_rarefied_res <- 
   list.files(
-    "Data/Paper_1/data_supplementary/study3/binned",
+    "Data/Paper_1/data_supplementary/study3/rarefied",
     pattern = "[.]csv$",
     full.names = TRUE
   )
@@ -314,6 +205,12 @@ vec_richness_res <-
     pattern = "[.]csv$",
     full.names = TRUE
   )
+
+
+#----------------------------------------------------------#
+# 5. Combine results of each iteration for all three measures
+# in each step ------
+#----------------------------------------------------------#
 
 ### Show results as data frame
 
@@ -347,21 +244,6 @@ data_overv_rarefied_new_age_res <-
 data_overv_rarefied_new_age_res <- 
   bind_rows(data_overv_rarefied_new_age_res)
 
-###
-
-data_overv_vec_binned_res  <- 
-  purrr::map(
-    .progress = TRUE,
-    .x = seq_along(vec_binned_res),
-    .f = ~ {
-      iter <- vec_binned_res[[.x]] %>% 
-        read_csv()
-      
-    }
-  )
-
-data_overv_vec_binned_res <- 
-  bind_rows(data_overv_vec_binned_res)
 
 ###
 
@@ -376,11 +258,12 @@ data_overv_vec_richness_res  <-
     }
   )
 
+
 data_overv_vec_richness_res  <- 
   bind_rows(data_overv_vec_richness_res )
 
 #----------------------------------------------------------#
-# 5.  Summarize and visualize -----------------------
+# 6.  Summarize and visualize -----------------------
 #----------------------------------------------------------#
 
 ##Combine summaries in each step to a single data frame
@@ -389,12 +272,11 @@ step0 <- data_overview_raw
 step1 <- data_overview_harm
 step2 <- data_overv_rarefied_res
 step3 <- data_overv_rarefied_new_age_res
-step4 <- data_overv_vec_binned_res
-step5 <- data_overv_vec_richness_res
+step4 <- data_overv_vec_richness_res
 
 
 study3_data_overview <- 
-  bind_rows(step0, step1, step2,step3, step4, step5) %>% 
+  bind_rows(step0, step1,step2,step3, step4) %>% 
   mutate(study = "Study 3") %>% 
   relocate(study)
 
@@ -403,9 +285,29 @@ study3_data_overview <-
 write_csv(study3_data_overview,here("Data/Paper_1/data_supplementary/data_overview/study3_data_overview.csv"))
 
 
-##Plot as boxplot
+##Plot as boxplot (heplper)
 
-steps %>% 
+
+plot_data_overview <-  function(data_overview, metric)
+  {
+    data_overview %>% 
+    ggplot(aes(x = step, y =  "metric")) + 
+    geom_boxplot(aes(colour = step)) +
+    facet_wrap(~region) +
+    labs(y = "No. of Datasets") +
+    xlab(element_blank()) +
+    theme_classic() +
+    theme(axis.text.x = element_blank())
+}
+
+### N datasets
+
+plot_data_overview(study3_data_overview, n_datasets)
+plot_data_overview(study3_data_overview, n_samples)
+plot_data_overview(study3_data_overview, n_taxa)
+
+
+study3_data_overview %>% 
     ggplot(aes(x = step, y =  n_datasets)) + 
     geom_boxplot(aes(colour = step)) +
     facet_wrap(~region) +
@@ -416,7 +318,7 @@ steps %>%
   )  
   
   
-steps %>% 
+study3_data_overview %>% 
   ggplot(aes(x = step, y =  n_samples)) + 
   geom_boxplot(aes(colour = step)) +
   facet_wrap(~region) +
@@ -427,7 +329,7 @@ steps %>%
         ) 
 
 
-steps %>% 
+study3_data_overview %>% 
   ggplot(aes(x = step, y =  n_taxa)) + 
   geom_boxplot(aes(colour = step)) +
   facet_wrap(~region) +
@@ -438,3 +340,15 @@ steps %>%
   ) 
 
 
+step4 %>% 
+  filter(region == "Europe") %>% 
+  ggplot(aes(x = step, y =  n_datasets)) + 
+  geom_boxplot(color = "red") +
+  labs(y = "No. of Datasets") +
+  xlab(element_blank()) +
+  theme_classic() +
+  theme(axis.text.x = element_blank()
+  ) 
+
+
+#----------------END OF SCRIPT--------------------------------

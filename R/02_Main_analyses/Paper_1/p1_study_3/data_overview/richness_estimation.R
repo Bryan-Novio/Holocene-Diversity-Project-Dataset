@@ -33,7 +33,7 @@ purrr::walk(
     } 
     
     data_temp_richness <- 
-      vec_names_richness_study3[[1]] %>% 
+      vec_names_richness_study3[[.x]] %>% 
       readr::read_rds() %>% 
       tidyr::unite("sample_id", c(dataset_id,age), sep = "_", remove = FALSE )
     
@@ -85,7 +85,7 @@ purrr::walk(
 # Check one iteration
 
 data_overview_one_iter_data_temp_richness <-
-  read_csv(here("Data/Paper_1/data_supplementary/study3/richness/80.csv"))
+  read_csv(here("Data/Paper_1/data_supplementary/study3/richness/1.csv"))
 
 
 

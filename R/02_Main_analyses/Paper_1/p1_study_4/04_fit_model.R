@@ -111,7 +111,7 @@ data_dummy_full <-
   tidyr::expand_grid(
     dataset_id = unique(richness_data4$dataset_id),
     age = seq(
-      min(richness_data4$age),
+      min(richness_data4$age), # revised by Ondra
       max(richness_data4$age),
       length.out = 100
     )
