@@ -3,12 +3,13 @@
 #
 #            Paper01| Method 1: Giesecke et al
 #
+#
 # Europe, site-based richness (dataset_id,age), 1000 bins - 
 # rarefy 500 
-#                       2019
+#                          2019
 #
 # 
-#               ----  BINNING  ----
+#                   ----RAREFACTION  ----
 #----------------------------------------------------------#
 
 library(tidyverse)
@@ -43,31 +44,33 @@ source_files <-
 )
 
 #----------------------------------------------------------#
-# 3. Bin data  at different taxo rank --
+# 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
- 
-# by dataset_id
 
-data_binned <-
-  data_study1_harmonised  %>% 
-  bin_data(dataset_id, 1000)
+# at genus level only
 
-# discard samples containing less than 500 pollen counts
+data_to_rarefy <- 
+  data_study1_harmonised  %>%
+  select(taxa, age, pollen_counts, dataset_id) %>% 
+  rename(taxon_name = taxa) %>% 
+  mutate(pollen_counts = as.integer(round(pollen_counts, digits = 0)) # ensure pollen_counts are integers(required in 'rarefy' in vegan)
+  )  %>% 
+  pivot_wider(
+    names_from = taxon_name,
+    values_from = pollen_counts
+  ) %>% 
+  ungroup()
 
-data_binned_n_pollen <- 
-  data_binned %>% 
-  group_by(dataset_id, BIN) %>% 
-  summarise(total_pollen_grain = sum(summed_pollen_count), .groups = "drop")
+set.seed(1234)
 
-data_binned_samples_500 <- 
-  data_binned_n_pollen %>% 
-  filter(total_pollen_grain >= 500) %>% 
-  inner_join(data_binned, by = c("dataset_id", "BIN"))
-
+rarefied_data <-
+  rarefy_all_samples(
+    data_source = data_to_rarefy,
+    n_grains = 500
+  )
 
 #----------------------------------------------------------#
-# Write the binned and prepared_data to RDS files
+# 4. Write the rarefied data to an RDS file
+#----------------------------------------------------------# 
 
-#genus level
-write_rds(data_binned_samples_500, here("Data/Paper_1/data_bin/data_study1_binned.rds"))
-
+write_rds(rarefied_data, here("Data/Paper_1/data_rarefy/data_study1_rarefied.rds"))

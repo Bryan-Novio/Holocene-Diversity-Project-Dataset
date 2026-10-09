@@ -31,12 +31,10 @@ data_p1_s1_counts_ages_subregion <-
 
 data_subregion <- 
   data_p1_s1_counts_ages_subregion %>%
-  distinct(subregion, dataset_id) %>% 
-  mutate(dataset_id = as.double(dataset_id))
-
+  distinct(subregion, dataset_id)
 
 richness_subregion <-
-  left_join(richness, data_subregion, by ="dataset_id") 
+  left_join(richness , data_subregion, by ="dataset_id") 
 
 
 # compute median richness
@@ -51,6 +49,7 @@ median_richness_data <-
 
 median_richness_15k <-
   median_richness_data %>% filter(age <= 15000)
+
 
 summary(median_richness_15k)
 
@@ -87,7 +86,7 @@ ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)
       if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
     }
   ) +
-  scale_y_continuous(breaks = c(0,20, 25, 30)) +
+  scale_y_continuous(breaks = c(0,30, 40, 50)) +
   scale_color_manual(values = c(
     "Alps" = "black",
     "Boreal" = "darkgreen",
