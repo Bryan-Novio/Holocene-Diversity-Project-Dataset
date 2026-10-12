@@ -47,12 +47,10 @@ study3_richness_sd <-
 # 3. Model predictions -----
 #----------------------------------------------------------#
 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
 out_dir_preds <- 
-  here("Data/Paper_1/data_model/preds_50")
-=======
+  here("Data/Paper_1/data_model/preds_new")
+
 vec_ages <-  seq(0, 12e3, 100) 
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 data_dummy_full <-
   purrr::map(
@@ -92,15 +90,9 @@ summary(standardize_richness[[1]])
 ### 3.1.1.Load model iterations
 
 gam_mods <- 
-  list.files(
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
-    "Data/Paper_1/data_model/mod_iters_50",
-=======
-    "Data/Paper_1/data_model/mod_iterations_new",
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
+  list.files( "Data/Paper_1/data_model/mod_iterations_new",
     pattern = "[.]rds$",
-    full.names = TRUE
-  )
+    full.names = TRUE)
 
 ##View single model
 
@@ -153,28 +145,14 @@ toc()
 
 # View single prediction
 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
-one <-
-  read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
-=======
 one <- read_rds(here("Data/Paper_1/data_model/preds_new/pred_1.rds"))
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 summary(one)
 
 ### 3.1.3.Back-transform richness
 
 
-preds <- 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
-  list.files(here::here("Data/Paper_1/data_model/preds_50"), pattern = "[.]rds$",full.names = TRUE ) 
-
-out_back <- here("Data/Paper_1/data_model/data_back_2")
-=======
-  list.files(here::here("Data/Paper_1/data_model/preds_new"), pattern = "[.]rds$",full.names = TRUE ) 
-
 out_back <-   here("Data/Paper_1/data_model/data_back_new")
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 
 for (i in seq_along(preds)) {
@@ -201,9 +179,5 @@ for (i in seq_along(preds)) {
 
 #View single back-transformed iteration
 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
-data_back <- 
-  read_rds(here("Data/Paper_1/data_model/data_back_2/1.rds"))
-=======
+
 data_back <- read_rds(here("Data/Paper_1/data_model/data_back_new/1.rds"))
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
