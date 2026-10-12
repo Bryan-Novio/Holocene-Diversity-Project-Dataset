@@ -74,23 +74,17 @@ median_richness_back <-
 
 median_richness_back %>% 
   ggplot(aes(x = age, y = continental_median_richness)) +
-  geom_line(linewidth = 1, color = "red") + 
-  geom_line(aes(x = age, y = continental_median_richness, group = iter),
-    linewidth = 0.1, 
-    alpha = 0.05, 
-    color = "gray60"
-  ) +
+  geom_line(linewidth = 1, color = "red") +  
   geom_ribbon(aes(ymin = continental_richness_dwn, 
   ymax = continental_richness_upp),  fill = "blue", alpha = 0.4) +
   facet_wrap(~region) +
   theme_classic()+
   scale_x_reverse()
 
-
-
 #----------------------------------------------------------#
 # 4. Visualize trends per iteration with site-level trends --
 #----------------------------------------------------------# 
+
 
 ##4.1. for single iteration
 
@@ -111,10 +105,53 @@ all_data_back_iters <- purrr::map(
       readr::read_rds()
     
      iters_new <- iters %>% 
-       mutate(median_richness = median(richness),
-              ci_lower = quantile(richness, 0.25, na.rm = TRUE),
+       group_by(region,age) %>% 
+       mutate(median_richness = median(richness),.groups = "drop",
+              ci_lower = quantile(richness, 0.025, na.rm = TRUE),
               ci_upper = quantile(richness, 0.975, na.rm = TRUE) 
      
        )
   }
 )
+
+##4.3. combine all iterations as a dataframe
+
+all_data_back_iters_new <-
+  bind_rows(all_data_back_iters , .id = "iter")
+
+
+
+## 4.4. collapse iterations into one summary curve per (region, age)
+
+all_data_back_iters_overall <- all_data_back_iters_new %>%
+  group_by(region, age) %>%
+  summarize(
+    overall_median = median(median_richness, na.rm = TRUE),
+    lwr = quantile(median_richness, 0.025, na.rm = TRUE),
+    upr = quantile(median_richness, 0.975, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+## 4.5. Plot median richness per iter with overall median and error
+
+ggplot() +
+  geom_line(
+    data = all_data_back_iters_new,
+    aes(x = age, y = median_richness, group = iter),
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  facet_wrap(~ region) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 30)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
+
+
+
