@@ -47,22 +47,40 @@ study3_richness_sd <-
 # 3. Model predictions -----
 #----------------------------------------------------------#
 
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
 out_dir_preds <- 
   here("Data/Paper_1/data_model/preds_50")
+=======
+vec_ages <-  seq(0, 12e3, 100) 
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 data_dummy_full <-
   purrr::map(
     .progress = TRUE,
     .x = standardize_richness,
     .f = ~ {
-      tidyr::expand_grid(
-        dplyr::distinct(., region),
-        age = seq(
-          min(.$age),
-          max(.$age),
-          length.out = 100
+      
+      age_limits <- 
+        .x %>% 
+        dplyr::group_by(region) %>% 
+        dplyr::summarise(
+          min_age = min(age),
+          max_age = max(age)
         )
-      )
+      
+      tidyr::expand_grid(
+        region = unique(.x$region),
+        age = vec_ages, 
+      ) %>% 
+        dplyr::left_join(
+        age_limits,
+        by = "region"
+      ) %>% 
+        dplyr::filter(
+          age >= min_age,
+          age <= max_age
+        ) %>% 
+        dplyr::select(-c(min_age, max_age))
     }
     
   )
@@ -75,7 +93,11 @@ summary(standardize_richness[[1]])
 
 gam_mods <- 
   list.files(
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
     "Data/Paper_1/data_model/mod_iters_50",
+=======
+    "Data/Paper_1/data_model/mod_iterations_new",
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
     pattern = "[.]rds$",
     full.names = TRUE
   )
@@ -131,8 +153,12 @@ toc()
 
 # View single prediction
 
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
 one <-
   read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
+=======
+one <- read_rds(here("Data/Paper_1/data_model/preds_new/pred_1.rds"))
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 summary(one)
 
@@ -140,9 +166,15 @@ summary(one)
 
 
 preds <- 
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
   list.files(here::here("Data/Paper_1/data_model/preds_50"), pattern = "[.]rds$",full.names = TRUE ) 
 
 out_back <- here("Data/Paper_1/data_model/data_back_2")
+=======
+  list.files(here::here("Data/Paper_1/data_model/preds_new"), pattern = "[.]rds$",full.names = TRUE ) 
+
+out_back <-   here("Data/Paper_1/data_model/data_back_new")
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 
 for (i in seq_along(preds)) {
@@ -169,5 +201,9 @@ for (i in seq_along(preds)) {
 
 #View single back-transformed iteration
 
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
 data_back <- 
   read_rds(here("Data/Paper_1/data_model/data_back_2/1.rds"))
+=======
+data_back <- read_rds(here("Data/Paper_1/data_model/data_back_new/1.rds"))
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R

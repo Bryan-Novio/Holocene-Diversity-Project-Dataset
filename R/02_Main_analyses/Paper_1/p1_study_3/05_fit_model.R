@@ -38,9 +38,14 @@ source_files <-
 # 2. Load richness  -----------------------------------------
 #----------------------------------------------------------# 
 
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/06_fit_model.R
 paths <- 
   list.files(
   "Data/Paper_1/data_estimate_richness/richness_iters",
+=======
+paths <- list.files(
+  "Data/Paper_1/data_estimate_richness/s3_richness_test",
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/05_fit_model.R
   pattern = "[.]rds$",
   full.names = TRUE
 )
@@ -50,7 +55,14 @@ paths <-
 #----------------------------------------------------------#
 
 out_dir_mod <- 
+<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/06_fit_model.R
   here("Data/Paper_1/data_model/mod_iters_50")
+=======
+  here("Data/Paper_1/data_model/mod_iterations_new")
+
+out_dir_preds <- 
+  here("Data/Paper_1/data_model/preds_new")
+>>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/05_fit_model.R
 
 #----------------------------------------------------------#
 # 4. Standardize richness  ----

@@ -19,8 +19,8 @@ library(here)
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-bins <- list.files(
-  "Data/Paper_1/data_bin/bin_iterations_new",
+rarefied_data_iter <- list.files(
+  "Data/Paper_1/data_rarefy/rarefied_testing",
   pattern = "[.]rds$",
   full.names = TRUE
 )
@@ -52,49 +52,41 @@ source_files <-
 # 3. Output folder ----------
 #----------------------------------------------------------#
 
-out_dir <- 
-  here::here("Data/Paper_1/data_estimate_richness/richness_iters")
+richness_dir <- 
+  here::here("Data/Paper_1/data_estimate_richness/s3_richness_test")
 
 #----------------------------------------------------------#
 # 4. Estimate richness  at different taxo rank -- at 12 cal yr bp 
 #----------------------------------------------------------# 
 
-for (i in seq_along(bins)) {
+for (i in seq_along(rarefied_data_iter)) {
   
   # ---- Load binned dataset for each iteration  ----
-  data_binned <- readr::read_rds(bins[i])
+      data <- readr::read_rds(rarefied_data_iter[i])
   
   # Extract iteration id from filename
-  id <- as.integer(tools::file_path_sans_ext(basename(bins[i])))
+      id <- as.integer(tools::file_path_sans_ext(basename(rarefied_data_iter[i])))
   
-  # ---- 4.1. Reshape rarefied dataset with new ages to bin ----
+  # ---- 4.1. prepare dataset for richness estimation ----
   
-  data_binned_to_estimate <- 
-    data_binned %>% 
-          tidyr::pivot_wider(names_from = taxa, 
-                      values_from = summed_pollen_count) %>% 
-          tidyr::unite("dataset_id_age", dataset_id,
-                BIN, sep = "_", remove = TRUE)
-
-  # ---- 4.2. Prepare dataset for richness estimation ----
-  
-  data_binned_to_estimate_re <- 
-    data_binned_to_estimate %>% 
-          tidyr::separate_wider_delim(dataset_id_age, delim = "_", 
-                               names = c("dataset_id","BIN")) %>% 
-          tidyr::pivot_longer(cols = -c(dataset_id, BIN), 
-                       names_to = "taxa", values_to = "summed_pollen_count") %>% 
-          prepare_data_for_richness_estimation(type = "binned")
+  rarefied_data_iter_re <- data %>% 
+    separate_wider_delim(dataset_id_age, delim = "_", 
+                         names = c("dataset_id","BIN")) %>% 
+    pivot_longer(cols = -c(dataset_id, BIN), 
+                 names_to = "taxa", values_to = "summed_pollen_count") %>% 
+    rename(age = BIN, pollen_counts = summed_pollen_count) %>% 
+    prepare_data_for_richness_estimation(type = "nonbinned")
 
   # ---- 4.3.richness estimation for each binned data ----
   
   richness_estimate <- 
-    data_binned_to_estimate_re %>% 
+        rarefied_data_iter_re %>% 
           estimate_richness() %>% 
           dplyr::mutate(age = as.numeric(age)) %>% 
           dplyr::mutate(dataset_id = as_factor(dataset_id)) %>% 
           dplyr::filter(age <= 12000)
   
+
   # ---- 4.4. add region to each binned data ----
   
   richness_estimate_re <- 
@@ -103,22 +95,20 @@ for (i in seq_along(bins)) {
     dplyr::mutate(dataset_id = as.character(dataset_id)) %>% 
           dplyr::inner_join(region, by = "dataset_id")
   
-  readr::write_rds(richness_estimate_re,file = paste0(out_dir,"/",id,".rds"), compress = "gz" ) # Write the binned and prepared_data to RDS files
+  readr::write_rds(richness_estimate_re,file = paste0(out_dir,"/",id,".rds"), compress = "gz" ) # Write estimation as RDS files
   
-  rm(data_binned, id, data_binned_to_estimate, data_binned_to_estimate_re,richness_estimate,richness_estimate_re   )
+  rm(id,  rarefied_data_iter_re,  richness_estimate, richness_estimate_re)
   
   gc(verbose = FALSE)
   
 }
 
-# View a single iteration
+# View few iterations
 
-one <- 
-  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/richness_iters/1.rds"))
-
-two <- 
-  readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/richness_iters/2.rds"))
+readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness_test/1.rds"))
+readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness_test/100.rds"))
+readr::read_rds(here::here("Data/Paper_1/data_estimate_richness/s3_richness_test/1000.rds"))
 
 
-## end
+#----------------END OF SCRIPT--------------------------------
 
