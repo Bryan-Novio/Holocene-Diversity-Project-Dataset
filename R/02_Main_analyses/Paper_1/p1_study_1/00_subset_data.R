@@ -145,6 +145,7 @@ data_p1_s1_subregion_counts_ages_subregion <-  # 477 sites
 
 # include only sites with at least 32 identified pollen types
 
+
 # 451 sites (less 26 sites or 35,833 samples)
 
 sites_with_more_32 <- 

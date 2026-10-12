@@ -30,7 +30,7 @@ get_number_of_taxa <- function(data_source, group_var = NULL, name = NULL) {
   if(
     isFALSE(is.null(name))
   ) {
-    
+
     assertthat::assert_that(
       is.character(name)
     )

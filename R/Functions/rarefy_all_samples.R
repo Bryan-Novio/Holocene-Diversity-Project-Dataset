@@ -13,7 +13,7 @@ rarefy_all_samples <- function(data_source, n_grains) {
   )
   
   data_prepared <-
-    data_source %>%
+    check %>%
     dplyr::mutate(
       dataset_id_age= paste0(dataset_id,"_", age)
     ) %>%
@@ -21,6 +21,7 @@ rarefy_all_samples <- function(data_source, n_grains) {
     dplyr::mutate(
       dplyr::across(-dataset_id_age, ~ tidyr::replace_na(.,0))
     ) %>% 
+    colnames()
     tibble::column_to_rownames("dataset_id_age")
   
   
