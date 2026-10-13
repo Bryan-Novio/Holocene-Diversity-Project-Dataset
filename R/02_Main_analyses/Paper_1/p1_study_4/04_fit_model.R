@@ -38,8 +38,7 @@ source_files <-
 # 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_data4 <- 
-  read_rds(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
+richness_data4 <- read_csv(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
 
 
 lab <- c(0,2.5, 5, 7.5, 10, 12.5)
