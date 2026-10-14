@@ -43,7 +43,10 @@ paths <- list.files(
   "Data/Paper_1/data_estimate_richness/s3_richness_test",
   pattern = "[.]rds$",
   full.names = TRUE
-)
+) %>% 
+  rlang::set_names(
+    nm = str_extract(., "\\d+(?=\\.rds$)")
+  )
 
 #----------------------------------------------------------#
 # 3. Output folders ----------
@@ -61,6 +64,7 @@ out_dir_preds <-
 
 standardize_richness <- 
   purrr::map(
+  .progress = TRUE,
   .x = paths,
   .f = ~ {
     readr::read_rds(.x) %>%
@@ -78,6 +82,7 @@ standardize_richness <-
 
 study3_richness_sd <- 
   purrr::map(
+  .progress = TRUE,
   .x = standardize_richness,
   .f = ~{
     .x %>% 
@@ -114,7 +119,7 @@ set.seed(19900723)
 purrr::walk2(
   .progress = TRUE,
   .x = standardize_richness,
-  .y = seq_along(standardize_richness),
+  .y = names(standardize_richness),
   .f = ~ {
     out_file <- file.path(out_dir_mod, paste0("model_", .y, ".rds"))
     
@@ -149,12 +154,12 @@ purrr::walk2(
 # View a single iteration
 
 one <- 
-  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iters_50/model_1000.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations_new/model_1000.rds"))
 
 # Check model parameters
 
 mod_iters <- list.files(
-  "Data/Paper_1/data_model/mod_iters_50",
+  "Data/Paper_1/data_model/mod_iterations_new",
   pattern = "[.]rds$",
   full.names = TRUE
 )

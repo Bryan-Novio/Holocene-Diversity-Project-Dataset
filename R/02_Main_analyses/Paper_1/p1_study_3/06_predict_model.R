@@ -83,7 +83,14 @@ data_dummy_full <-
     
   )
 
-summary(standardize_richness[[1]])
+
+
+summary(standardize_richness[["1"]])
+
+standardize_richness[["10"]]
+
+names(standardize_richness)[10]
+
 
 ## 3.1.Prediction
 
@@ -92,11 +99,16 @@ summary(standardize_richness[[1]])
 gam_mods <- 
   list.files( "Data/Paper_1/data_model/mod_iterations_new",
     pattern = "[.]rds$",
-    full.names = TRUE)
+    full.names = TRUE) %>% 
+  rlang::set_names(
+    nm = str_extract(.,"(?<=model_)\\d+(?=\\.rds$)")
+  )
 
 ##View single model
 
-gam_mods[[1]] %>% read_rds()
+gam_mods[1:10]
+
+gam_mods[["100"]] %>% read_rds()
 
 ### 3.1.2.Predict
 
@@ -107,12 +119,14 @@ tic()
 
 for (i in seq_along(gam_mods)) {
   
-  tic(paste("Iteration", i, "of", n))
+  iter_name <- names(gam_mods)[i] 
   
-  mod_path <- gam_mods[[i]]
-  data_i   <- data_dummy_full[[i]]
+  tic(paste("Iteration", iter_name , "of", n))
   
-  out_file <- file.path(out_dir_preds, paste0("pred_", i, ".rds"))
+  mod_path <- gam_mods[[iter_name]]
+  data_i   <- data_dummy_full[[iter_name]]
+  
+  out_file <- file.path(out_dir_preds, paste0("pred_", iter_name, ".rds"))
   
   if (file.exists(out_file)) {
     toc(log = TRUE)
@@ -145,25 +159,35 @@ toc()
 
 # View single prediction
 
-one <- read_rds(here("Data/Paper_1/data_model/preds_new/pred_1.rds"))
+two <- read_rds(here("Data/Paper_1/data_model/preds_new/pred_102.rds"))
 
-summary(one)
+summary(two)
 
 ### 3.1.3.Back-transform richness
 
 
-out_back <-   here("Data/Paper_1/data_model/data_back_new")
+names_preds <- 
+  list.files( file.path(out_dir_preds),
+              pattern = "[.]rds$",
+              full.names = TRUE) %>% 
+  rlang::set_names(
+    nm = str_extract(.,"(?<=pred_)\\d+(?=\\.rds$)")
+  )
+
+out_back <- here("Data/Paper_1/data_model/data_back_new")
 
 
-for (i in seq_along(preds)) {
+for (i in seq_along(names_preds)) {
+  
+  iter_name <- names(names_preds)[i] 
   
   # 1. Read the data
-  path <- preds[i]
-  data_back <- readr::read_rds(path)
+  data_back <- readr::read_rds(names_preds[[iter_name]])
   
   # 2. Join and back-transform
-  data_back <- data_back %>%
-    dplyr::left_join(study3_richness_sd[[i]], by = "region") %>%
+  data_back_trans <- 
+    data_back %>%
+    dplyr::left_join(study3_richness_sd[[iter_name]], by = "region") %>%
     dplyr::mutate(
       richness  = estimate * sd_richness + mean_richness,
       rich_low  = conf_low * sd_richness + mean_richness,
@@ -171,8 +195,8 @@ for (i in seq_along(preds)) {
     )
   # 3. Save sd for each iteration
   readr::write_rds(
-    data_back, 
-    file = stringr::str_glue("{out_back}/{i}.rds")
+    data_back_trans, 
+    file = stringr::str_glue("{out_back}/{iter_name}.rds")
   )
 }
 
@@ -181,3 +205,5 @@ for (i in seq_along(preds)) {
 
 
 data_back <- read_rds(here("Data/Paper_1/data_model/data_back_new/1.rds"))
+
+
