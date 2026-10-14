@@ -44,17 +44,32 @@ data_rich <- list.files(
   "Data/Paper_1/data_estimate_richness/s3_richness_test",
   pattern = "[.]rds$",
   full.names = TRUE
-)
+) %>% 
+  rlang::set_names(
+    nm = str_extract(., "\\d+(?=\\.rds$)")
+  )
 
+
+data_rich[1:10]
 
 data_back <- list.files(
   "Data/Paper_1/data_model/data_back_new/",
   pattern = "[.]rds$",
   full.names = TRUE
-)
+) %>% 
+  rlang::set_names(
+    nm = str_extract(., "\\d+(?=\\.rds$)")
+  )
 
-median_richness_back <- 
-  purrr::map(1:1000, 
+data_back[1:10]
+
+data_back[["1"]] %>% read_rds()
+
+
+median_richness_back <-
+  1:1000 %>% 
+  rlang::set_names() %>% 
+  purrr::map(
            .progress = TRUE,
            .f = load_pred_richness_and_select) %>% 
   bind_rows(.id = "iter") %>% 
@@ -97,20 +112,25 @@ plot_richness_iter(data_back,data_rich,1)
 
 ##4.2. for all iterations and summarized to one trend line
 
-all_data_back_iters <- purrr::map(
+all_data_back_iters <- 
+  nm <- 1:1000 %>% 
+  rlang::set_names() %>%
+  purrr::map(
+  .x = data_back,
   .progress = TRUE,
-  .x  = data_back,
   .f  =  ~ {
+    
     iters <- .x %>% 
       readr::read_rds()
     
      iters_new <- iters %>% 
        group_by(region,age) %>% 
-       mutate(median_richness = median(richness),.groups = "drop",
+       summarise(median_richness = median(richness),.groups = "drop",
               ci_lower = quantile(richness, 0.025, na.rm = TRUE),
               ci_upper = quantile(richness, 0.975, na.rm = TRUE) 
      
        )
+     return(iters_new)
   }
 )
 
@@ -146,12 +166,90 @@ ggplot() +
   geom_line(
     data = all_data_back_iters_overall,
     aes(x = age, y = overall_median),
-    color = "red", linewidth = 1) +
+    color = "red", linewidth = 0.5) +
   facet_wrap(~ region) +
   scale_x_reverse() +
   coord_cartesian(ylim = c(15, 30)) +
   labs(x = "Age (cal yr BP)", y = "Richness") +
   theme_classic() 
 
+#Asia
+
+all_data_back_iters_new_AS <-
+  all_data_back_iters_new %>% filter(region =="Asia")
+
+all_data_back_iters_overall_AS <-
+  all_data_back_iters_overall %>% filter(region =="Asia") 
+
+ggplot() +
+  geom_line(
+    data = all_data_back_iters_new_AS,
+    aes(x = age, y = median_richness, group = iter),
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall_AS,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall_AS,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 20)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
 
 
+
+#Europe
+
+all_data_back_iters_new_EU <-
+  all_data_back_iters_new %>% filter(region =="Europe")
+
+all_data_back_iters_overall_EU <-
+  all_data_back_iters_overall %>% filter(region =="Europe") 
+
+ggplot() +
+  geom_line(
+    data = all_data_back_iters_new_EU,
+    aes(x = age, y = median_richness, group = iter),
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall_EU,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall_EU,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 25)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
+
+
+#NAmerica
+
+all_data_back_iters_new_NA <-
+  all_data_back_iters_new %>% filter(region =="North America")
+
+all_data_back_iters_overall_NA <-
+  all_data_back_iters_overall %>% filter(region =="North America") 
+
+ggplot() +
+  geom_line(
+    data = all_data_back_iters_new_NA,
+    aes(x = age, y = median_richness, group = iter),
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall_NA,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall_NA,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 18)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
