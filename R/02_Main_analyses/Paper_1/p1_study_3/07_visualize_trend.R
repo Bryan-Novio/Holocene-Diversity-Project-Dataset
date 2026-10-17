@@ -295,6 +295,7 @@ ggplot() +
   geom_line(
     data = all_data_back_iters_new_AS,
     aes(x = age, y = median_richness, group = iter),
+<<<<<<< HEAD
     linewidth = 0.1, alpha = 0.05, color = "red") +
   geom_ribbon(
     data = all_data_back_iters_overall_AS,
@@ -391,5 +392,73 @@ ggplot() +
             axis.ticks.x.bottom = element_line(linewidth = 1),
             axis.ticks.y.left = element_line(linewidth = 1)
   )
+=======
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall_AS,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall_AS,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 20)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
+>>>>>>> b81db28e84b18b18bd13222a08828e1948764f8d
 
 
+
+#Europe
+
+all_data_back_iters_new_EU <-
+  all_data_back_iters_new %>% filter(region =="Europe")
+
+all_data_back_iters_overall_EU <-
+  all_data_back_iters_overall %>% filter(region =="Europe") 
+
+ggplot() +
+  geom_line(
+    data = all_data_back_iters_new_EU,
+    aes(x = age, y = median_richness, group = iter),
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall_EU,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall_EU,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 25)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
+
+
+#NAmerica
+
+all_data_back_iters_new_NA <-
+  all_data_back_iters_new %>% filter(region =="North America")
+
+all_data_back_iters_overall_NA <-
+  all_data_back_iters_overall %>% filter(region =="North America") 
+
+ggplot() +
+  geom_line(
+    data = all_data_back_iters_new_NA,
+    aes(x = age, y = median_richness, group = iter),
+    linewidth = 0.1, alpha = 0.05, color = "gray60") +
+  geom_ribbon(
+    data = all_data_back_iters_overall_NA,
+    aes(x = age, ymin = lwr, ymax = upr),
+    fill = "blue", alpha = 0.3) +
+  geom_line(
+    data = all_data_back_iters_overall_NA,
+    aes(x = age, y = overall_median),
+    color = "red", linewidth = 1) +
+  scale_x_reverse() +
+  coord_cartesian(ylim = c(15, 18)) +
+  labs(x = "Age (cal yr BP)", y = "Richness") +
+  theme_classic() 
