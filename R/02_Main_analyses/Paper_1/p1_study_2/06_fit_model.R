@@ -33,6 +33,7 @@ source_files <-
     source
   )
 
+
 #----------------------------------------------------------#
 # 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
@@ -40,13 +41,16 @@ source_files <-
 richness_data <- 
   read_csv(here("Data/Paper_1/data_estimate_richness/study2_richness.csv"))
 
+
 hist(richness_data$richness)
+
 
 #  Convert dataset_id as random factor
 
 richness_data <-
   richness_data %>%              
   mutate(dataset_id = as_factor(dataset_id))
+
 
 p1 <-
   ggplot2::ggplot(
@@ -64,6 +68,7 @@ p1 <-
                  axis.title = element_text(color = "#2a707f", size = 18),
                  axis.line  = element_line(color = "#2a707f", linewidth = 1)
                  )
+
 
 
 #----------------------------------------------------------#
@@ -89,6 +94,7 @@ n_cores_to_use <-
 ## 3.2. Fit model -----
 
 set.seed(19900723)
+
 
 gam_s2 <-                               #method = REML
   fit_regression_model(
@@ -156,7 +162,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_1,
+    model = gam_s2,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -226,5 +232,35 @@ data_pred_s2 <- data_pred_general %>%
 
 data_pred_s2 %>%
   plot_trend_study_2()
+
+
+
+data_pred_s2 %>% 
+  ggplot2::ggplot(aes(x = age, y = est))+ 
+  geom_ribbon(aes(ymin = low, ymax = upp),colour = "orange",alpha = 0.2
+  ) +
+  ggplot2::geom_line(color = "darkorange", linewidth = 2) +
+  ggplot2::theme(
+    axis.text.x = element_text(size = 15, color = "black"),
+    axis.text.y = element_text(size = 15, color = "black"),
+                 axis.title.x = element_text(size = 15, color = "black"),
+                 axis.title.y = element_text(size = 15, color = "black"),
+                 panel.background = element_blank(),
+                 axis.line.y = element_line(color = "black", linewidth = 1),
+                 axis.line.x = element_line(color = "black", linewidth = 1),
+                 axis.ticks.x = element_line(linewidth = 1),
+                 axis.ticks.y = element_line(linewidth = 1),
+                 axis.ticks.length.y. = unit(.25, "cm"),
+                 axis.ticks.length.x.bottom = unit(.25, "cm"))  +
+  ggplot2::coord_cartesian(
+    ylim = c(6,14)
+  ) +
+  labs(y = "Richness",  x = "Age (cal yr BP)")+
+  ggplot2::scale_x_reverse() +   
+  ggplot2::geom_vline(xintercept = 9500, color ="coral", size = 1,alpha = 0.1)
+
+
+
+
 
   

@@ -31,6 +31,7 @@ data_age_uncertainty <-
 
 ## Harmonised dataset
 data_harmonised_study3   <-
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds")) %>% 
   read_rds(here("Data/Paper_1/data_harmonize/
                 data_study3_data_harmonised_merge.rds")) %>% 
   mutate(region = str_replace_all(region, "North_America", 
@@ -91,6 +92,14 @@ source_files <-
 #----------------------------------------------------------#
 
 ## Raw
+
+
+pollen_data_study3 %>% 
+  get_number_of_metric( name = "raw", group_var = "region",  "dataset_id")
+
+
+pollen_data_study3 %>% 
+  get_number_of_metric( name = "raw", group_var = "region",  "sample_id")
 
 
 pollen_data_study3 %>% 
@@ -180,6 +189,11 @@ data_overview_harm <-
 ##For steps 2 - 5 (See p1_study3/data_overview scripts)
 
 
+
+                                  
+##For steps 2 - 5 (See p1_study3/data_overview scripts)
+
+
 #----------------------------------------------------------#
 # 4.Load results for all three measures in each step 
 # (1000 iters) -------
@@ -223,7 +237,6 @@ data_overv_rarefied_res <-
         read_csv()
       
     }
-<<<<<<< HEAD
 
 step2
   
@@ -329,8 +342,13 @@ step4 <- number_datasets_binned_data <-
     .x = data_binned_study3[1:1000],
     .f = ~ readr::read_rds(.x) %>% 
       get_number_of_datasets() 
-=======
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85
+
+
+data_overv_rarefied_res <- 
+  bind_rows(data_overv_rarefied_res)
+
+###
+
   )
 
 data_overv_rarefied_res <- 
@@ -351,6 +369,10 @@ data_overv_rarefied_new_age_res <-
 
 data_overv_rarefied_new_age_res <- 
   bind_rows(data_overv_rarefied_new_age_res)
+
+
+###
+
 
 
 ###
@@ -435,6 +457,8 @@ study3_data_overview %>%
   theme_classic() +
   theme(axis.text.x = element_blank()
         ) 
+
+
 
 
 study3_data_overview %>% 
