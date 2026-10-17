@@ -78,37 +78,10 @@ data_p1_s4_filter <- data_p1_s4 %>%
   filter(dataset_id != 4548 & dataset_id != 52268) # 53 records
 
 
-###3. discard samples with < 25 pollen grains
-
-data_p1_s4_filter_sample <- 
-  data_p1_s4_filter %>% 
-  unnest(levels) %>% 
-  filter(n_sample_counts > 25)  #45 records
-
-data_p1_s4_filter_sample %>% 
-  relocate(sample_id,x50_percent)
-
-  relocate(n_sample_counts) %>% 
-  filter(n_sample_counts < 25)
-
-data_p1_s4_filter %>% 
-  relocate(n_sample_counts) %>% 
-  filter(n_sample_counts < 25)
-  unnest(levels) %>% 
-  relocate(n_sample_counts) %>% 
-  filter(n_sample_counts < 25)
-
-
-
-
-  unnest(raw_counts)
-  mutate(raw_counts = as.double(raw_counts)) %>% 
-  filter(raw_counts < 25)
-
 #####3.1. get pollen counts with ages
 
 data_p1_s4_counts_ages <- 
-  data_p1_s4 %>%
+  data_p1_s4_filter %>%
   get_pollen_counts_with_ages() %>% 
   filter(age<= 12000)
 

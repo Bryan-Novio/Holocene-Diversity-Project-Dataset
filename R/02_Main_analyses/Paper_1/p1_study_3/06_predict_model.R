@@ -47,12 +47,13 @@ study3_richness_sd <-
 # 3. Model predictions -----
 #----------------------------------------------------------#
 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
+out_dir_preds <- 
+  here("Data/Paper_1/data_model/preds_new")
+
+vec_ages <-  seq(0, 12e3, 100) 
 out_dir_preds <- 
   here("Data/Paper_1/data_model/preds_50")
-=======
 vec_ages <-  seq(0, 12e3, 100) 
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 data_dummy_full <-
   purrr::map(
@@ -85,6 +86,14 @@ data_dummy_full <-
     
   )
 
+
+
+summary(standardize_richness[["1"]])
+
+standardize_richness[["10"]]
+
+names(standardize_richness)[10]
+
 summary(standardize_richness[[1]])
 
 ## 3.1.Prediction
@@ -92,18 +101,17 @@ summary(standardize_richness[[1]])
 ### 3.1.1.Load model iterations
 
 gam_mods <- 
-  list.files(
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
-    "Data/Paper_1/data_model/mod_iters_50",
-=======
-    "Data/Paper_1/data_model/mod_iterations_new",
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
+  list.files( "Data/Paper_1/data_model/mod_iterations_new",
     pattern = "[.]rds$",
-    full.names = TRUE
-  )
+    full.names = TRUE) %>% 
+  rlang::set_names(
+    nm = str_extract(.,"(?<=model_)\\d+(?=\\.rds$)")
 
 ##View single model
 
+gam_mods[1:10]
+
+gam_mods[["100"]] %>% read_rds()
 gam_mods[[1]] %>% read_rds()
 
 ### 3.1.2.Predict
@@ -115,6 +123,14 @@ tic()
 
 for (i in seq_along(gam_mods)) {
   
+  iter_name <- names(gam_mods)[i] 
+  
+  tic(paste("Iteration", iter_name , "of", n))
+  
+  mod_path <- gam_mods[[iter_name]]
+  data_i   <- data_dummy_full[[iter_name]]
+  
+  out_file <- file.path(out_dir_preds, paste0("pred_", iter_name, ".rds"))
   tic(paste("Iteration", i, "of", n))
   
   mod_path <- gam_mods[[i]]
@@ -153,28 +169,47 @@ toc()
 
 # View single prediction
 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
+two <- read_rds(here("Data/Paper_1/data_model/preds_new/pred_102.rds"))
+
+summary(two)
 one <-
   read_rds(here("Data/Paper_1/data_model/preds/pred_1.rds"))
-=======
 one <- read_rds(here("Data/Paper_1/data_model/preds_new/pred_1.rds"))
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 summary(one)
 
 ### 3.1.3.Back-transform richness
 
 
+names_preds <- 
+  list.files( file.path(out_dir_preds),
+              pattern = "[.]rds$",
+              full.names = TRUE) %>% 
+  rlang::set_names(
+    nm = str_extract(.,"(?<=pred_)\\d+(?=\\.rds$)")
+  )
+
+out_back <- here("Data/Paper_1/data_model/data_back_new")
+
+
+for (i in seq_along(names_preds)) {
+  
+  iter_name <- names(names_preds)[i] 
+  
+  # 1. Read the data
+  data_back <- readr::read_rds(names_preds[[iter_name]])
+  
+  # 2. Join and back-transform
+  data_back_trans <- 
+    data_back %>%
+    dplyr::left_join(study3_richness_sd[[iter_name]], by = "region") %>%
 preds <- 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
   list.files(here::here("Data/Paper_1/data_model/preds_50"), pattern = "[.]rds$",full.names = TRUE ) 
 
 out_back <- here("Data/Paper_1/data_model/data_back_2")
-=======
   list.files(here::here("Data/Paper_1/data_model/preds_new"), pattern = "[.]rds$",full.names = TRUE ) 
 
 out_back <-   here("Data/Paper_1/data_model/data_back_new")
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
 
 
 for (i in seq_along(preds)) {
@@ -193,6 +228,8 @@ for (i in seq_along(preds)) {
     )
   # 3. Save sd for each iteration
   readr::write_rds(
+    data_back_trans, 
+    file = stringr::str_glue("{out_back}/{iter_name}.rds")
     data_back, 
     file = stringr::str_glue("{out_back}/{i}.rds")
   )
@@ -201,9 +238,11 @@ for (i in seq_along(preds)) {
 
 #View single back-transformed iteration
 
-<<<<<<< HEAD:R/02_Main_analyses/Paper_1/p1_study_3/07_predict_model.R
+
+data_back <- read_rds(here("Data/Paper_1/data_model/data_back_new/1.rds"))
+
+
 data_back <- 
   read_rds(here("Data/Paper_1/data_model/data_back_2/1.rds"))
-=======
 data_back <- read_rds(here("Data/Paper_1/data_model/data_back_new/1.rds"))
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85:R/02_Main_analyses/Paper_1/p1_study_3/06_predict_model.R
+
