@@ -8,3 +8,4 @@ load_pred_richness_and_select <-
     read_rds() %>% 
     select(region, age, richness)
 }
+

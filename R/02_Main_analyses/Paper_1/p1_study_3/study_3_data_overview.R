@@ -32,6 +32,8 @@ data_age_uncertainty <-
 ## Harmonised dataset
 data_harmonised_study3   <-
   read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds")) %>% 
+  read_rds(here("Data/Paper_1/data_harmonize/
+                data_study3_data_harmonised_merge.rds")) %>% 
   mutate(region = str_replace_all(region, "North_America", 
           "North America"))
 
@@ -90,6 +92,14 @@ source_files <-
 #----------------------------------------------------------#
 
 ## Raw
+
+
+pollen_data_study3 %>% 
+  get_number_of_metric( name = "raw", group_var = "region",  "dataset_id")
+
+
+pollen_data_study3 %>% 
+  get_number_of_metric( name = "raw", group_var = "region",  "sample_id")
 
 
 pollen_data_study3 %>% 
@@ -174,6 +184,11 @@ data_overview_harm <-
     by = join_by(region, step),
   ) %>% 
   relocate(step, .before = n_datasets) 
+
+                                  
+##For steps 2 - 5 (See p1_study3/data_overview scripts)
+
+
 
                                   
 ##For steps 2 - 5 (See p1_study3/data_overview scripts)
@@ -334,6 +349,13 @@ data_overv_rarefied_res <-
 
 ###
 
+  )
+
+data_overv_rarefied_res <- 
+  bind_rows(data_overv_rarefied_res)
+
+###
+
 data_overv_rarefied_new_age_res <- 
   purrr::map(
     .progress = TRUE,
@@ -347,6 +369,10 @@ data_overv_rarefied_new_age_res <-
 
 data_overv_rarefied_new_age_res <- 
   bind_rows(data_overv_rarefied_new_age_res)
+
+
+###
+
 
 
 ###
@@ -431,6 +457,8 @@ study3_data_overview %>%
   theme_classic() +
   theme(axis.text.x = element_blank()
         ) 
+
+
 
 
 study3_data_overview %>% 

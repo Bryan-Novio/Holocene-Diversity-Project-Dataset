@@ -48,6 +48,7 @@ paths <- list.files(
     nm = str_extract(., "\\d+(?=\\.rds$)")
   )
 
+
 #----------------------------------------------------------#
 # 3. Output folders ----------
 #----------------------------------------------------------#
@@ -57,6 +58,7 @@ out_dir_mod <-
 
 out_dir_preds <- 
   here("Data/Paper_1/data_model/preds_new")
+
 
 #----------------------------------------------------------#
 # 4. Standardize richness  ----
@@ -120,6 +122,7 @@ purrr::walk2(
   .progress = TRUE,
   .x = standardize_richness,
   .y = names(standardize_richness),
+  .y = seq_along(standardize_richness),
   .f = ~ {
     out_file <- file.path(out_dir_mod, paste0("model_", .y, ".rds"))
     
@@ -155,11 +158,13 @@ purrr::walk2(
 
 one <- 
   readr::read_rds(here::here("Data/Paper_1/data_model/mod_iterations_new/model_1000.rds"))
+  readr::read_rds(here::here("Data/Paper_1/data_model/mod_iters_50/model_1000.rds"))
 
 # Check model parameters
 
 mod_iters <- list.files(
   "Data/Paper_1/data_model/mod_iterations_new",
+  "Data/Paper_1/data_model/mod_iters_50",
   pattern = "[.]rds$",
   full.names = TRUE
 )
