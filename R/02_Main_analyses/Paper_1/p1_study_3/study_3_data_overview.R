@@ -31,8 +31,7 @@ data_age_uncertainty <-
 
 ## Harmonised dataset
 data_harmonised_study3   <-
-  read_rds(here("Data/Paper_1/data_harmonize/
-                data_study3_data_harmonised_merge.rds")) %>% 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study3_data_harmonised_merge.rds")) %>% 
   mutate(region = str_replace_all(region, "North_America", 
           "North America"))
 
@@ -223,7 +222,6 @@ data_overv_rarefied_res <-
         read_csv()
       
     }
-<<<<<<< HEAD
 
 step2
   
@@ -329,9 +327,7 @@ step4 <- number_datasets_binned_data <-
     .x = data_binned_study3[1:1000],
     .f = ~ readr::read_rds(.x) %>% 
       get_number_of_datasets() 
-=======
->>>>>>> 1b6ed01ca4d1e189a3d9a2638bcdbace616e9e85
-  )
+
 
 data_overv_rarefied_res <- 
   bind_rows(data_overv_rarefied_res)
