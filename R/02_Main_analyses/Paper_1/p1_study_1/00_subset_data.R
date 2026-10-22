@@ -84,7 +84,7 @@ data_p1_s1_sub_region_sample <- data_p1_s1_sub_region %>%
 data_p1_s1_sub_region %>% 
   ggplot(aes(x=long, y= lat, color = subregion)) +
   borders(fill= "gray", colour = "black") +
-  geom_point() +
+  geom_point(size = 3) +
   scale_color_manual(values = c(
     "Alps" = "black",
     "Boreal" = "darkgreen",
@@ -92,7 +92,9 @@ data_p1_s1_sub_region %>%
     "Temperate Continental" = "orange",
     "Temperate Oceanic" = "blue"
   )) +
-  coord_quickmap(xlim = c(-25,35), ylim = c(35,75))
+  coord_quickmap(xlim = c(-25,35), ylim = c(35,75)) +
+  theme_void() +
+  theme(legend.position = "none")
 
 
 data_p1_s1_sub_region %>%

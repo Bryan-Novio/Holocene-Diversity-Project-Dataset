@@ -171,12 +171,32 @@ s3_as_new <- s3_as %>%
   pivot_wider(names_from = id, values_from = "richness")
 
 
-s3_as_new <- s3_as_new %>% 
-  rename(est = col)
 
 gen_trend <- plot_trend_general(s3_as_new, "red") 
 
 gen_trend + coord_cartesian(ylim = c(15,23)) 
+
+
+
+s3_as_new %>% 
+  ggplot(aes(x = age, y = est)) +
+  geom_line(linewidth = 3, color = "red") + 
+  geom_ribbon(aes(ymin = low, 
+                  ymax = upp),  fill = "red", alpha = 0.1) +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 25, color = "black",angle = 90, vjust = 0.7),
+        axis.text.y.right = element_text(size = 25, color = "black",angle = 90, vjust = 0.7, hjust = 0.5),
+        axis.line.y.right = element_line(color = "black", linewidth = 1),
+        axis.line.x.bottom = element_line(color = "black", linewidth = 1),
+        axis.ticks.x = element_line(linewidth = 1),
+        axis.ticks.y = element_line(linewidth = 1),
+        axis.ticks.length.y.right = unit(.25, "cm"),
+        axis.ticks.length.x.bottom = unit(.25, "cm"),
+        panel.background = element_blank(),
+  )  +
+  scale_x_continuous(breaks = c(12000,8000, 4000, 0)) +
+  scale_y_continuous(position = "right") 
 
 
 

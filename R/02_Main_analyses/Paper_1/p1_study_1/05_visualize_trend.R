@@ -50,7 +50,8 @@ median_richness_data <-
   )
 
 median_richness_15k <-
-  median_richness_data %>% filter(age <= 15000)
+  median_richness_data %>% filter(age <= 15000) %>% 
+  rename(Subregion = subregion)
 
 
 summary(median_richness_15k)
@@ -60,7 +61,7 @@ write_csv(median_richness_15k,here("Data/Paper_1/data_model/model_csvs/S1_Richne
 
 ## same
 
-ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)) +
+ggplot(median_richness_15k, aes(x = age, y = median_richness, color = Subregion)) +
   geom_line(linewidth = 1) +
   scale_x_reverse(
     breaks = seq(0, 15000, by = 1000),
@@ -79,7 +80,7 @@ ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
-ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)) +
+ggplot(median_richness_15k, aes(x = age, y = median_richness, color = Subregion)) +
   annotate("rect", xmin = Inf, xmax = 11500, ymin = -Inf, ymax = Inf, fill = "green", alpha = 0.2) +
   annotate("rect", xmin = 11500, xmax = 8500, ymin = -Inf, ymax = Inf, fill = "lightgreen", alpha = 0.2) +
   annotate("rect", xmin = 8500, xmax = 4500, ymin = -Inf, ymax = Inf, fill = "lightyellow", alpha = 0.2) +
@@ -110,7 +111,7 @@ ggplot(median_richness_15k, aes(x = age, y = median_richness, color = subregion)
 
 median_richness_15k %>% 
   ggplot2::ggplot(aes(x = age , y = median_richness)) +
-  ggplot2::geom_line(aes(colour = subregion), linewidth = 3)  +
+  ggplot2::geom_line(aes(colour = Subregion), linewidth = 3)  +
   ggplot2::theme(axis.text.x = element_text(size = 25, color = "black", angle = 90, vjust = 0.5),
                  axis.text.y.right = element_text(size = 25, color = "black", angle = 90, vjust = 0.5, hjust = 0.5),
                  axis.title.x = element_blank(),
@@ -124,7 +125,7 @@ median_richness_15k %>%
                  axis.ticks.length.x.bottom = unit(.25, "cm"),
                  legend.text = element_blank(),
                  legend.position = "none")   +
-  scale_y_continuous(breaks = y_labels, position = "right") +
+  scale_y_continuous(breaks = seq(0, 15000, by = 1000), position = "right") +
   ggplot2::scale_x_continuous(breaks = c(0,5000,10000,15000), limits =c(0,15000)) +
   scale_color_manual(values = c(
     "Alps" = "black",
@@ -133,4 +134,86 @@ median_richness_15k %>%
     "Temperate Continental" = "orange",
     "Temperate Oceanic" = "blue"
   ))
+
+
+
+
+
+
+###with original
+
+
+s1_new <- s1_new %>% 
+  mutate(Subregion = fct_relevel(Subregion, c("Alps", "Boreal", "Meridional/Submeridional","Temperate Continental","Temperate Oceanic"))) %>%
+  arrange(Subregion)
+
+
+median_richness_15k <- median_richness_15k %>% 
+  mutate(Subregion = as.factor(Subregion))
+
+
+
+ggplot() +
+  geom_line(data = median_richness_15k, aes(x = age, y = median_richness, color = Subregion),linewidth = 2) +
+  geom_line(data = s1_new , aes(x = age, y = richness, color = Subregion),
+            ,linewidth = 1, linetype = 2) +
+  mutate(Subregion = fct_relevel(Subregion, c("Alps", "Boreal", "Meridional/Submeridional","Temperate Continental","Temperate Oceanic")))
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
+  ) +
+  scale_color_manual(values = c(
+    "Alps" = "black",
+    "Boreal" = "darkgreen",
+    "Meridional/Submeridional" = "red",
+    "Temperate Continental" = "orange",
+    "Temperate Oceanic" = "blue"
+  )) +
+  theme_classic() +
+  labs (y = "Richness", x = "Age (cal yr BP)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 15),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
+        legend.title = element_text(size = 15))
+  
+  
+
+
+### plot per biome
+
+ggplot() +
+ geom_line(data = s1_new,(aes(x = age, y = richness)),linewidth = 0.7, linetype = 2, color = "#FFBBFF") +
+ geom_line(data = median_richness_15k,aes( x = age, y = median_richness),linewidth = 2, color =  "purple") +
+  facet_wrap(~Subregion) +
+  scale_x_reverse(
+    breaks = seq(0, 15000, by = 1000),
+    labels = function(x) {
+      if_else(x %in% c(0, 3000, 6000, 9000, 12000, 15000), as.character(x), "")
+    }
+  )  +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.spacing = unit(1.5,"lines"),
+        strip.text = element_text(size = 15),
+        strip.text.x = element_text (size = 12),
+        strip.text.y = element_text (size = 12),
+        strip.background = element_rect(fill = "grey", linewidth = 0),
+        axis.text.x.bottom = element_text(size = 12),
+        axis.text.y.left = element_text(size = 12),
+        axis.title.x.bottom = element_text(size = 15),
+        axis.title.y.left = element_text(size = 15),
+        ) +
+  labs(y = expression(Median~site~richness~(ET[500]))) +
+  labs(x = "Age (cal yr BP)")
+
+
+
+
+
+
+
+
 

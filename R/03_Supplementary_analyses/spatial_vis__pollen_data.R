@@ -103,9 +103,9 @@ ggplot() +
   geom_sf(data = world_ortho, fill = "grey", color = "white") +
   geom_sf(data = g, color = alpha("grey", 0.3)) +
   # Scatter data points
-  geom_sf(data = raw_data_points_AS_sf, aes(color = "Asia"), size = 2) +
-  geom_sf(data = raw_data_points_EU_sf, aes(color = "Europe"), size = 2) +
-  geom_sf(data = raw_data_points_NA_sf,aes(color = "North America"),size = 2) +
+  geom_sf(data = raw_data_points_AS_sf, aes(color = "Asia"), size = 2.5, alpha = 0.5) +
+  geom_sf(data = raw_data_points_EU_sf, aes(color = "Europe"), size = 2.5,alpha = 0.5) +
+  geom_sf(data = raw_data_points_NA_sf,aes(color = "North America"),size = 2.5,alpha = 0.5) +
   geom_sf_text(data = lon_labels_sf, aes(label = label), color = "grey40", size = 3, vjust = -0.5, alpha = 0.8) +
   geom_sf_text(data = lat_labels_sf, aes(label = label), color = "grey40", size = 3, hjust = -0.2, alpha = 0.8) +
   scale_color_manual(
@@ -116,7 +116,11 @@ ggplot() +
     )
   ) +
   labs (color = "Continent") +
-  theme_void()
+  theme(panel.background = element_blank(),
+        axis.title.x.bottom = element_blank(),
+        axis.title.y.left = element_blank(),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 15))
 
 
 ##END of SCRIPT
