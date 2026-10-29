@@ -39,7 +39,7 @@ raw <- data %>%
 
 
 richness_data4 <- 
-  read_rds(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
+  read_csv(here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
 
 
 an <- richness_data4 %>% 
@@ -77,7 +77,7 @@ raw_plus_an %>%
 an_coord %>% 
   ggplot(aes(x = long, y = lat)) + 
   borders(fill= "gray") +
-  geom_point( colour = "blue", size = 2) +
+  geom_point( colour = "red", size = 3) +
   coord_quickmap(xlim = c(28, 180), ylim = c(20,80))+
   theme(panel.background = element_blank(),
         panel.border = element_blank(),

@@ -307,12 +307,12 @@ data_pred_s2 %>%
  s2_new
  
  ggplot()+ 
-   geom_ribbon(data =  s2_new, aes(x = age, ymin = low, ymax = upp), fill= "grey",alpha = 0.2
-   ) +
-   ggplot2::geom_line( data = s2_new, aes(x = age, y = est),color = "grey40", linewidth = 2) +
- # geom_ribbon(data = data_pred_s2, aes(x = age, ymin = low, ymax = upp), fill= "orange",alpha = 0.2
- # ) +
- # ggplot2::geom_line( data = data_pred_s2, aes(x = age, y = est),color = "darkorange", linewidth = 2) +
+  # geom_ribbon(data =  s2_new, aes(x = age, ymin = low, ymax = upp), fill= "grey",alpha = 0.2
+   #) +
+  # ggplot2::geom_line( data = s2_new, aes(x = age, y = est),color = "grey40", linewidth = 2) +
+geom_ribbon(data = data_pred_s2, aes(x = age, ymin = low, ymax = upp), fill= "orange",alpha = 0.2
+ ) +
+ ggplot2::geom_line( data = data_pred_s2, aes(x = age, y = est),color = "darkorange", linewidth = 2) +
    ggplot2::theme(
      axis.text.x = element_text(size = 15, color = "black"),
      axis.text.y = element_text(size = 15, color = "black"),

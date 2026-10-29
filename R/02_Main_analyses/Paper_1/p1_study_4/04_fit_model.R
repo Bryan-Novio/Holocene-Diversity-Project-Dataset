@@ -52,8 +52,7 @@ p <-
   ) +
   theme (axis.title.x = element_text(size = 30),
          axis.title.y = element_text(size = 30),
-         axis.text.x = element_text(size = 25)) +
-  scale_x_continuous(labels = lab )
+         axis.text.x = element_text(size = 25))
   
 #----------------------------------------------------------#
 # 3. Model fitting -----
@@ -233,39 +232,39 @@ p +
     data = s4_new ,
     ggplot2::aes(
       x = age,
-      y = est,
-      ymin = low,
+     y = est,
+    ymin = low,
       ymax = upp
-    ),
+   ),
     fill = "grey",
-    alpha = 0.1
-  ) +
+   alpha = 0.1
+ ) +
   ggplot2::geom_line(
-    data = s4_new  ,
-    ggplot2::aes(x = age, y = est),
-    linewidth = 2,
-    color = "grey40"
+  data = s4_new  ,
+  ggplot2::aes(x = age, y = est),
+  linewidth = 2,
+  color = "grey40"
   ) +
-  ggplot2::geom_ribbon(
-    data = data_pred_general,
-    ggplot2::aes(
-      x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high
-    ),
-    fill = "red",
-    alpha = 0.1
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_general,
-    ggplot2::aes(x = age, y = estimate),
-    linewidth = 2,
-    color = "red"
-  ) +
+ # ggplot2::geom_ribbon(
+  #data = data_pred_general,
+ # ggplot2::aes(
+ # x = age,
+ # y = estimate,
+  #ymin = conf_low,
+  # ymax = conf_high
+ # ),
+  #fill = "red",
+ # alpha = 0.1
+ #) +
+ #ggplot2::geom_line(
+#  data = data_pred_general,
+  #ggplot2::aes(x = age, y = estimate),
+  #linewidth = 2,
+#  color = "red"
+#) +
   ggplot2::theme(
     legend.position = "none",
-    axis.text.x  = element_text(color = "black", size = 15,  hjust = 0.8),
+    axis.text.x  = element_text(color = "black", size = 15,  hjust = .2, vjust = 0.05),
     axis.text.y =  element_text(color = "black", size = 15,  hjust = 0.8),
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18),
@@ -276,7 +275,8 @@ p +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),
     xlim = c(0, 12000)
-  ) 
+  ) +
+  scale_x_reverse()
 
 
 

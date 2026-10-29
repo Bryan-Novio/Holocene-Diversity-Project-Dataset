@@ -92,6 +92,7 @@ eur %>%
         legend.position = "none")
 
 
+
 namerica %>% 
   ggplot(aes(x = long, y = lat)) + 
   borders(fill= "gray") +
@@ -106,3 +107,15 @@ namerica %>%
         axis.ticks.x =  element_blank(),
         axis.title.x = element_blank(),
         legend.position = "none")
+
+
+
+library(fs)
+
+
+dir_tree("Holocene-Diversity-Project-Dataset")
+
+
+install.packages("printtree")
+library(printtree)
+print_rtree("Holocene-Diversity-Project-Dataset",format = "unicode")

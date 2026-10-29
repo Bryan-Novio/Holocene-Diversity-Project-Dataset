@@ -155,8 +155,8 @@ median_richness_15k <- median_richness_15k %>%
 
 ggplot() +
   geom_line(data = median_richness_15k, aes(x = age, y = median_richness, color = Subregion),linewidth = 2) +
-  geom_line(data = s1_new , aes(x = age, y = richness, color = Subregion),
-            ,linewidth = 1, linetype = 2) +
+ # geom_line(data = s1_new , aes(x = age, y = richness, color = Subregion),
+       #     ,linewidth = 1, linetype = 2) +
   mutate(Subregion = fct_relevel(Subregion, c("Alps", "Boreal", "Meridional/Submeridional","Temperate Continental","Temperate Oceanic")))
   scale_x_reverse(
     breaks = seq(0, 15000, by = 1000),
@@ -183,11 +183,17 @@ ggplot() +
 
 
 ### plot per biome
+  
+library (ggh4x)
 
 ggplot() +
- geom_line(data = s1_new,(aes(x = age, y = richness)),linewidth = 0.7, linetype = 2, color = "#FFBBFF") +
- geom_line(data = median_richness_15k,aes( x = age, y = median_richness),linewidth = 2, color =  "purple") +
-  facet_wrap(~Subregion) +
+# geom_line(data = s1_new,(aes(x = age, y = richness)),linewidth = 0.7, linetype = 2, color = "purple") +
+geom_line(data = median_richness_15k,aes( x = age, y = median_richness
+  ),linewidth = 2, color =  "purple") +
+  facet_wrap2(~Subregion,
+             strip = strip_themed(
+               background_x = elem_list_rect(fill = sub_cols)
+             )) +
   scale_x_reverse(
     breaks = seq(0, 15000, by = 1000),
     labels = function(x) {
@@ -197,10 +203,11 @@ ggplot() +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         panel.spacing = unit(1.5,"lines"),
-        strip.text = element_text(size = 15),
+        strip.text = element_text(size = 18, colour = "white"),
         strip.text.x = element_text (size = 12),
         strip.text.y = element_text (size = 12),
-        strip.background = element_rect(fill = "grey", linewidth = 0),
+        strip.background = element_rect(linewidth = 0, colour = NA),
+        strip.background.y = element_blank(),
         axis.text.x.bottom = element_text(size = 12),
         axis.text.y.left = element_text(size = 12),
         axis.title.x.bottom = element_text(size = 15),
@@ -209,11 +216,24 @@ ggplot() +
   labs(y = expression(Median~site~richness~(ET[500]))) +
   labs(x = "Age (cal yr BP)")
 
+sub_cols <- c(
+  "black",
+  "darkgreen",
+  "red",
+  "orange",
+  "blue"
+)
 
 
+sub_cols <- as.character(sub_cols)
 
-
-
+scale_color_manual(values = c(
+  "Alps" = "black",
+  "Boreal" = "darkgreen",
+  "Meridional/Submeridional" = "red",
+  "Temperate Continental" = "orange",
+  "Temperate Oceanic" = "blue"
+))
 
 
 

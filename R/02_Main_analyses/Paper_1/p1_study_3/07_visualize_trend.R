@@ -215,22 +215,23 @@ s3_as_new <-
 
 
 
+
 ggplot() +
   geom_ribbon(
     data = all_data_back_iters_overall_AS,
     aes(x = age, ymin = lwr, ymax = upr),
     fill = "coral", alpha = 0.3) +
   geom_line(
-    data = all_data_back_iters_overall_AS,
-    aes(x = age, y = overall_median),
-    color = "darkred", linewidth = 1) +
+  data = all_data_back_iters_overall_AS,
+  aes(x = age, y = overall_median),
+  color = "darkred", linewidth = 1) +
   geom_ribbon(
     data = s3_as_new,
     aes(x = age, ymin = low, ymax = upp),
     fill = "grey", alpha = 0.3) +
   geom_line(
     data = s3_as_new,
-    aes(x = age, y =est),
+    aes(x = age, y =col),
     color = "grey40", linewidth = 1) +
   scale_x_reverse() +
   coord_cartesian(ylim = c(15, 18.5)) +
@@ -290,9 +291,6 @@ s3_eu_new
 
 max(all_data_back_iters_new_EU$age)
 
-s3_eu_new <- 
-  s3_eu_new %>%
-  mutate(age = if_else(age==12000,11700,age))
 
 ggplot() +
   geom_ribbon(
@@ -304,14 +302,15 @@ ggplot() +
     aes(x = age, y = est),
     color = "grey40", linewidth = 1) +
   geom_ribbon(
-    data = all_data_back_iters_overall_EU,
-    aes(x = age, ymin = lwr, ymax = upr),
-    fill = "darkviolet", alpha = 0.3) +
-  geom_line(
-    data = all_data_back_iters_overall_EU,
-    aes(x = age, y = overall_median),
-    color = "darkviolet", linewidth = 1) +
+   data = all_data_back_iters_overall_EU,
+   aes(x = age, ymin = lwr, ymax = upr),
+   fill = "darkviolet", alpha = 0.3) +
+   geom_line(
+   data = all_data_back_iters_overall_EU,
+   aes(x = age, y = overall_median),
+   color = "darkviolet", linewidth = 1) +
   scale_x_reverse() +
+  scale_y_continuous(breaks = seq(15,24, by = 2)) +
   coord_cartesian(ylim = c(15, 24)) +
   labs(x = "Age (cal yr BP)", y = "Richness") +
   theme(axis.text.x = element_text(size = 15),
@@ -377,13 +376,13 @@ ggplot() +
     aes(x = age, y = est),
     color = "grey40", linewidth = 1) +
   geom_ribbon(
-    data = all_data_back_iters_overall_NA,
-    aes(x = age, ymin = lwr, ymax = upr),
-    fill = "darkorange", alpha = 0.3) +
+  data = all_data_back_iters_overall_NA,
+  aes(x = age, ymin = lwr, ymax = upr),
+  fill = "darkorange", alpha = 0.3) +
   geom_line(
-    data = all_data_back_iters_overall_NA,
-    aes(x = age, y = overall_median),
-    color = "darkorange", linewidth = 1) +
+  data = all_data_back_iters_overall_NA,
+  aes(x = age, y = overall_median),
+  color = "darkorange", linewidth = 1) +
   scale_x_reverse() +
   coord_cartesian(ylim = c(15, 17.7
   )) +
