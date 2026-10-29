@@ -48,12 +48,11 @@ p <-
     richness_data4,
     ggplot2::aes(x = age, y = richness)
   ) +
-  ggplot2::labs(y = "Pollen Richness", x = "Age"
+  ggplot2::labs(y = "Richness", x = "Age (cal yr BP)"
   ) +
   theme (axis.title.x = element_text(size = 30),
          axis.title.y = element_text(size = 30),
-         axis.text.x = element_text(size = 25)) +
-  scale_x_continuous(labels = lab )
+         axis.text.x = element_text(size = 25))
   
 #----------------------------------------------------------#
 # 3. Model fitting -----
@@ -99,6 +98,7 @@ gam_s4 <-                                # fREML
 ## 3.3. Save model as an RDS file --
 
 write_rds(gam_s4, here("Data/Paper_1/data_model/gam_s4.rds"))
+
 
 
 gam_s4 <- read_rds(here("Data/Paper_1/data_model/gam_s4.rds"))
@@ -159,41 +159,27 @@ data_pred_general <-
 write_csv(data_pred_general, here("Data/Paper_1/data_model/model_csvs/S4_Preds.csv"))
 
 
+
 #----------------------------------------------------------#
 # 4. Visualization -----
 #----------------------------------------------------------#
 
 ## 4.1. Plot predictions for individual series-----
 
-p +
-  ggplot2::geom_ribbon(
-    data = data_pred_full,
-    ggplot2::aes(
-      x = age,
-      y = estimate,
-      ymin = conf_low,
-      ymax = conf_high,
-      fill = dataset_id
-    ),
-    alpha = 0.1
-  ) +
-  ggplot2::geom_line(
-    data = data_pred_full,
-    ggplot2::aes(x = age, y = estimate, color = dataset_id),
-    linewidth = 1
+p + 
+  ggplot2::geom_line(data = data_pred_full, 
+     aes(x = age, y = estimate, color = factor(dataset_id),alpha = 0.5,
+    linewidth = 0.1)
   ) +
   ggplot2::theme(legend.position = "none",
-                 axis.text  = element_text(size = 5),
-                 strip.text = element_text(
-                   size = 6,
-                   color = "#2a707f"
-                 ),
-                 strip.background = element_rect(
-                   color = "#2a707f",
-                   fill = NA,
-                   linewidth = 0.3
-                 )
-  ) +
+                 axis.text.x  = element_text(size = 15, hjust = .8),
+                 axis.text.y  = element_text(size = 15),
+                 axis.title.x = element_text(size = 18),
+                 axis.title.y = element_text(size = 18),
+                 panel.background = element_blank(),
+                 axis.line.x = element_line(color = "black"),
+                 axis.line.y = element_line(color = "black")
+                 ) +
   ggplot2::coord_cartesian(
     ylim = c(0, max(richness_data4$richness) + 5)
   )
@@ -209,25 +195,106 @@ p +
       ymin = conf_low,
       ymax = conf_high
     ),
-    fill = "blue",
+    fill = "red",
     alpha = 0.1
   ) +
   ggplot2::geom_line(
     data = data_pred_general,
     ggplot2::aes(x = age, y = estimate),
-    linewidth = 4,
+    linewidth = 2,
     color = "red"
   ) +
   ggplot2::theme(
     legend.position = "none",
-    axis.text  = element_text(color = "black", size = 24,  hjust = 0.8),
-    theme(panel.background = element_blank(),
-          panel.border = element_rect(colour = "black"))
+    axis.text.x  = element_text(color = "black", size = 15,  hjust = 0.8),
+    axis.text.y =  element_text(color = "black", size = 15,  hjust = 0.8),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.line.x.bottom = element_line(color = "black"),
+    axis.line.y.left = element_line(color = "black"),
+    panel.background = element_blank()
   ) +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),
     xlim = c(0, 12000)
     ) 
+
+
+
+##original
+
+s4_new <- 
+  s4_new %>%
+  mutate(age = if_else(age==12000,11700,age))
+  
+p +
+    ggplot2::geom_ribbon(
+    data = s4_new ,
+    ggplot2::aes(
+      x = age,
+     y = est,
+    ymin = low,
+      ymax = upp
+   ),
+    fill = "grey",
+   alpha = 0.1
+ ) +
+  ggplot2::geom_line(
+  data = s4_new  ,
+  ggplot2::aes(x = age, y = est),
+  linewidth = 2,
+  color = "grey40"
+  ) +
+ # ggplot2::geom_ribbon(
+  #data = data_pred_general,
+ # ggplot2::aes(
+ # x = age,
+ # y = estimate,
+  #ymin = conf_low,
+  # ymax = conf_high
+ # ),
+  #fill = "red",
+ # alpha = 0.1
+ #) +
+ #ggplot2::geom_line(
+#  data = data_pred_general,
+  #ggplot2::aes(x = age, y = estimate),
+  #linewidth = 2,
+#  color = "red"
+#) +
+  ggplot2::theme(
+    legend.position = "none",
+    axis.text.x  = element_text(color = "black", size = 15,  hjust = .2, vjust = 0.05),
+    axis.text.y =  element_text(color = "black", size = 15,  hjust = 0.8),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.line.x.bottom = element_line(color = "black"),
+    axis.line.y.left = element_line(color = "black"),
+    panel.background = element_blank()
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(10.3, 17),
+    xlim = c(0, 12000)
+  ) +
+  scale_x_reverse()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 data_pred_general_s4 <- 

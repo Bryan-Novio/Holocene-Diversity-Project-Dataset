@@ -64,9 +64,11 @@ p1 <-
     
   )+
   ggplot2::theme(legend.position = "none",
-                 plot.title = element_text(color = "#2a707f"),
-                 axis.title = element_text(color = "#2a707f", size = 18),
-                 axis.line  = element_line(color = "#2a707f", linewidth = 1)
+                 axis.text.x = element_text(size =15),
+                 axis.text.y = element_text(size =15),
+                 plot.title = element_text(color = "black"),
+                 axis.title = element_text(color = "black", size = 18),
+                 axis.line  = element_line(color = "black", linewidth = 1)
                  )
 
 
@@ -149,7 +151,7 @@ data_dummy_general <-
 
 data_pred_full <-
   predict_model(
-    model = gam_s2,
+    model = gam_1 ,
     newdata = data_dummy_full,
     type = "response"
   ) %>%
@@ -162,7 +164,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_s2,
+    model = gam_1 ,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -219,6 +221,45 @@ p1 +
     ylim = c(0, max(richness_data$richness) + 5)
   )
 
+
+### sites as lines
+
+data_pred_full_id <- 
+  data_pred_full %>% 
+  group_by(dataset_id,age) %>% 
+  summarise(median_richnes = median(estimate),
+         median_low = median(conf_low),
+         median_high = median(conf_high),
+         age = median(age))%>% 
+  distinct(dataset_id, age, median_richnes, median_low, median_high)
+
+
+ggplot() +
+  geom_line(data = data_pred_full_id , 
+            aes(x = age, y = median_richnes), linewidth = 1)
+
+
+data_pred_full_id %>% 
+  ggplot(aes(x= age, y = median_richnes, group = dataset_id)) +
+  geom_line(colour = "orange",alpha = 0.5) +
+  ggplot2::theme(
+    axis.text.x = element_text(size = 15, color = "black"),
+    axis.text.y = element_text(size = 15, color = "black"),
+    axis.title.x = element_text(size = 15, color = "black"),
+    axis.title.y = element_text(size = 15, color = "black"),
+    panel.background = element_blank(),
+    axis.line.y = element_line(color = "black", linewidth = 1),
+    axis.line.x = element_line(color = "black", linewidth = 1),
+    axis.ticks.x = element_line(linewidth = 1),
+    axis.ticks.y = element_line(linewidth = 1),
+    axis.ticks.length.y. = unit(.25, "cm"),
+    axis.ticks.length.x.bottom = unit(.25, "cm")) +
+  labs(y = "Richness",  x = "Age (cal yr BP)")+
+  ggplot2::scale_x_reverse() +   
+  ggplot2::geom_vline(xintercept = 9500, color ="black", size = 1,alpha = 0.5, linetype = "dotted")
+
+
+
 # 4.2. Plot general trend-----
 
 data_pred_general <- 
@@ -235,11 +276,11 @@ data_pred_s2 %>%
 
 
 
-data_pred_s2 %>% 
-  ggplot2::ggplot(aes(x = age, y = est))+ 
-  geom_ribbon(aes(ymin = low, ymax = upp),colour = "orange",alpha = 0.2
+
+ ggplot()+ 
+  geom_ribbon(data = data_pred_s2, aes(x = age, ymin = low, ymax = upp), fill= "orange",alpha = 0.2
   ) +
-  ggplot2::geom_line(color = "darkorange", linewidth = 2) +
+  ggplot2::geom_line( data = data_pred_s2, aes(x = age, y = est),color = "darkorange", linewidth = 2) +
   ggplot2::theme(
     axis.text.x = element_text(size = 15, color = "black"),
     axis.text.y = element_text(size = 15, color = "black"),
@@ -257,10 +298,39 @@ data_pred_s2 %>%
   ) +
   labs(y = "Richness",  x = "Age (cal yr BP)")+
   ggplot2::scale_x_reverse() +   
-  ggplot2::geom_vline(xintercept = 9500, color ="coral", size = 1,alpha = 0.1)
+  ggplot2::geom_vline(xintercept = 9500, color ="coral", size = 1,alpha = 0.5, linetype = "dotted")
 
 
 
-
+#### with original
+ 
+ s2_new
+ 
+ ggplot()+ 
+  # geom_ribbon(data =  s2_new, aes(x = age, ymin = low, ymax = upp), fill= "grey",alpha = 0.2
+   #) +
+  # ggplot2::geom_line( data = s2_new, aes(x = age, y = est),color = "grey40", linewidth = 2) +
+geom_ribbon(data = data_pred_s2, aes(x = age, ymin = low, ymax = upp), fill= "orange",alpha = 0.2
+ ) +
+ ggplot2::geom_line( data = data_pred_s2, aes(x = age, y = est),color = "darkorange", linewidth = 2) +
+   ggplot2::theme(
+     axis.text.x = element_text(size = 15, color = "black"),
+     axis.text.y = element_text(size = 15, color = "black"),
+     axis.title.x = element_text(size = 15, color = "black"),
+     axis.title.y = element_text(size = 15, color = "black"),
+     panel.background = element_blank(),
+     axis.line.y = element_line(color = "black", linewidth = 1),
+     axis.line.x = element_line(color = "black", linewidth = 1),
+     axis.ticks.x = element_line(linewidth = 1),
+     axis.ticks.y = element_line(linewidth = 1),
+     axis.ticks.length.y. = unit(.25, "cm"),
+     axis.ticks.length.x.bottom = unit(.25, "cm"))  +
+   ggplot2::coord_cartesian(
+     ylim = c(6,14)
+   ) +
+   labs(y = "Richness",  x = "Age (cal yr BP)")+
+   ggplot2::scale_x_reverse() +   
+   ggplot2::geom_vline(xintercept = 9500, color ="coral", size = 1,alpha = 0.5, linetype = "dotted")
+ 
 
   

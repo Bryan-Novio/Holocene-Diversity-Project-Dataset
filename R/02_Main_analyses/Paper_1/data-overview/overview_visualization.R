@@ -69,3 +69,133 @@ overview_all %>%
   guides(colour = guide_legend(nrow = 1)) + 
   facet_grid(cols = vars(study_reg), rows = vars(metric), scales = "free", space = "free_x") 
 
+
+study_data_overview[[1]] %>% 
+  read_csv() %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = step, y = count, colour = step)) +
+  geom_boxplot() + 
+  geom_point() +
+  labs(x = "Step", color = "Step") +
+  theme_bw()
+
+
+
+
+study_data_overview[[2]] %>% 
+  read_csv() %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = step, y = count, colour = step)) +
+  geom_boxplot() + 
+  geom_point() +
+  labs(x = "Step", color = "Step") +
+  theme_bw()
+
+
+study_data_overview[[3]] %>% 
+  read_csv() %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = step, y = count, colour = step)) +
+  geom_boxplot() + 
+  geom_point() +
+  labs(x = "Step", color = "Step") +
+  theme_bw()
+
+
+# study 4
+
+s4_order <-
+  c("raw", "harm", "rarefied", "richness")
+
+study_data_overview[[4]] %>% 
+  read_csv() %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = factor(step, levels = s4_order), y = count)) +
+  geom_point(aes(colour = step), size = 4)+
+  facet_wrap(~metric) +
+  labs(x = "Step", color = "Step", y = "Count") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 12))
+
+
+
+
+# study 1
+
+s1_order <-
+  c("raw", "harm", "rarefied","binned", "richness")
+
+study_data_overview[[1]] %>% 
+  read_csv() %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = factor(step, levels = s1_order), y = count)) +
+  geom_point(aes(colour = step), size = 4)+
+  facet_wrap(~metric) +
+  labs(x = "Step", color = "Step", y = "Count") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 12))
+
+
+
+# study 2
+
+s2_order <-
+  c("raw", "binned","select_woody_taxa","harm", "rarefied", "richness")
+
+study_data_overview[[2]] %>% 
+  read_csv() %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = factor(step, levels = s2_order), y = count)) +
+  geom_point(aes(colour = step), size = 4)+
+  facet_wrap(~metric) +
+  labs(x = "Step", color = "Step", y = "Count") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 7)
+        ) +
+  guides(colour = guide_legend(nrow=1))
+
+# Study 3
+
+
+s3_order <-
+  c("raw", "harm","rarefied","rarefied_new_age", "richness")
+
+study_data_overview[[3]] %>% 
+  read_csv() %>% 
+  filter(region == "Europe") %>% 
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "metric", values_to = "count") %>% 
+  ggplot(aes(x = factor(step, levels = s3_order), y = count)) +
+  geom_boxplot(aes(colour = step, height = 50))+
+  facet_wrap(~metric) +
+  labs(x = "Step", color = "Step", y = "Count") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 10)
+  ) + 
+  guides(colour = guide_legend(nrow=1))
+
+study_data_overview[[3]] %>% 
+  read_csv() %>% 
+  filter(region == "Asia") %>% 
+  ggplot(aes(x = step, y = n_samples)) +
+  geom_boxplot()

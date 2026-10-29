@@ -605,7 +605,7 @@ raw_plus_an %>%
 an_coord %>% 
   ggplot(aes(x = long, y = lat)) + 
   borders(fill= "gray") +
-  geom_point( colour = "blue", size = 2) +
+  #geom_point( colour = "purple", size = 3) +
   coord_quickmap(xlim = c(-11, 35), ylim = c(36, 70))+
   theme(panel.background = element_blank(),
         panel.border = element_blank(),

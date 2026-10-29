@@ -103,11 +103,9 @@ ggplot() +
   geom_sf(data = world_ortho, fill = "grey", color = "white") +
   geom_sf(data = g, color = alpha("grey", 0.3)) +
   # Scatter data points
-  geom_sf(data = raw_data_points_AS_sf, aes(color = "Asia"), size = 2) +
-  geom_sf(data = raw_data_points_EU_sf, aes(color = "Europe"), size = 2) +
-  geom_sf(data = raw_data_points_NA_sf,aes(color = "North America"),size = 2) +
-  geom_sf_text(data = lon_labels_sf, aes(label = label), color = "grey40", size = 3, vjust = -0.5, alpha = 0.8) +
-  geom_sf_text(data = lat_labels_sf, aes(label = label), color = "grey40", size = 3, hjust = -0.2, alpha = 0.8) +
+  geom_sf(data = raw_data_points_AS_sf, aes(color = "Asia"), size = 2.5, alpha = 0.5) +
+  geom_sf(data = raw_data_points_EU_sf, aes(color = "Europe"), size = 2.5,alpha = 0.5) +
+  geom_sf(data = raw_data_points_NA_sf,aes(color = "North America"),size = 2.5,alpha = 0.5) +
   scale_color_manual(
     values = c(
       "Asia" = "red",
@@ -115,16 +113,52 @@ ggplot() +
       "North America" ="orange"
     )
   ) +
-  labs (color = "Continent") +
-  theme_void()
+  labs (color = "Continent:") +
+  theme(panel.background = element_blank(),
+        axis.title.x.bottom = element_blank(),
+        axis.title.y.left = element_blank(),
+        legend.title = element_text(size = 18),
+        axis.text.x = element_text(vjust = -0.9),
+        axis.text.y = element_text(vjust = -0.5),
+        legend.text = element_text(size = 15),
+        legend.key.size = unit(1.2, "cm"),
+        legend.position = "bottom") +
+  guides(color = guide_legend(override.aes = list(size = 7)))
+
 
 
 ##END of SCRIPT
 
 
+fig <-   tibble(continent = c("Asia","Europe","North America"),
+         N_sites = c(55,472,474),
+         N_samps = c(2821,45099, 27162)
+         
+         )
+
+cols <-    c("Asia" = "red","Europe" = "purple","North America" = "orange")
 
 
+fig2 <- fig %>% mutate(continent = as.factor(continent))
 
+
+fig2 %>% 
+  ggplot(aes(x= continent,y =  N_samps, fill = continent)) +
+  geom_col() +
+  theme_classic() +
+  theme(axis.title.y = element_text(size = 30, margin = margin(r = 15)),
+        axis.title.x = element_blank(),
+        axis.text.y = element_text(size = 25),
+        axis.text.x = element_blank(),
+        axis.ticks.x.bottom = element_blank(),
+        legend.position = "none") +
+  labs(y = "No. of Samples", x = "Continent") +
+  scale_fill_manual(
+    values = cols)
+
+f+ scale_color_manual(
+    values = c("Asia" = "red","Europe" = "purple","North America" = "orange")
+  )
 
 
 
