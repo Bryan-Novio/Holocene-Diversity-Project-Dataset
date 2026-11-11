@@ -49,7 +49,8 @@ source_files <-
 
 rarefied_data_to_bin <- 
   rarefied_data %>% 
-  tidyr::separate(dataset_id_age, c("dataset_id", "age"))  %>% 
+  # Split on "_" only, so that negative and decimal ages stay intact
+  tidyr::separate(dataset_id_age, c("dataset_id", "age"), sep = "_")  %>%
   pivot_longer(-c(dataset_id,age),names_to = "taxa", values_to  = "pollen_counts")  %>% 
   dplyr::mutate(age = as.double(age)) 
 

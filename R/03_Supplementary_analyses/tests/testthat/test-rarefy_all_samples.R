@@ -89,6 +89,7 @@ testthat::test_that("rarefy_all_samples() validates n_grains", {
       -5,
       2.5,
       NA_real_,
+      Inf,
       NULL,
       numeric(0),
       TRUE

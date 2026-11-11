@@ -92,7 +92,7 @@ testthat::test_that("plot_trend_with_reference_line() returns 3 layers", {
   testthat::expect_true(ggplot2::is_ggplot(plot_trend))
   testthat::expect_equal(
     base::unname(vec_geoms),
-    c("GeomLine", "GeomRibbon", "GeomVline")
+    c("GeomRibbon", "GeomLine", "GeomVline")
   )
 })
 
@@ -133,10 +133,10 @@ testthat::test_that("plot_trend_with_reference_line() maps est, low, upp", {
   plot_trend <-
     plot_trend_with_reference_line(data = data_trend)
 
-  data_line <-
+  data_ribbon <-
     ggplot2::get_layer_data(plot_trend, 1)
 
-  data_ribbon <-
+  data_line <-
     ggplot2::get_layer_data(plot_trend, 2)
 
   testthat::expect_equal(dplyr::pull(data_line, x), c(0, 4000, 8000, 12000))
@@ -144,6 +144,28 @@ testthat::test_that("plot_trend_with_reference_line() maps est, low, upp", {
   testthat::expect_equal(dplyr::pull(data_line, colour), base::rep("black", 4))
   testthat::expect_equal(dplyr::pull(data_ribbon, ymin), c(6.5, 7.5, 8.5, 9.5))
   testthat::expect_equal(dplyr::pull(data_ribbon, ymax), c(7.5, 8.5, 9.5, 10.5))
+})
+
+testthat::test_that("plot_trend_with_reference_line() fills the ribbon grey", {
+  data_trend <-
+    tibble::tibble(
+      age = c(0, 4000, 8000, 12000),
+      est = c(7, 8, 9, 10),
+      low = c(6.5, 7.5, 8.5, 9.5),
+      upp = c(7.5, 8.5, 9.5, 10.5)
+    )
+
+  plot_trend <-
+    plot_trend_with_reference_line(data = data_trend)
+
+  data_ribbon <-
+    ggplot2::get_layer_data(plot_trend, 1)
+
+  testthat::expect_equal(
+    base::unique(dplyr::pull(data_ribbon, fill)),
+    "gray"
+  )
+  testthat::expect_equal(base::unique(dplyr::pull(data_ribbon, alpha)), 0.5)
 })
 
 testthat::test_that("plot_trend_with_reference_line() limits y to 6-14", {
@@ -165,7 +187,7 @@ testthat::test_that("plot_trend_with_reference_line() limits y to 6-14", {
   testthat::expect_equal(plot_trend@coordinates[["limits"]][["y"]], c(6, 14))
   testthat::expect_equal(scale_y[["position"]], "right")
   testthat::expect_equal(
-    dplyr::pull(ggplot2::get_layer_data(plot_trend, 1), y),
+    dplyr::pull(ggplot2::get_layer_data(plot_trend, 2), y),
     c(7, 8, 9, 30)
   )
 })
@@ -205,7 +227,7 @@ testthat::test_that("plot_trend_with_reference_line() ignores extra columns", {
     plot_trend_with_reference_line(data = data_trend)
 
   testthat::expect_equal(
-    dplyr::pull(ggplot2::get_layer_data(plot_trend, 1), y),
+    dplyr::pull(ggplot2::get_layer_data(plot_trend, 2), y),
     c(7, 8)
   )
 })

@@ -180,32 +180,27 @@ testthat::test_that("predict_model() validates exclude_terms", {
       x = c(-1, 0, 1)
     )
 
-  testthat::expect_error(
-    predict_model(
-      model = mod,
-      newdata = data_new,
-      exclude_terms = 1:3
-    ),
-    "`exclude_terms` must be NULL or a character vector\\."
-  )
+  list_bad_terms <-
+    base::list(
+      1:3,
+      character(0),
+      TRUE,
+      NA_character_,
+      c("dataset_id", "region")
+    )
 
-  testthat::expect_error(
-    predict_model(
-      model = mod,
-      newdata = data_new,
-      exclude_terms = character(0)
-    ),
-    "`exclude_terms` must be NULL or a character vector\\."
-  )
-
-  testthat::expect_error(
-    predict_model(
-      model = mod,
-      newdata = data_new,
-      exclude_terms = TRUE
-    ),
-    "`exclude_terms` must be NULL or a character vector\\."
-  )
+  for (
+    sel_terms in list_bad_terms
+  ) {
+    testthat::expect_error(
+      predict_model(
+        model = mod,
+        newdata = data_new,
+        exclude_terms = sel_terms
+      ),
+      "`exclude_terms` must be NULL or a single character string\\."
+    )
+  }
 })
 
 
@@ -453,23 +448,10 @@ testthat::test_that("predict_model() result ignores excluded factor level", {
       data = data_fit
     )
 
-  data_new_level_1 <-
+  data_new_level_5 <-
     tibble::tibble(
       x = c(-1, 0, 1),
-      dataset_id = base::factor("1", levels = base::as.character(1:6))
-    )
-
-  data_new_level_5 <-
-    dplyr::mutate(
-      data_new_level_1,
       dataset_id = base::factor("5", levels = base::as.character(1:6))
-    )
-
-  res_level_1 <-
-    predict_model(
-      model = mod,
-      newdata = data_new_level_1,
-      exclude_terms = "dataset_id"
     )
 
   res_level_5 <-
@@ -479,11 +461,31 @@ testthat::test_that("predict_model() result ignores excluded factor level", {
       exclude_terms = "dataset_id"
     )
 
+  # The population-level prediction from mgcv, made with level 5 in place
+  vec_expected <-
+    stats::predict(
+      object = mod,
+      newdata = data_new_level_5,
+      exclude = "s(dataset_id)"
+    ) |>
+    base::as.vector()
+
+  vec_level_5 <-
+    stats::predict(
+      object = mod,
+      newdata = data_new_level_5
+    ) |>
+    base::as.vector()
+
   testthat::expect_equal(
-    dplyr::pull(res_level_1, estimate),
     dplyr::pull(res_level_5, estimate),
-    tolerance = 1e-8
+    vec_expected,
+    tolerance = 1e-6
   )
+  vec_diff <-
+    dplyr::pull(res_level_5, estimate) - vec_level_5
+
+  testthat::expect_true(base::any(base::abs(vec_diff) > 1e-3))
 })
 
 testthat::test_that("predict_model() forwards arguments in ...", {

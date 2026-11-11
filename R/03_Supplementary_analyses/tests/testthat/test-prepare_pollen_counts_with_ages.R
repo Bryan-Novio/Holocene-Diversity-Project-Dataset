@@ -394,11 +394,60 @@ testthat::test_that("prepare_pollen_counts_with_ages() keeps duplicate ages", {
   testthat::expect_equal(dplyr::pull(res, age), c(50, 60))
 })
 
-testthat::test_that("prepare_pollen_counts_with_ages() handles zero rows", {
-  testthat::skip(
-    "Known issue: zero-row compilation fails in prepare_pollen_counts()."
+testthat::test_that("prepare_pollen_counts_with_ages() warns on duplicate id", {
+  data_compilation <-
+    tibble::tibble(
+      dataset_id = "d1",
+      raw_counts = base::list(
+        tibble::tibble(
+          sample_id = "s1",
+          abies = 7,
+          betula = 3
+        )
+      ),
+      levels = base::list(
+        tibble::tibble(
+          sample_id = c("s1", "s1"),
+          age = c(50, 60)
+        )
+      )
+    )
+
+  testthat::expect_warning(
+    res <-
+      prepare_pollen_counts_with_ages(data_compilation = data_compilation),
+    "many-to-many"
   )
 
+  testthat::expect_equal(base::nrow(res), 4L)
+})
+
+testthat::test_that("prepare_pollen_counts_with_ages() keeps NA ages", {
+  data_compilation <-
+    tibble::tibble(
+      dataset_id = "d1",
+      raw_counts = base::list(
+        tibble::tibble(
+          sample_id = c("s1", "s2"),
+          abies = c(7, 4)
+        )
+      ),
+      levels = base::list(
+        tibble::tibble(
+          sample_id = c("s1", "s2"),
+          age = c(50, NA)
+        )
+      )
+    )
+
+  res <-
+    prepare_pollen_counts_with_ages(data_compilation = data_compilation)
+
+  testthat::expect_equal(dplyr::pull(res, sample_id), c("s1", "s2"))
+  testthat::expect_equal(dplyr::pull(res, age), c(50, NA))
+})
+
+testthat::test_that("prepare_pollen_counts_with_ages() handles zero rows", {
   data_compilation <-
     tibble::tibble(
       dataset_id = character(),
@@ -410,6 +459,10 @@ testthat::test_that("prepare_pollen_counts_with_ages() handles zero rows", {
     prepare_pollen_counts_with_ages(data_compilation = data_compilation)
 
   testthat::expect_equal(base::nrow(res), 0L)
+  testthat::expect_named(
+    res,
+    c("dataset_id", "sample_id", "taxa", "pollen_counts", "age")
+  )
 })
 
 

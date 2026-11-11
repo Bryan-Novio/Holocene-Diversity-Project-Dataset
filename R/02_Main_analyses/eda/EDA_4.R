@@ -39,8 +39,8 @@ source_files <- sapply(
 
 # bins = 500; 1000, non-binned
 
-binned_data_500 <- purrr::map(harmonized_data, ~ bin_pollen_counts(.x, 500)) 
-binned_data_1000 <- purrr:::map(harmonized_data,~ bin_pollen_counts(.x, 1000))
+binned_data_500 <- purrr::map(harmonized_data, ~ bin_pollen_counts(.x, dataset_id, 500)) 
+binned_data_1000 <- purrr:::map(harmonized_data,~ bin_pollen_counts(.x, dataset_id, 1000))
 non_binned_data <-  harmonized_data
 
 # # Prepare data for richness estimation

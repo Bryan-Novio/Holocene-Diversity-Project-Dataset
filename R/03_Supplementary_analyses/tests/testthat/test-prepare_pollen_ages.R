@@ -300,10 +300,6 @@ testthat::test_that("prepare_pollen_ages() skips datasets without levels", {
 })
 
 testthat::test_that("prepare_pollen_ages() handles a zero-row compilation", {
-  testthat::skip(
-    "Known issue: zero-row compilation fails in select()."
-  )
-
   data_compilation <-
     tibble::tibble(
       dataset_id = character(),

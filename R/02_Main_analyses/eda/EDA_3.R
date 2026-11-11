@@ -49,11 +49,11 @@ sapply(
 
 data_binned_500 <- 
   prepare_pollen_counts_with_ages(data) %>% 
-  bin_pollen_counts(., 500)   # bin_size = 500          
+  bin_pollen_counts(., dataset_id, 500)   # bin_size = 500          
                                           # binned data
 data_binned_1000 <- 
   prepare_pollen_counts_with_ages(data) %>% 
-  bin_pollen_counts(., 1000)   # bin_size = 500  
+  bin_pollen_counts(., dataset_id, 1000)   # bin_size = 500  
 
 data_not_binned <-
   prepare_pollen_counts_with_ages(data) # nonbinned data
@@ -87,14 +87,14 @@ summary(richness_age_unbinned)
 
 
 prepare_pollen_counts_with_ages(data) %>% 
-  bin_pollen_counts(bin_size = 500) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned") %>% 
   compute_richness()
 
 data %>% 
   filter(region == "Europe") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned") %>% 
   compute_richness()
 
@@ -168,7 +168,7 @@ set.seed(1234)
 data %>% 
   filter(region == "Asia") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 500) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "nonbinned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -187,7 +187,7 @@ data %>%
 data %>% 
   filter(region == "Europe") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 500) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -206,7 +206,7 @@ data %>%
 data %>% 
   filter(region == "Europe") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 500) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -227,7 +227,7 @@ data %>%
 data %>% 
   filter(region == "Europe") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -251,7 +251,7 @@ library(ggpubr)
 s1 <- data %>% 
   filter(region == "Europe") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -270,7 +270,7 @@ s1 <- data %>%
 s2 <- data %>% 
   filter(region == "North America") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -290,7 +290,7 @@ s2 <- data %>%
 s3 <- data %>% 
   filter(region == "North America") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 500) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -337,7 +337,7 @@ sc <- ggarrange(s1,s2,s3,s4,
 s1_NA <- data %>% 
   filter(region == "North America") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -356,7 +356,7 @@ s1_NA <- data %>%
 s2_NA <- data %>% 
   filter(region == "North America") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -374,7 +374,7 @@ s2_NA <- data %>%
 s3_NA <- data %>% 
   filter(region == "North America") %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 500) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -420,7 +420,7 @@ region
   
 data %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(
@@ -440,7 +440,7 @@ data %>%
 
 data %>% 
   prepare_pollen_counts_with_ages() %>% 
-  bin_pollen_counts(bin_size = 1000) %>% 
+  bin_pollen_counts(binning_var = dataset_id, bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
   save_rarefied_iterations(

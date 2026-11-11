@@ -88,7 +88,7 @@ data_prepared_richness_estimation2 <-
          taxa = str_replace(taxa, "Rhus", "Rhus/Toxicodendron"),
          taxa = str_replace(taxa, "Juniperus", "Juniperus/Thuja"),
          taxa = str_replace(taxa, "Prunus", "Prunus/Sorbus"),
-         taxa = str_replace(taxa, "Ostrya", "Ostrya/Carnipus"),
+         taxa = str_replace(taxa, "Ostrya", "Ostrya/Carpinus"),
          taxa = str_replace(taxa, "Myrica", "Myrica/Comptonia")
          )
 

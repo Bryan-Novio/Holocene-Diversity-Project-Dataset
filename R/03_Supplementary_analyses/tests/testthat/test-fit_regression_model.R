@@ -306,6 +306,101 @@ testthat::test_that("fit_regression_model() requires dataset_id if needed", {
   }
 })
 
+testthat::test_that("fit_regression_model() requires a factor group_var", {
+  data_fit <-
+    tibble::tibble(
+      richness = base::seq_len(24),
+      age = base::rep(base::seq_len(12), times = 2),
+      dataset_id = base::rep(c(1155, 1263), each = 12)
+    )
+
+  data_character <-
+    dplyr::mutate(
+      data_fit,
+      dataset_id = base::as.character(dataset_id)
+    )
+
+  for (
+    sel_data in base::list(data_fit, data_character)
+  ) {
+    testthat::expect_error(
+      fit_regression_model(
+        data_source = sel_data,
+        y_var = "richness",
+        time_var = "age",
+        group_var = "dataset_id",
+        random = "intercept",
+        sel_k = 4
+      ),
+      "the group_var column must be a factor"
+    )
+  }
+})
+
+testthat::test_that("fit_regression_model() requires a factor dataset_id", {
+  data_fit <-
+    tibble::tibble(
+      richness = base::seq_len(24),
+      age = base::rep(base::seq_len(12), times = 2),
+      region = base::factor(base::rep(c("A", "B"), each = 12)),
+      dataset_id = base::rep(c(1, 2, 3, 4), each = 6)
+    )
+
+  vec_options <-
+    c("slope_rand_id", "slope_rand_id_2", "intercept_reg", "hgam_GI")
+
+  for (
+    sel_random in vec_options
+  ) {
+    testthat::expect_error(
+      fit_regression_model(
+        data_source = data_fit,
+        y_var = "richness",
+        time_var = "age",
+        group_var = "region",
+        random = sel_random,
+        sel_k = 4
+      ),
+      "the dataset_id column must be a factor"
+    )
+  }
+})
+
+testthat::test_that("fit_regression_model() rejects reserved ... arguments", {
+  data_fit <-
+    tibble::tibble(
+      richness = base::seq_len(24),
+      age = base::rep(base::seq_len(12), times = 2),
+      region = base::factor(base::rep(c("A", "B"), each = 12))
+    )
+
+  testthat::expect_error(
+    fit_regression_model(
+      data_source = data_fit,
+      y_var = "richness",
+      time_var = "age",
+      group_var = "region",
+      random = "intercept",
+      sel_k = 4,
+      method = "REML"
+    ),
+    "formula, data, method, and family cannot be passed in \\.\\.\\."
+  )
+
+  testthat::expect_error(
+    fit_regression_model(
+      data_source = data_fit,
+      y_var = "richness",
+      time_var = "age",
+      group_var = "region",
+      random = "intercept",
+      sel_k = 4,
+      family = stats::poisson()
+    ),
+    "cannot be passed in"
+  )
+})
+
 testthat::test_that("fit_regression_model() validates sel_k", {
   data_fit <-
     tibble::tibble(
@@ -600,6 +695,12 @@ testthat::test_that("fit_regression_model() builds the intercept_reg model", {
     c("s(age):regionA", "s(age):regionB", "s(dataset_id)")
   )
   testthat::expect_true("regionB" %in% base::names(stats::coef(mod)))
+  testthat::expect_s3_class(mod[["smooth"]][[1]], "tprs.smooth")
+  testthat::expect_s3_class(mod[["smooth"]][[2]], "tprs.smooth")
+  testthat::expect_equal(mod[["smooth"]][[1]][["bs.dim"]], 4L)
+
+  # One smoothing parameter per group smooth, plus one for dataset_id
+  testthat::expect_length(mod[["sp"]], 3L)
 })
 
 testthat::test_that("fit_regression_model() builds the hgam_GI model", {
@@ -634,6 +735,10 @@ testthat::test_that("fit_regression_model() builds the hgam_GI model", {
   )
   testthat::expect_s3_class(mod[["smooth"]][[1]], "tprs.smooth")
   testthat::expect_equal(mod[["smooth"]][[1]][["bs.dim"]], 4L)
+
+  # The global smooth and each group smooth get their own smoothing
+  #   parameter, plus one for dataset_id
+  testthat::expect_length(mod[["sp"]], 4L)
 })
 
 

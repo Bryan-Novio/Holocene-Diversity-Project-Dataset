@@ -269,10 +269,6 @@ testthat::test_that("prepare_data_for_richness_estimation() bins from text", {
 })
 
 testthat::test_that("prepare_data_for_richness_estimation() factor bins", {
-  testthat::skip(
-    "Known issue: as.numeric(factor) returns level codes, not labels."
-  )
-
   data_binned <-
     tibble::tibble(
       dataset_id = "d1",
@@ -316,29 +312,7 @@ testthat::test_that("prepare_data_for_richness_estimation() keeps raw ages", {
   testthat::expect_equal(res, data_expected)
 })
 
-testthat::test_that("prepare_data_for_richness_estimation() other = raw", {
-  data_raw <-
-    tibble::tibble(
-      dataset_id = "d1",
-      age = 120,
-      taxa = "Betula",
-      pollen_counts = 5
-    )
-
-  res_other <-
-    prepare_data_for_richness_estimation(
-      data_source = data_raw,
-      type = "anything_else"
-    )
-
-  res_nonbinned <-
-    prepare_data_for_richness_estimation(
-      data_source = data_raw,
-      type = "nonbinned"
-    )
-
-  testthat::expect_equal(res_other, res_nonbinned)
-
+testthat::test_that("prepare_data_for_richness_estimation() rejects bad type", {
   data_binned <-
     tibble::tibble(
       dataset_id = "d1",
@@ -347,13 +321,17 @@ testthat::test_that("prepare_data_for_richness_estimation() other = raw", {
       summed_pollen_count = 5
     )
 
-  testthat::expect_error(
-    prepare_data_for_richness_estimation(
-      data_source = data_binned,
-      type = "Binned"
-    ),
-    "age and pollen_counts have to be columns"
-  )
+  for (
+    sel_type in c("anything_else", "Binned", "raw", "")
+  ) {
+    testthat::expect_error(
+      prepare_data_for_richness_estimation(
+        data_source = data_binned,
+        type = sel_type
+      ),
+      "type has to be either 'binned' or 'nonbinned'"
+    )
+  }
 })
 
 testthat::test_that("prepare_data_for_richness_estimation() drops <= 0 (bin)", {

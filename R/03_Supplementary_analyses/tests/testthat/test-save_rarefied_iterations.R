@@ -133,6 +133,7 @@ testthat::test_that("save_rarefied_iterations() validates n_grains", {
       -1,
       2.5,
       NA_real_,
+      Inf,
       NULL,
       numeric(0)
     )

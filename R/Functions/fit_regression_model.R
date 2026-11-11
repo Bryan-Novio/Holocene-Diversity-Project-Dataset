@@ -6,7 +6,7 @@
 #' formula is chosen with the `random` argument.
 #' @param data_source
 #' Data frame with the columns named in `y_var`, `time_var`, and `group_var`.
-#' The grouping variable should be a factor. For every `random` option except
+#' The grouping variable must be a factor. For every `random` option except
 #' `"intercept"` and `"slope"` the data must also contain a factor column
 #' `dataset_id`.
 #' @param y_var
@@ -15,7 +15,7 @@
 #' Single character string. Name of the time (e.g. age) column.
 #' @param group_var
 #' Single character string. Name of the grouping column (e.g. region or
-#' dataset).
+#' dataset). The column must be a factor.
 #' @param random
 #' Single character string selecting the model structure. One of the
 #' following, with `y`, `t`, `g`, and `k` standing for `y_var`, `time_var`,
@@ -32,13 +32,16 @@
 #'   s(dataset_id, bs = "re")`. As `"slope_rand_id"`, but the common smooth
 #'   uses the default basis and dimension (`sel_k` is not applied to it) and
 #'   the group smooths use no `xt` setting.
-#' * `"intercept_reg"`: `y ~ g + s(t, by = g, bs = "fs", k) +
-#'   s(dataset_id, bs = "re")`. A fixed effect of the group plus
-#'   group-specific smooths, with a random intercept for `dataset_id`.
-#' * `"hgam_GI"`: `y ~ s(t, bs = "tp", k) + s(t, by = g, m = 1, bs = "tp",
-#'   k) + s(dataset_id, bs = "re")`. A hierarchical GAM (model GI): a global
-#'   smooth plus group-level smooths with a shared smoothing penalty, and a
+#' * `"intercept_reg"`: `y ~ g + s(t, by = g, bs = "tp", k) +
+#'   s(dataset_id, bs = "re")`. A fixed effect of the group plus a separate
+#'   smooth for each group, each with its own smoothing parameter, and a
 #'   random intercept for `dataset_id`.
+#' * `"hgam_GI"`: `y ~ s(t, bs = "tp", k) + s(t, by = g, m = 1, bs = "tp",
+#'   k) + s(dataset_id, bs = "re")`. A hierarchical GAM in the style of model
+#'   GI (Pedersen et al. 2019): a global smooth plus group-level deviation
+#'   smooths, each group with its own smoothing parameter (`m = 1` penalises
+#'   the first derivative). Unlike the original GI model, the random
+#'   intercept is for `dataset_id`, not for the group.
 #' @param sel_k
 #' Single positive number. Basis dimension `k` of the time smooths.
 #' @param error_family
@@ -46,7 +49,8 @@
 #' [stats::poisson()], passed as `family` to [mgcv::bam()].
 #' @param ...
 #' Further arguments passed to [mgcv::bam()], such as `weights`, `discrete`,
-#' or `nthreads`.
+#' or `nthreads`. The arguments `formula`, `data`, `method`, and `family` are
+#' set by the function and cannot be passed here.
 #' @return
 #' A fitted model of class `bam` (also `gam`, `glm`, and `lm`), estimated with
 #' fast REML. Smooth terms can be listed with [gratia::smooths()].
@@ -129,6 +133,26 @@ fit_regression_model <- function(
     msg = "data_source must contain 'dataset_id' for this 'random' option"
   )
 
+  # A numeric grouping column would silently turn the random intercept
+  #   s(g, bs = "re") into a single slope on the group number
+  assertthat::assert_that(
+    is.factor(data_source[[group_var]]),
+    msg = "the group_var column must be a factor"
+  )
+
+  assertthat::assert_that(
+    random %in% c("intercept", "slope") ||
+      is.factor(data_source[["dataset_id"]]),
+    msg = "the dataset_id column must be a factor"
+  )
+
+  # These arguments are set below, so passing them in ... would clash
+  vec_reserved_args <- c("formula", "data", "method", "family")
+  assertthat::assert_that(
+    !any(...names() %in% vec_reserved_args),
+    msg = "formula, data, method, and family cannot be passed in ..."
+  )
+
   assertthat::assert_that(
     length(sel_k) == 1,
     is.numeric(sel_k),
@@ -165,7 +189,7 @@ fit_regression_model <- function(
       
       "intercept_reg" = 
         stringr::str_glue(
-          "{y_var} ~ {group_var} + s({time_var}, by = {group_var}, bs = 'fs', k = {sel_k}) + s(dataset_id, bs = 're')" 
+          "{y_var} ~ {group_var} + s({time_var}, by = {group_var}, bs = 'tp', k = {sel_k}) + s(dataset_id, bs = 're')" 
         ),
       
       "hgam_GI" =  stringr::str_glue(

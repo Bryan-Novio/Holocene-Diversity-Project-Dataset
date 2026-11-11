@@ -1,16 +1,16 @@
 #' @title Plot the trend of study 2 with a threshold line
 #' @description
 #' Builds a plot of an estimated trend over time for study 2: a thick black
-#' line for the estimate, a grey ribbon for its interval, and a red vertical
-#' line at age 9500.
+#' line for the estimate on top of a grey ribbon for its interval, and a red
+#' vertical line at age 9500.
 #' @param data
 #' Data frame with the numeric columns `age` (x), `est` (estimate), `low`
 #' (lower limit), and `upp` (upper limit).
 #' @return
-#' A `ggplot` object (not saved) with a `geom_line()`, a `geom_ribbon()`, and
-#' a `geom_vline()` layer at `xintercept = 9500`. The y axis is on the right
-#' and zoomed to 6 to 14 with `coord_cartesian()` (data outside the range are
-#' not removed), and axis titles are removed.
+#' A `ggplot` object (not saved) with a `geom_ribbon()`, a `geom_line()`, and
+#' a `geom_vline()` layer at `xintercept = 9500`, in this drawing order. The
+#' y axis is on the right and zoomed to 6 to 14 with `coord_cartesian()` (data
+#' outside the range are not removed), and axis titles are removed.
 #' @details
 #' The vertical line position (9500) and the y range (6 to 14) are fixed in
 #' the function and cannot be changed through arguments, so the plot suits
@@ -33,11 +33,12 @@ plot_trend_with_reference_line <- function(data) {
   )
 
   
-  data %>% 
-  ggplot2::ggplot(aes(x = age, y = est))+ 
-    ggplot2::geom_line(color = "black", linewidth = 3
+  # The ribbon is drawn first and filled grey, so it does not dim the line
+  data %>%
+  ggplot2::ggplot(aes(x = age, y = est))+
+    geom_ribbon(aes(ymin = low, ymax = upp), fill = "gray",alpha = 0.5
     ) +
-    geom_ribbon(aes(ymin = low, ymax = upp), colour = "gray",alpha = 0.5
+    ggplot2::geom_line(color = "black", linewidth = 3
     ) +
     ggplot2::theme(axis.text.x = element_text(size = 25, color = "black",angle = 90, vjust = 0.7),
                    axis.text.y.right = element_text(size = 25, color = "black",angle = 90, vjust = 0.7, hjust = 0.5),

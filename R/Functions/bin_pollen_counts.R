@@ -14,22 +14,15 @@
 #' Single positive number. Width of one bin, in the units of `age`.
 #' @return
 #' An ungrouped tibble with one row per `binning_var`, `taxa`, and `BIN`, and
-#' the columns `binning_var` (under its original name), `taxa`, `BIN` (factor
-#' whose labels are integers), and `summed_pollen_count` (sum of
-#' `pollen_counts`).
+#' the columns `binning_var` (under its original name), `taxa`, `BIN`
+#' (integer bin index), and `summed_pollen_count` (sum of `pollen_counts`).
 #' @details
 #' Bins are half-open intervals `[min_age + (i - 1) * bin_size, min_age + i *
 #' bin_size)`, starting at the smallest `age` of the WHOLE input (not per
-#' `binning_var`). The intended `BIN` value is the chronological bin index
-#' `i = floor((age - min_age) / bin_size) + 1`.
-#'
-#' Known gaps. (1) `BIN` is currently derived from the alphabetical order of
-#' the [cut()] labels (e.g. `"[2e+03,3e+03)"`), so the index is not
-#' chronological (with `bin_size = 1000` from 10 bins on, with
-#' `bin_size = 500` already from the third bin), and empty bins are skipped,
-#' which shifts the later indices. (2) A `binning_var` given as a
-#' quoted string is not resolved to the column: the result then holds a
-#' column named `"dataset_id"` filled with the string itself. Use a bare name.
+#' `binning_var`). `BIN` is the chronological bin index
+#' `i = floor((age - min_age) / bin_size) + 1`, so the youngest bin is 1. A
+#' bin without samples leaves a gap in `BIN` (e.g. 1, 2, 4); the later bins
+#' keep their index.
 #' @seealso [filter_bins_by_pollen_sum()]
 #' @examples
 #' \dontrun{
@@ -52,7 +45,10 @@ bin_pollen_counts <- function(data_source, binning_var, bin_size) {
   missing_cols <- setdiff(required_cols, colnames(data_source))
   assertthat::assert_that(
     length(missing_cols) == 0,
-    msg = paste("Missing required columns:", paste(missing_cols, collapse = ", "))
+    msg = paste(
+      "Missing required columns:",
+      paste(missing_cols, collapse = ", ")
+    )
   )
 
   # Check that there is at least one row to bin
@@ -88,15 +84,14 @@ bin_pollen_counts <- function(data_source, binning_var, bin_size) {
     msg = "age and pollen_counts cannot contain NA values"
   )
 
+  # Compute the bin index directly from age, so that BIN is chronological
+  #   and an empty bin leaves a gap instead of shifting the later bins
   data_binned <- data_source %>%
     mutate(
-      BIN = cut(age, seq(min(age), max(age) + bin_size, bin_size), right = FALSE),
-      BIN_chr = as.character(BIN),
-      BIN_fct = as.factor(BIN_chr),
-      BIN_int = as.factor(as.numeric(BIN_fct)), # recode bins to integer, then factor
-      BIN = BIN_int
+      BIN = as.integer(floor((age - min(age)) / bin_size) + 1)
     ) %>%
-    group_by({{ binning_var }}, taxa, BIN) %>%
+    # Group by the captured symbol, which also resolves a quoted column name
+    group_by(!!bin_col, taxa, BIN) %>%
     summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop")
 
   return(data_binned)

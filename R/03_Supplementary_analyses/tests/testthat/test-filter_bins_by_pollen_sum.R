@@ -2,7 +2,7 @@
 # Inputs -----
 #----------------------------------------------------------#
 
-testthat::test_that("accepts valid inputs", {
+testthat::test_that("filter_bins_by_pollen_sum() accepts valid inputs", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "a", "b", "b", "c"),
@@ -19,15 +19,15 @@ testthat::test_that("accepts valid inputs", {
   )
 
   testthat::expect_s3_class(res, "data.frame")
-  testthat::expect_equal(base::nrow(res), 5L)
+  testthat::expect_equal(base::nrow(res), 2L)
 })
 
-testthat::test_that("validates data_input", {
+testthat::test_that("filter_bins_by_pollen_sum() validates data_input", {
   list_bad_data <-
     base::list(
       1,
       "a",
-      base::list(BIN = 1, summed_pollen_count = 1),
+      base::list(dataset_id = "a", BIN = 1, summed_pollen_count = 1),
       NULL
     )
 
@@ -44,15 +44,16 @@ testthat::test_that("validates data_input", {
   }
 })
 
-testthat::test_that("validates required columns", {
+testthat::test_that("filter_bins_by_pollen_sum() validates required columns", {
   data_binned <-
     tibble::tibble(
+      dataset_id = c("a", "a"),
       BIN = c(1L, 2L),
       summed_pollen_count = c(300, 200)
     )
 
   for (
-    sel_col in c("BIN", "summed_pollen_count")
+    sel_col in c("dataset_id", "BIN", "summed_pollen_count")
   ) {
     data_missing <-
       dplyr::select(data_binned, -dplyr::all_of(sel_col))
@@ -62,14 +63,15 @@ testthat::test_that("validates required columns", {
         data_input = data_missing,
         n_grains = 100
       ),
-      "must contain 'BIN' and 'summed_pollen_count'"
+      "must contain 'dataset_id', 'BIN', 'summed_pollen_count'"
     )
   }
 })
 
-testthat::test_that("validates n_grains", {
+testthat::test_that("filter_bins_by_pollen_sum() validates n_grains", {
   data_binned <-
     tibble::tibble(
+      dataset_id = c("a", "a"),
       BIN = c(1L, 2L),
       summed_pollen_count = c(300, 200)
     )
@@ -102,7 +104,7 @@ testthat::test_that("validates n_grains", {
 # Output structure -----
 #----------------------------------------------------------#
 
-testthat::test_that("returns the columns of data_input", {
+testthat::test_that("filter_bins_by_pollen_sum() returns input columns", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "a", "b", "b", "c"),
@@ -122,12 +124,13 @@ testthat::test_that("returns the columns of data_input", {
     res,
     c("dataset_id", "taxa", "BIN", "summed_pollen_count")
   )
-  testthat::expect_equal(base::dim(res), c(3L, 4L))
+  testthat::expect_equal(base::dim(res), c(2L, 4L))
 })
 
-testthat::test_that("returns a data frame for a data frame input", {
+testthat::test_that("filter_bins_by_pollen_sum() keeps data.frame class", {
   data_binned <-
     base::data.frame(
+      dataset_id = c("a", "a", "a"),
       BIN = c(1L, 1L, 2L),
       summed_pollen_count = c(300, 200, 10)
     )
@@ -147,7 +150,7 @@ testthat::test_that("returns a data frame for a data frame input", {
 # Functional correctness -----
 #----------------------------------------------------------#
 
-testthat::test_that("keeps bins with a pooled total >= n_grains", {
+testthat::test_that("filter_bins_by_pollen_sum() keeps totals >= n_grains", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "a", "b", "b", "c"),
@@ -163,20 +166,20 @@ testthat::test_that("keeps bins with a pooled total >= n_grains", {
 
   data_expected <-
     tibble::tibble(
-      dataset_id = c("a", "a", "b"),
-      BIN = c(1L, 1L, 1L),
-      summed_pollen_count = c(300, 200, 100)
+      dataset_id = c("a", "a"),
+      BIN = c(1L, 1L),
+      summed_pollen_count = c(300, 200)
     )
 
   testthat::expect_equal(res, data_expected)
 })
 
-testthat::test_that("keeps a bin whose total equals n_grains", {
+testthat::test_that("filter_bins_by_pollen_sum() keeps total == n_grains", {
   data_binned <-
     tibble::tibble(
-      dataset_id = c("a", "a", "b", "b", "c"),
-      BIN = c(1L, 1L, 1L, 2L, 2L),
-      summed_pollen_count = c(300, 200, 100, 399, 1)
+      dataset_id = c("a", "a", "b"),
+      BIN = c(1L, 1L, 2L),
+      summed_pollen_count = c(300, 100, 500)
     )
 
   res_equal <-
@@ -191,11 +194,11 @@ testthat::test_that("keeps a bin whose total equals n_grains", {
       n_grains = 401
     )
 
-  testthat::expect_equal(base::unique(dplyr::pull(res_equal, BIN)), c(1L, 2L))
-  testthat::expect_equal(base::unique(dplyr::pull(res_above, BIN)), 1L)
+  testthat::expect_equal(base::nrow(res_equal), 3L)
+  testthat::expect_equal(dplyr::pull(res_above, dataset_id), "b")
 })
 
-testthat::test_that("pools totals across datasets", {
+testthat::test_that("filter_bins_by_pollen_sum() does not pool datasets", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "b"),
@@ -209,14 +212,10 @@ testthat::test_that("pools totals across datasets", {
       n_grains = 400
     )
 
-  testthat::expect_equal(base::nrow(res), 2L)
+  testthat::expect_equal(base::nrow(res), 0L)
 })
 
-testthat::test_that("applies the threshold per dataset and BIN", {
-  testthat::skip(
-    "Known issue: totals are pooled over datasets, not per dataset and BIN"
-  )
-
+testthat::test_that("filter_bins_by_pollen_sum() filters per dataset and BIN", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "b", "a"),
@@ -235,7 +234,26 @@ testthat::test_that("applies the threshold per dataset and BIN", {
   testthat::expect_equal(dplyr::pull(res, BIN), 2L)
 })
 
-testthat::test_that("keeps exactly the bins that pass (random data)", {
+testthat::test_that("filter_bins_by_pollen_sum() judges a BIN per dataset", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "b"),
+      taxa = c("t1", "t2", "t1"),
+      BIN = c(1L, 1L, 1L),
+      summed_pollen_count = c(250, 250, 300)
+    )
+
+  res <-
+    filter_bins_by_pollen_sum(
+      data_input = data_binned,
+      n_grains = 400
+    )
+
+  testthat::expect_equal(dplyr::pull(res, dataset_id), c("a", "a"))
+  testthat::expect_equal(dplyr::pull(res, taxa), c("t1", "t2"))
+})
+
+testthat::test_that("filter_bins_by_pollen_sum() matches random data", {
   base::set.seed(900723)
 
   data_binned <-
@@ -248,35 +266,27 @@ testthat::test_that("keeps exactly the bins that pass (random data)", {
   res <-
     filter_bins_by_pollen_sum(
       data_input = data_binned,
-      n_grains = 500
+      n_grains = 100
     )
 
-  data_totals <-
+  data_expected <-
     data_binned |>
-    dplyr::group_by(BIN) |>
-    dplyr::summarise(
+    dplyr::group_by(dataset_id, BIN) |>
+    dplyr::mutate(
       total = base::sum(summed_pollen_count)
-    )
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::filter(total >= 100) |>
+    dplyr::select(-total)
 
-  vec_expected_bins <-
-    data_totals |>
-    dplyr::filter(total >= 500) |>
-    dplyr::pull(BIN)
-
-  testthat::expect_true(base::all(dplyr::pull(res, BIN) %in% vec_expected_bins))
-  testthat::expect_equal(
-    base::sort(base::unique(dplyr::pull(res, BIN))),
-    base::sort(vec_expected_bins)
-  )
-  testthat::expect_equal(
-    base::nrow(res),
-    base::sum(dplyr::pull(data_binned, BIN) %in% vec_expected_bins)
-  )
+  testthat::expect_true(base::nrow(res) %in% 1:59)
+  testthat::expect_equal(res, data_expected)
 })
 
-testthat::test_that("accepts a factor BIN", {
+testthat::test_that("filter_bins_by_pollen_sum() accepts a factor BIN", {
   data_binned <-
     tibble::tibble(
+      dataset_id = c("a", "a", "a"),
       BIN = base::factor(c("1", "1", "2")),
       summed_pollen_count = c(300, 200, 10)
     )
@@ -296,7 +306,7 @@ testthat::test_that("accepts a factor BIN", {
 # Edge cases -----
 #----------------------------------------------------------#
 
-testthat::test_that("returns zero rows if no bin passes", {
+testthat::test_that("filter_bins_by_pollen_sum() gives 0 rows if none pass", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "b"),
@@ -314,7 +324,7 @@ testthat::test_that("returns zero rows if no bin passes", {
   testthat::expect_named(res, c("dataset_id", "BIN", "summed_pollen_count"))
 })
 
-testthat::test_that("keeps everything for n_grains <= 0", {
+testthat::test_that("filter_bins_by_pollen_sum() keeps all for n_grains <= 0", {
   data_binned <-
     tibble::tibble(
       dataset_id = c("a", "b"),
@@ -338,9 +348,10 @@ testthat::test_that("keeps everything for n_grains <= 0", {
   testthat::expect_equal(res_negative, data_binned)
 })
 
-testthat::test_that("handles a single row", {
+testthat::test_that("filter_bins_by_pollen_sum() handles a single row", {
   data_binned <-
     tibble::tibble(
+      dataset_id = "a",
       BIN = 1L,
       summed_pollen_count = 400
     )
@@ -361,9 +372,10 @@ testthat::test_that("handles a single row", {
   testthat::expect_equal(base::nrow(res_drop), 0L)
 })
 
-testthat::test_that("handles zero rows", {
+testthat::test_that("filter_bins_by_pollen_sum() handles zero rows", {
   data_binned <-
     tibble::tibble(
+      dataset_id = character(),
       BIN = integer(),
       summed_pollen_count = numeric()
     )
@@ -375,12 +387,13 @@ testthat::test_that("handles zero rows", {
     )
 
   testthat::expect_equal(base::nrow(res), 0L)
-  testthat::expect_named(res, c("BIN", "summed_pollen_count"))
+  testthat::expect_named(res, c("dataset_id", "BIN", "summed_pollen_count"))
 })
 
-testthat::test_that("drops bins whose total is NA", {
+testthat::test_that("filter_bins_by_pollen_sum() drops bins with NA totals", {
   data_binned <-
     tibble::tibble(
+      dataset_id = c("a", "a", "a"),
       BIN = c(1L, 1L, 2L),
       summed_pollen_count = c(300, NA, 500)
     )
@@ -399,38 +412,44 @@ testthat::test_that("drops bins whose total is NA", {
 # Scale -----
 #----------------------------------------------------------#
 
-testthat::test_that("handles 5,000 rows", {
+testthat::test_that("filter_bins_by_pollen_sum() handles 5,000 rows", {
   base::set.seed(900723)
 
   data_binned <-
     tibble::tibble(
-      dataset_id = base::sample(base::paste0("d", 1:100), 5000, TRUE),
-      BIN = base::sample(1:50, 5000, TRUE),
+      dataset_id = base::sample(base::paste0("d", 1:50), 5000, TRUE),
+      BIN = base::sample(1:20, 5000, TRUE),
       summed_pollen_count = base::sample(0:100, 5000, TRUE)
     )
 
   res <-
     filter_bins_by_pollen_sum(
       data_input = data_binned,
-      n_grains = 5000
+      n_grains = 300
     )
 
   data_totals <-
     data_binned |>
-    dplyr::group_by(BIN) |>
+    dplyr::group_by(dataset_id, BIN) |>
     dplyr::summarise(
-      total = base::sum(summed_pollen_count)
+      total = base::sum(summed_pollen_count),
+      .groups = "drop"
     )
 
-  vec_expected_bins <-
+  data_expected_bins <-
     data_totals |>
-    dplyr::filter(total >= 5000) |>
-    dplyr::pull(BIN)
+    dplyr::filter(total >= 300) |>
+    dplyr::select(dataset_id, BIN) |>
+    dplyr::arrange(dataset_id, BIN)
+
+  data_res_bins <-
+    res |>
+    dplyr::distinct(dataset_id, BIN) |>
+    dplyr::arrange(dataset_id, BIN)
 
   testthat::expect_named(res, c("dataset_id", "BIN", "summed_pollen_count"))
-  testthat::expect_true(base::length(vec_expected_bins) %in% 1:49)
-  testthat::expect_equal(
-    base::sort(base::unique(dplyr::pull(res, BIN))),
-    base::sort(vec_expected_bins)
+  testthat::expect_true(
+    base::nrow(data_expected_bins) %in% 1:(base::nrow(data_totals) - 1)
   )
+  testthat::expect_equal(data_res_bins, data_expected_bins)
 })

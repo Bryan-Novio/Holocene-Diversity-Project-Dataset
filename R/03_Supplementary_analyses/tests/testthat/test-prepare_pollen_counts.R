@@ -360,10 +360,6 @@ testthat::test_that("prepare_pollen_counts() keeps duplicated sample ids", {
 })
 
 testthat::test_that("prepare_pollen_counts() handles a zero-row compilation", {
-  testthat::skip(
-    "Known issue: zero-row compilation fails in pivot_longer()."
-  )
-
   data_compilation <-
     tibble::tibble(
       dataset_id = character(),
@@ -378,6 +374,27 @@ testthat::test_that("prepare_pollen_counts() handles a zero-row compilation", {
     res,
     c("dataset_id", "sample_id", "taxa", "pollen_counts")
   )
+})
+
+testthat::test_that("prepare_pollen_counts() handles tables without taxa", {
+  data_compilation <-
+    tibble::tibble(
+      dataset_id = c("d1", "d2"),
+      raw_counts = base::list(
+        tibble::tibble(sample_id = c("s1", "s2")),
+        tibble::tibble(sample_id = "s1")
+      )
+    )
+
+  res <-
+    prepare_pollen_counts(data_compilation = data_compilation)
+
+  testthat::expect_equal(base::nrow(res), 0L)
+  testthat::expect_named(
+    res,
+    c("dataset_id", "sample_id", "taxa", "pollen_counts")
+  )
+  testthat::expect_type(dplyr::pull(res, dataset_id), "character")
 })
 
 

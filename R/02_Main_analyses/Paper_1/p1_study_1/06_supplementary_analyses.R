@@ -136,7 +136,7 @@ harmonized_data_study$genus
 #               ----  BINNING  ----
 #----------------------------------------------------------#
 
-harmonized_data_study$genus %>% bin_pollen_counts(1000)
+harmonized_data_study$genus %>% bin_pollen_counts(dataset_id, 1000)
 
 max(harmonized_data_study$genus$age)
 

@@ -69,7 +69,7 @@ rarefy_all_samples <- function(data_source, n_grains) {
   assertthat::assert_that(
     is.numeric(n_grains),
     length(n_grains) == 1,
-    !is.na(n_grains),
+    is.finite(n_grains),
     n_grains > 0,
     n_grains == round(n_grains),
     msg = "n_grains must be a single positive whole number"

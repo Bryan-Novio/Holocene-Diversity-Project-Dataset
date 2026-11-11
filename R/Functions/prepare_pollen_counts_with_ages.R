@@ -12,11 +12,14 @@
 #' `pollen_counts`, and `age`.
 #' @details
 #' The two tables are combined with an inner join by `dataset_id` and
-#' `sample_id`, so samples that have counts but no age (or an age but no
-#' counts) are dropped. Counts that are `NA` are dropped before the join, see
-#' [prepare_pollen_counts()]. A sample id that occurs more than once in `levels`
-#' of one dataset duplicates its count rows. Known gap: a compilation with
-#' zero rows fails, see [prepare_pollen_counts()].
+#' `sample_id`, so samples missing from `levels` (or from `raw_counts`) are
+#' dropped. A sample that is listed in `levels` with `age = NA` is kept,
+#' with `NA` as its age; filter such rows before binning or modelling.
+#' Counts that are `NA` are dropped before the join, see
+#' [prepare_pollen_counts()]. A sample id that occurs more than once in
+#' `levels` of one dataset duplicates its count rows, and [dplyr::inner_join()]
+#' then warns about a many-to-many relationship if the sample has more than
+#' one taxon. A compilation with zero rows returns a zero-row tibble.
 #' @seealso [prepare_pollen_counts()], [prepare_pollen_ages()]
 #' @examples
 #' \dontrun{

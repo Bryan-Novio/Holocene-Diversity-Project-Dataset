@@ -40,9 +40,12 @@ compute_richness <- function(data_for_richness_estimation){
     msg = "'pollen_grains' in data_for_richness_estimation must be numeric."
   )
   
-  data_for_richness_estimation %>% 
-    mutate(present = ifelse(pollen_grains >= 1, 1, 0)) %>% 
-    group_by(dataset_id,age) %>% 
+  res <-
+    data_for_richness_estimation %>%
+    mutate(present = ifelse(pollen_grains >= 1, 1, 0)) %>%
+    group_by(dataset_id,age) %>%
     summarize(richness = sum(present, na.rm = TRUE), .groups = "drop")
+
+  return(res)
 }
 

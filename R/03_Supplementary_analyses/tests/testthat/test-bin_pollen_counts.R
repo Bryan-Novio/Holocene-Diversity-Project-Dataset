@@ -241,10 +241,10 @@ testthat::test_that("bin_pollen_counts() returns an ungrouped tibble", {
     c("dataset_id", "taxa", "BIN", "summed_pollen_count")
   )
   testthat::expect_equal(base::dim(res), c(3L, 4L))
-  testthat::expect_s3_class(dplyr::pull(res, BIN), "factor")
+  testthat::expect_type(dplyr::pull(res, BIN), "integer")
   testthat::expect_equal(
-    base::levels(dplyr::pull(res, BIN)),
-    c("1", "2")
+    base::sort(base::unique(dplyr::pull(res, BIN))),
+    c(1L, 2L)
   )
 })
 
@@ -296,17 +296,11 @@ testthat::test_that("bin_pollen_counts() sums counts per group and bin", {
     tibble::tibble(
       dataset_id = c("a", "a", "b"),
       taxa = c("t1", "t2", "t1"),
-      BIN = c("1", "2", "2"),
+      BIN = c(1L, 2L, 2L),
       summed_pollen_count = c(3, 3, 4)
     )
 
-  data_res_plain <-
-    dplyr::mutate(
-      res,
-      BIN = base::as.character(BIN)
-    )
-
-  testthat::expect_equal(data_res_plain, data_expected)
+  testthat::expect_equal(res, data_expected)
 })
 
 testthat::test_that("bin_pollen_counts() preserves total counts", {
@@ -372,6 +366,33 @@ testthat::test_that("bin_pollen_counts() starts bins at the minimum age", {
   testthat::expect_equal(vec_bin_b, "2")
 })
 
+testthat::test_that("bin_pollen_counts() bins negative ages from the minimum", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b"),
+      taxa = c("t1", "t1", "t1", "t1"),
+      age = c(-70, 929, 930, 2000),
+      pollen_counts = c(1, 2, 4, 8)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1000
+    )
+
+  data_expected <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "b"),
+      taxa = c("t1", "t1", "t1"),
+      BIN = c(1L, 2L, 3L),
+      summed_pollen_count = c(3, 4, 8)
+    )
+
+  testthat::expect_equal(res, data_expected)
+})
+
 testthat::test_that("bin_pollen_counts() uses half-open bins [lower, upper)", {
   data_pollen <-
     tibble::tibble(
@@ -393,10 +414,6 @@ testthat::test_that("bin_pollen_counts() uses half-open bins [lower, upper)", {
 })
 
 testthat::test_that("bin_pollen_counts() orders 12 bins chronologically", {
-  testthat::skip(
-    "Known issue: BIN follows alphabetical cut() label order, not age"
-  )
-
   data_pollen <-
     tibble::tibble(
       dataset_id = "a",
@@ -427,10 +444,6 @@ testthat::test_that("bin_pollen_counts() orders 12 bins chronologically", {
 })
 
 testthat::test_that("bin_pollen_counts() keeps the bin index across gaps", {
-  testthat::skip(
-    "Known issue: empty bins are skipped, so later BIN indices shift"
-  )
-
   data_pollen <-
     tibble::tibble(
       dataset_id = c("a", "a", "a"),
@@ -456,10 +469,6 @@ testthat::test_that("bin_pollen_counts() keeps the bin index across gaps", {
 })
 
 testthat::test_that("bin_pollen_counts() accepts binning_var as a string", {
-  testthat::skip(
-    "Known issue: a quoted binning_var is grouped as a constant string"
-  )
-
   data_pollen <-
     tibble::tibble(
       dataset_id = c("a", "b"),
@@ -525,7 +534,7 @@ testthat::test_that("bin_pollen_counts() uses one bin for a large bin_size", {
     )
 
   testthat::expect_equal(base::nrow(res), 2L)
-  testthat::expect_equal(base::nlevels(dplyr::pull(res, BIN)), 1L)
+  testthat::expect_equal(dplyr::pull(res, BIN), c(1L, 1L))
   testthat::expect_equal(dplyr::pull(res, summed_pollen_count), c(3, 3))
 })
 

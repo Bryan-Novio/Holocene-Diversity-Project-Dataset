@@ -34,9 +34,9 @@
 #' variable does not affect the estimate, because all smooths of that
 #' variable are dropped. It is only needed because
 #' [marginaleffects::predictions()] requires every model variable to be
-#' present. Matching of smooth labels uses a regular expression, so a term
-#' name that is a substring of another variable name also excludes the
-#' smooths of that variable.
+#' present. Smooth labels are matched by literal substring, so a term name
+#' that is part of another variable name also excludes the smooths of that
+#' variable.
 #' @seealso [fit_regression_model()], [extract_factor_levels()]
 #' @examples
 #' \dontrun{
@@ -72,9 +72,10 @@ predict_model <- function(
 
   assertthat::assert_that(
     is.null(exclude_terms) ||
-      (length(exclude_terms) >= 1 &&
-        is.character(exclude_terms)),
-    msg = "`exclude_terms` must be NULL or a character vector."
+      (length(exclude_terms) == 1 &&
+        is.character(exclude_terms) &&
+        !is.na(exclude_terms)),
+    msg = "`exclude_terms` must be NULL or a single character string."
   )
 
   data_to_predict <-
@@ -86,7 +87,8 @@ predict_model <- function(
   ) {
     terms_to_exclude <-
       gratia::smooths(model) |>
-      stringr::str_subset(exclude_terms)
+      # Match the name literally, so characters such as "." are not regex
+      stringr::str_subset(stringr::fixed(exclude_terms))
 
     vec_factor_levels <-
       extract_factor_levels(
