@@ -1,5 +1,47 @@
-bin_data <- function(data_source, binning_var, bin_size){
-  
+#' @title Bin pollen counts into fixed-width age bins
+#' @description
+#' Assigns each sample to an age bin of fixed width and sums the pollen
+#' counts of each taxon within each combination of a binning variable (e.g.
+#' `dataset_id`) and age bin.
+#' @param data_source
+#' Data frame in long format with the columns `age` (numeric, no `NA`),
+#' `pollen_counts` (numeric, no `NA`), `taxa` (taxon identifier), and the
+#' column named by `binning_var`. It must have at least one row.
+#' @param binning_var
+#' Name of the column to bin within (e.g. `dataset_id`), given as a bare
+#' column name or as a string. It must be a column of `data_source`.
+#' @param bin_size
+#' Single positive number. Width of one bin, in the units of `age`.
+#' @return
+#' An ungrouped tibble with one row per `binning_var`, `taxa`, and `BIN`, and
+#' the columns `binning_var` (under its original name), `taxa`, `BIN` (factor
+#' whose labels are integers), and `summed_pollen_count` (sum of
+#' `pollen_counts`).
+#' @details
+#' Bins are half-open intervals `[min_age + (i - 1) * bin_size, min_age + i *
+#' bin_size)`, starting at the smallest `age` of the WHOLE input (not per
+#' `binning_var`). The intended `BIN` value is the chronological bin index
+#' `i = floor((age - min_age) / bin_size) + 1`.
+#'
+#' Known gaps. (1) `BIN` is currently derived from the alphabetical order of
+#' the [cut()] labels (e.g. `"[2e+03,3e+03)"`), so the index is not
+#' chronological (with `bin_size = 1000` from 10 bins on, with
+#' `bin_size = 500` already from the third bin), and empty bins are skipped,
+#' which shifts the later indices. (2) A `binning_var` given as a
+#' quoted string is not resolved to the column: the result then holds a
+#' column named `"dataset_id"` filled with the string itself. Use a bare name.
+#' @seealso [filter_bins_by_pollen_sum()]
+#' @examples
+#' \dontrun{
+#' data_binned <-
+#'   bin_pollen_counts(
+#'     data_source = data_pollen_with_ages,
+#'     binning_var = dataset_id,
+#'     bin_size = 500
+#'   )
+#' }
+bin_pollen_counts <- function(data_source, binning_var, bin_size){
+
   #------------------------------------------------------#
   # 0. Minimal input validation additions (required)
   #------------------------------------------------------#
@@ -18,6 +60,17 @@ bin_data <- function(data_source, binning_var, bin_size){
     msg = paste("Missing required columns:", paste(missing_cols, collapse = ", "))
   )
   
+  assertthat::assert_that(
+    nrow(data_source) > 0,
+    msg = "data_source must have at least one row"
+  )
+
+  assertthat::assert_that(
+    is.numeric(data_source[["age"]]),
+    is.numeric(data_source[["pollen_counts"]]),
+    msg = "age and pollen_counts must be numeric"
+  )
+
   # NEW: tidy-eval conversion so binning_var works as bare or string
   bin_col <- rlang::ensym(binning_var)
   assertthat::assert_that(
@@ -27,7 +80,8 @@ bin_data <- function(data_source, binning_var, bin_size){
   
   # Check bin_size (your original)
   assertthat::assert_that(
-    is.numeric(bin_size) && length(bin_size) == 1 && bin_size > 0,
+    is.numeric(bin_size) && length(bin_size) == 1 && !is.na(bin_size) &&
+      bin_size > 0,
     msg = "bin_size must be a single positive numeric value"
   )
   

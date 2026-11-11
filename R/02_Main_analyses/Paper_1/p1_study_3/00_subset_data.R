@@ -77,7 +77,7 @@ study3_data %>%
 
 data_p1_s3_counts_ages <- 
   study3_data %>%
-  get_pollen_counts_with_ages() 
+  prepare_pollen_counts_with_ages() 
 
 data_p1_s3_counts_ages %>% 
   arrange(desc(age)) %>%

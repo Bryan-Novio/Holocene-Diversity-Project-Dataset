@@ -95,7 +95,7 @@ data_prepared_richness_estimation2 <-
 
 richness <- 
   data_prepared_richness_estimation2 %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   mutate(age = as.numeric(age))
 
 summary(richness)

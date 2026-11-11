@@ -307,7 +307,7 @@ s4 <- data_pred_general_s4%>%
          upp = conf_high)
 
 gen_trend_s4 <- 
-  plot_trend_general(s4 , "black") 
+  plot_trend(s4 , "black") 
 
 gen_trend_s4 + coord_cartesian(ylim = c(10.3,23))
 

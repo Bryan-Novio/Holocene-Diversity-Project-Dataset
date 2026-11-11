@@ -1,15 +1,91 @@
+#' @title Fit a GAM of a response over time with group structure
+#' @description
+#' Fits a generalised additive model with [mgcv::bam()] (method `"fREML"`) in
+#' which a response changes smoothly over time and groups (e.g. datasets or
+#' regions) enter as random effects or group-specific smooths. The model
+#' formula is chosen with the `random` argument.
+#' @param data_source
+#' Data frame with the columns named in `y_var`, `time_var`, and `group_var`.
+#' The grouping variable should be a factor. For every `random` option except
+#' `"intercept"` and `"slope"` the data must also contain a factor column
+#' `dataset_id`.
+#' @param y_var
+#' Single character string. Name of the response column.
+#' @param time_var
+#' Single character string. Name of the time (e.g. age) column.
+#' @param group_var
+#' Single character string. Name of the grouping column (e.g. region or
+#' dataset).
+#' @param random
+#' Single character string selecting the model structure. One of the
+#' following, with `y`, `t`, `g`, and `k` standing for `y_var`, `time_var`,
+#' `group_var`, and `sel_k`:
+#' * `"intercept"` (default): `y ~ s(t, k, bs = "cr") +
+#'   s(g, bs = "re")`. A common smooth trend plus a random intercept for
+#'   each group.
+#' * `"slope"`: `y ~ s(t, k, bs = "cr") + s(t, g, k, bs = "fs",
+#'   xt = list(bs = "cr"))`. A common smooth trend plus a separate smooth
+#'   (random smooth) for each group.
+#' * `"slope_rand_id"`: the `"slope"` formula plus a random intercept
+#'   `s(dataset_id, bs = "re")`.
+#' * `"slope_rand_id_2"`: `y ~ s(t) + s(t, g, k, bs = "fs") +
+#'   s(dataset_id, bs = "re")`. As `"slope_rand_id"`, but the common smooth
+#'   uses the default basis and dimension (`sel_k` is not applied to it) and
+#'   the group smooths use no `xt` setting.
+#' * `"intercept_reg"`: `y ~ g + s(t, by = g, bs = "fs", k) +
+#'   s(dataset_id, bs = "re")`. A fixed effect of the group plus
+#'   group-specific smooths, with a random intercept for `dataset_id`.
+#' * `"hgam_GI"`: `y ~ s(t, bs = "tp", k) + s(t, by = g, m = 1, bs = "tp",
+#'   k) + s(dataset_id, bs = "re")`. A hierarchical GAM (model GI): a global
+#'   smooth plus group-level smooths with a shared smoothing penalty, and a
+#'   random intercept for `dataset_id`.
+#' @param sel_k
+#' Single positive number. Basis dimension `k` of the time smooths.
+#' @param error_family
+#' A family object, such as [stats::gaussian()] (default) or
+#' [stats::poisson()], passed as `family` to [mgcv::bam()].
+#' @param ...
+#' Further arguments passed to [mgcv::bam()], such as `weights`, `discrete`,
+#' or `nthreads`.
+#' @return
+#' A fitted model of class `bam` (also `gam`, `glm`, and `lm`), estimated with
+#' fast REML. Smooth terms can be listed with [gratia::smooths()].
+#' @details
+#' `random` is resolved with [base::match.arg()], so omitting it selects
+#' `"intercept"`.
+#'
+#' The `"slope"`, `"slope_rand_id"`, and `"slope_rand_id_2"` structures
+#' combine `s(t)` with `s(t, g, bs = "fs")`, which makes [mgcv::bam()] warn
+#' that the model has repeated 1-d smooths of the same variable. The variable
+#' `dataset_id` is hard coded in the formulas of `"slope_rand_id"`,
+#' `"slope_rand_id_2"`, `"intercept_reg"`, and `"hgam_GI"`, which is why these
+#' options require that column. A grouping variable with a single level makes
+#' [mgcv::bam()] abort, because factor contrasts need two or more levels.
+#' @seealso [predict_model()], [extract_factor_levels()]
+#' @examples
+#' \dontrun{
+#' mod_richness <-
+#'   fit_regression_model(
+#'     data_source = data_richness,
+#'     y_var = "richness",
+#'     time_var = "age",
+#'     group_var = "region",
+#'     random = "hgam_GI",
+#'     sel_k = 10,
+#'     error_family = stats::gaussian()
+#'   )
+#' }
 fit_regression_model <- function(
   data_source,
   y_var, time_var, group_var,
-  random = c("intercept", "slope", "intercept_reg"),
+  random = c(
+    "intercept", "slope", "slope_rand_id", "slope_rand_id_2",
+    "intercept_reg", "hgam_GI"
+  ),
   sel_k,
   error_family = stats::gaussian(),
   ...
 ) {
-  require(mgcv)
-  require(stringr)
-  require(assertthat)
-
   assertthat::assert_that(
     is.data.frame(data_source),
     msg = "data_source must be a data.frame"
@@ -47,6 +123,11 @@ fit_regression_model <- function(
     match.arg(random,
       choices = c("intercept", "slope", "slope_rand_id", "slope_rand_id_2", "intercept_reg", "hgam_GI" )
     )
+
+  assertthat::assert_that(
+    random %in% c("intercept", "slope") || "dataset_id" %in% names(data_source),
+    msg = "data_source must contain 'dataset_id' for this 'random' option"
+  )
 
   assertthat::assert_that(
     length(sel_k) == 1,

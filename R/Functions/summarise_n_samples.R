@@ -1,13 +1,47 @@
-#function to get number of samples
-
-get_number_of_samples <- function(data_source, group_var = NULL, name = NULL) {
+#' @title Count the number of samples
+#' @description
+#' Counts the distinct values of `sample_id` in `data_source`, optionally
+#' within groups, and optionally labels the result with a name.
+#' @param data_source
+#' Data frame with the column `sample_id` (and the columns named in
+#' `group_var`).
+#' @param group_var
+#' `NULL` (default) or a character vector of column names of `data_source`
+#' to count within. `NULL` gives a single overall count.
+#' @param name
+#' `NULL` (default) or a single character string. If given, it is added as
+#' the column `data` to the result.
+#' @return
+#' A tibble with the grouping columns (if `group_var` is given; they keep
+#' their own names), the column `n` (integer, number of distinct `sample_id`),
+#' and the column `data` (if `name` is given).
+#' @details
+#' `NA` values of `sample_id` are counted as one distinct value, unlike in
+#' [summarise_n_distinct()], which drops them. Groups that do not occur in
+#' the data are not returned. When `group_var` is given, the result is
+#' still grouped by those columns (a grouped tibble), unlike the ungrouped
+#' result of [summarise_n_distinct()].
+#' @seealso [summarise_n_datasets()], [summarise_n_taxa()],
+#' [summarise_n_distinct()]
+#' @examples
+#' \dontrun{
+#' table_n <-
+#'   summarise_n_samples(
+#'     data_source = data_pollen,
+#'     group_var = "region",
+#'     name = "all"
+#'   )
+#' }
+summarise_n_samples <- function(data_source, group_var = NULL, name = NULL) {
   
   assertthat::assert_that(
-    is.data.frame(data_source)
+    is.data.frame(data_source),
+    msg = "`data_source` must be a data frame."
   )
   
   assertthat::assert_that(
-    "sample_id" %in%  names(data_source) 
+    "sample_id" %in% names(data_source),
+    msg = "`data_source` must contain the column 'sample_id'."
   )
   
   
@@ -15,12 +49,18 @@ get_number_of_samples <- function(data_source, group_var = NULL, name = NULL) {
     !is.null(group_var)
   ) {
     assertthat::assert_that(
-      group_var %in%  names(data_source) 
+      is.character(group_var),
+      msg = "`group_var` must be NULL or a character vector."
+    )
+
+    assertthat::assert_that(
+      all(group_var %in% names(data_source)),
+      msg = "All `group_var` columns must exist in `data_source`."
     )
     
     data_source <- 
       data_source %>% 
-      dplyr::group_by(get(group_var))
+      dplyr::group_by(dplyr::across(dplyr::all_of(group_var)))
   }
   
   data_sample <- 
@@ -33,7 +73,10 @@ get_number_of_samples <- function(data_source, group_var = NULL, name = NULL) {
   ) {
     
     assertthat::assert_that(
-      is.character(name)
+      is.character(name),
+      length(name) == 1,
+      !is.na(name),
+      msg = "`name` must be NULL or a single character string."
     )
     
     res <- 

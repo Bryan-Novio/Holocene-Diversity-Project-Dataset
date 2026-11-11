@@ -272,7 +272,7 @@ data_pred_s2 <- data_pred_general %>%
          upp = conf_high)
 
 data_pred_s2 %>%
-  plot_trend_study_2()
+  plot_trend_with_reference_line()
 
 
 

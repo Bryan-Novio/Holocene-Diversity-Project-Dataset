@@ -95,37 +95,37 @@ source_files <-
 
 
 pollen_data_study3 %>% 
-  get_number_of_metric( name = "raw", group_var = "region",  "dataset_id")
+  summarise_n_distinct( name = "raw", group_var = "region",  "dataset_id")
 
 
 pollen_data_study3 %>% 
-  get_number_of_metric( name = "raw", group_var = "region",  "sample_id")
+  summarise_n_distinct( name = "raw", group_var = "region",  "sample_id")
 
 
 pollen_data_study3 %>% 
-  get_number_of_metric( name = "raw", group_var = "region",  "dataset_id")
+  summarise_n_distinct( name = "raw", group_var = "region",  "dataset_id")
 
 
 pollen_data_study3 %>% 
-  get_number_of_metric( name = "raw", group_var = "region",  "sample_id")
+  summarise_n_distinct( name = "raw", group_var = "region",  "sample_id")
 
 raw_n_datasets <- 
   pollen_data_study3 %>% 
-  get_number_of_datasets( name = "raw", group_var = "region") %>% 
+  summarise_n_datasets( name = "raw", group_var = "region") %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
 
 raw_n_samples <- 
   pollen_data_study3 %>% 
-  get_number_of_samples(name = "raw", group_var = "region")  %>% 
+  summarise_n_samples(name = "raw", group_var = "region")  %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
 
 raw_n_taxa <- 
   pollen_data_study3 %>%
-  get_number_of_taxa(name = "raw", group_var = "region") %>% 
+  summarise_n_taxa(name = "raw", group_var = "region") %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
@@ -150,21 +150,21 @@ data_overview_raw <-
 
 harm_n_datasets <- 
   data_harmonised_study3 %>% 
-  get_number_of_datasets(group_var = "region", name = "harm") %>% 
+  summarise_n_datasets(group_var = "region", name = "harm") %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
 
 harm_n_samples <- 
   data_harmonised_study3 %>% 
-  get_number_of_samples(name = "harm", group_var = "region")  %>% 
+  summarise_n_samples(name = "harm", group_var = "region")  %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
 
 harm_n_taxa <- 
   data_harmonised_study3 %>%
-  get_number_of_taxa(name = "harm", group_var = "region") %>% 
+  summarise_n_taxa(name = "harm", group_var = "region") %>% 
   rlang::set_names(
     nm = c("region", "n", "step")
   )
@@ -254,7 +254,7 @@ step3} else
     .x = data_rarefied_study_new_age[1:1000],
     .f = ~ 
       readr::read_rds(.x) %>% 
-      get_number_of_datasets() 
+      summarise_n_datasets() 
   )
   
   step3 <- step3 %>% 
@@ -276,7 +276,7 @@ step4 <- number_datasets_binned_data <-
   purrr::map_dbl(
     .progress = TRUE)
 
-step1 <- get_number_of_datasets(data_harmonised_study3, "harmonised")
+step1 <- summarise_n_datasets(data_harmonised_study3, "harmonised")
   
 ##rarefied
 
@@ -292,7 +292,7 @@ step2 <- if (file.exists( here::here("Data/Paper_1/data_supplementary/study3_rar
       .f = ~ 
         readr::read_rds(.x) %>% 
         separate_wider_delim(dataset_id_age, delim = "_", names = c("dataset_id","age")) %>% 
-        get_number_of_datasets()
+        summarise_n_datasets()
     )
     
     # and save
@@ -318,7 +318,7 @@ step3} else
     .x = data_rarefied_study_new_age[1:1000],
     .f = ~ 
       readr::read_rds(.x) %>% 
-      get_number_of_datasets() 
+      summarise_n_datasets() 
   )
   
   step3 <- step3 %>% 
@@ -341,7 +341,7 @@ step4 <- number_datasets_binned_data <-
     .progress = TRUE,
     .x = data_binned_study3[1:1000],
     .f = ~ readr::read_rds(.x) %>% 
-      get_number_of_datasets() 
+      summarise_n_datasets() 
 
 
 data_overv_rarefied_res <- 

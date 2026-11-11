@@ -39,7 +39,7 @@ purrr::walk(
     
     n_datasets <- 
       data_temp_richness %>% 
-      get_number_of_datasets(group_var = "region", name = "richness") %>% 
+      summarise_n_datasets(group_var = "region", name = "richness") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )
@@ -53,7 +53,7 @@ purrr::walk(
     
     n_samples <- 
       data_temp_richness %>% 
-      get_number_of_samples(name = "richness", group_var = "region")  %>% 
+      summarise_n_samples(name = "richness", group_var = "region")  %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )

@@ -1,16 +1,59 @@
+#' @title Predict from a GAM, optionally excluding a factor term
+#' @description
+#' Computes model predictions for `newdata` with
+#' [marginaleffects::predictions()] and returns them as a tibble. Optionally,
+#' all smooth terms of one factor variable (e.g. a random effect of
+#' `dataset_id`) are excluded from the prediction, giving population-level
+#' estimates.
+#' @param model
+#' A fitted model of class `gam` (from [mgcv::gam()] or [mgcv::bam()]).
+#' @param newdata
+#' Data frame with the predictor values to predict for. It must contain all
+#' predictors of `model`, except the variable named in `exclude_terms`,
+#' which is filled in automatically.
+#' @param type
+#' Single character string. Prediction scale passed to
+#' [marginaleffects::predictions()], such as `"response"` (default) or
+#' `"link"`.
+#' @param exclude_terms
+#' `NULL` (default) or a single character string naming one factor variable
+#' of `model`. Every smooth term whose label contains this name is excluded
+#' from the prediction (via [gratia::smooths()]), and the variable is set to
+#' its first level in `newdata`. Only one term is supported.
+#' @param ...
+#' Further arguments passed to [marginaleffects::predictions()], such as
+#' `vcov` or `conf_level`.
+#' @return
+#' A tibble with one row per row of `newdata`. It holds the columns of
+#' `newdata` with their original names, plus the prediction columns from
+#' [marginaleffects::predictions()] with names cleaned to snake case by
+#' [janitor::make_clean_names()] (e.g. `estimate`, `std_error`,
+#' `conf_low`, `conf_high`).
+#' @details
+#' When `exclude_terms` is given, the value written into the excluded
+#' variable does not affect the estimate, because all smooths of that
+#' variable are dropped. It is only needed because
+#' [marginaleffects::predictions()] requires every model variable to be
+#' present. Matching of smooth labels uses a regular expression, so a term
+#' name that is a substring of another variable name also excludes the
+#' smooths of that variable.
+#' @seealso [fit_regression_model()], [extract_factor_levels()]
+#' @examples
+#' \dontrun{
+#' data_predicted <-
+#'   predict_model(
+#'     model = mod_richness,
+#'     newdata = data_new_ages,
+#'     type = "response",
+#'     exclude_terms = "dataset_id"
+#'   )
+#' }
 predict_model <- function(
   model, newdata,
   type = "response",
   exclude_terms = NULL,
   ...
 ) {
-  require(dplyr)
-  require(assertthat)
-  require(marginaleffects)
-  require(gratia)
-  require(janitor)
-  require(stringr)
-
   assertthat::assert_that(
     inherits(model, "gam"),
     msg = "`model` must be a 'gam' object."

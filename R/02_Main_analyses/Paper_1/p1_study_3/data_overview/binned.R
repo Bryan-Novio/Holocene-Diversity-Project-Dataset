@@ -41,7 +41,7 @@ purrr::walk(
     
     n_datasets <- 
       data_temp_binned %>% 
-      get_number_of_datasets(group_var = "region", name = "binned") %>% 
+      summarise_n_datasets(group_var = "region", name = "binned") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )
@@ -54,7 +54,7 @@ purrr::walk(
     
     n_samples <- 
       data_temp_binned %>% 
-      get_number_of_samples(name = "binned", group_var = "region")  %>% 
+      summarise_n_samples(name = "binned", group_var = "region")  %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )
@@ -69,7 +69,7 @@ purrr::walk(
       data_temp_binned %>% 
       select(taxa) %>%
       left_join(all_taxa_harm, by = "taxa", relationship = "many-to-many") %>% 
-      get_number_of_taxa(name = "binned", group_var = "region") %>% 
+      summarise_n_taxa(name = "binned", group_var = "region") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )

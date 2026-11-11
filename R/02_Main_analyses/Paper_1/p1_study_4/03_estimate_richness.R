@@ -62,7 +62,7 @@ data_prepared_richness_estimation4 <-
 
 richness4 <- 
   data_prepared_richness_estimation4 %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   mutate(age = as.numeric(age)) %>% 
   mutate(dataset_id = as_factor(dataset_id))
 

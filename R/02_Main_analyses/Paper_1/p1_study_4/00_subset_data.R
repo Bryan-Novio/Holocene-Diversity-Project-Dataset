@@ -82,7 +82,7 @@ data_p1_s4_filter <- data_p1_s4 %>%
 
 data_p1_s4_counts_ages <- 
   data_p1_s4_filter %>%
-  get_pollen_counts_with_ages() %>% 
+  prepare_pollen_counts_with_ages() %>% 
   filter(age<= 12000)
 
 max(data_p1_s4_counts_ages$age)

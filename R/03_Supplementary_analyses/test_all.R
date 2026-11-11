@@ -1,25 +1,6 @@
-library(tidyverse)
-library(here)
-library(testthat)
-library(assertthat)
-library(gratia)
-library(marginaleffects)
+# Test all R functions at once.
+#   The runner loads the functions and runs the whole testthat folder.
 
-fun_list <-
-  list.files(
-    path = "R/Functions/",
-    pattern = "\\.R$",
-    recursive = TRUE
-  )
-
-# Load the function into the global environment
-source_files <-
-  sapply(
-    paste0("R/Functions/", fun_list, sep = ""),
-    source
-  )
-
-# run all tests
-testthat::test_dir(
-  here("R/03_Supplementary_analyses/tests/testthat/")
+source(
+  here::here("R/03_Supplementary_analyses/tests/testthat.R")
 )

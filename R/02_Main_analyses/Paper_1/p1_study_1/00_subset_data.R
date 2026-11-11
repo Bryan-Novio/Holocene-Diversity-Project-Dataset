@@ -137,7 +137,7 @@ data_p1_s1_sub_region %>%
 
 data_p1_s1_subregion_counts_ages <- 
   data_p1_s1_sub_region %>% 
-  get_pollen_counts_with_ages() 
+  prepare_pollen_counts_with_ages() 
 
 data_p1_s1_subregion_counts_ages_subregion <-  # 477 sites
   data_p1_s1_subregion_counts_ages %>% 

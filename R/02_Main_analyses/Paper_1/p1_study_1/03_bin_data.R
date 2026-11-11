@@ -56,7 +56,7 @@ rarefied_data_to_bin <-
 
 data_binned <-
   rarefied_data_to_bin  %>% 
-  bin_data(dataset_id, 1000)
+  bin_pollen_counts(dataset_id, 1000)
 
 # discard samples containing less than 500 pollen counts
 

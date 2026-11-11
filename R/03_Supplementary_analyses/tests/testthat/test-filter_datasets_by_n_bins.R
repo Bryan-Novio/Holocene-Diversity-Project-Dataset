@@ -1,73 +1,368 @@
-library(testthat)
-library(tidyverse)
-library(assertthat)
+#----------------------------------------------------------#
+# Inputs -----
+#----------------------------------------------------------#
 
-test_that("select_cores_with_specific_number_of_bins() validates input types", {
-  df <- data.frame(dataset_id = c("1001","1001","1541"), BIN = c(1,2,1))
-  
-  expect_no_error(select_cores_with_specific_number_of_bins(df, 1))
-  
-  expect_error(select_cores_with_specific_number_of_bins("not_df", 1),
-               "data_input has to be data.frame")
-  
-  expect_error(select_cores_with_specific_number_of_bins(list(a=1), 1))
-  
-  expect_error(select_cores_with_specific_number_of_bins(df, "x"))
-  expect_error(select_cores_with_specific_number_of_bins(df, c(1,2)))
-  expect_error(select_cores_with_specific_number_of_bins(df, NA))
-})
+testthat::test_that("filter_datasets_by_n_bins() valid", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b", "b", "c"),
+      taxa = c("t1", "t1", "t2", "t1", "t2", "t1"),
+      BIN = c(1L, 2L, 3L, 1L, 1L, 5L)
+    )
 
-test_that("select_cores_with_specific_number_of_bins() checks required columns", {
-  df_missing_dataset <- data.frame(BIN = 1:3)
-  df_missing_bin <- data.frame(dataset_id = c("1001","1002","1541"))
-  
-  expect_error(select_cores_with_specific_number_of_bins(df_missing_dataset, 1))
-  expect_error(select_cores_with_specific_number_of_bins(df_missing_bin, 1))
-})
-
-test_that("select_cores_with_specific_number_of_bins() returns data.frame with expected structure", {
-  df <- data.frame(
-    dataset_id = c("1001","1001","1002","1002","1002"),
-    BIN = c(1,2,1,2,3),
-    value = 1:5
+  testthat::expect_no_error(
+    res <-
+      filter_datasets_by_n_bins(
+        data_input = data_binned,
+        n_bins = 3
+      )
   )
-  
-  out <- select_cores_with_specific_number_of_bins(df, 2)
-  
-  expect_s3_class(out, "data.frame")
-  expect_true("dataset_id" %in% names(out))
-  expect_true("BIN" %in% names(out))
-  expect_true("value" %in% names(out))
+
+  testthat::expect_s3_class(res, "data.frame")
+  testthat::expect_equal(base::nrow(res), 3L)
 })
 
-test_that("select_cores_with_specific_number_of_bins() selects datasets with at least n_bins distinct BIN values", {
-  df <- data.frame(
-    dataset_id = c("1001","1001","1001","1002","1002","1541"),
-    BIN = c(1,1,2,1,1,3)
+testthat::test_that("filter_datasets_by_n_bins() data_input", {
+  list_bad_data <-
+    base::list(
+      1,
+      "a",
+      base::list(dataset_id = "a", BIN = 1L),
+      NULL
+    )
+
+  for (
+    sel_data in list_bad_data
+  ) {
+    testthat::expect_error(
+      filter_datasets_by_n_bins(
+        data_input = sel_data,
+        n_bins = 1
+      ),
+      "data_input has to be data.frame"
+    )
+  }
+})
+
+testthat::test_that("filter_datasets_by_n_bins() cols", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "b"),
+      BIN = c(1L, 2L)
+    )
+
+  for (
+    sel_col in c("dataset_id", "BIN")
+  ) {
+    data_missing <-
+      dplyr::select(data_binned, -dplyr::all_of(sel_col))
+
+    testthat::expect_error(
+      filter_datasets_by_n_bins(
+        data_input = data_missing,
+        n_bins = 1
+      ),
+      "must contain 'dataset_id' and 'BIN'"
+    )
+  }
+})
+
+testthat::test_that("filter_datasets_by_n_bins() n_bins", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "b"),
+      BIN = c(1L, 2L)
+    )
+
+  list_bad_n <-
+    base::list(
+      "a",
+      c(1, 2),
+      NA_real_,
+      NULL,
+      numeric(0),
+      TRUE
+    )
+
+  for (
+    sel_n in list_bad_n
+  ) {
+    testthat::expect_error(
+      filter_datasets_by_n_bins(
+        data_input = data_binned,
+        n_bins = sel_n
+      ),
+      "n_bins must be a single numeric, non-NA value"
+    )
+  }
+})
+
+
+#----------------------------------------------------------#
+# Output structure -----
+#----------------------------------------------------------#
+
+testthat::test_that("filter_datasets_by_n_bins() shape", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b", "b", "c"),
+      taxa = c("t1", "t1", "t2", "t1", "t2", "t1"),
+      BIN = c(1L, 2L, 3L, 1L, 1L, 5L)
+    )
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 3
+    )
+
+  testthat::expect_s3_class(res, "tbl_df")
+  testthat::expect_false(dplyr::is_grouped_df(res))
+  testthat::expect_named(res, c("dataset_id", "taxa", "BIN"))
+  testthat::expect_equal(base::dim(res), c(3L, 3L))
+})
+
+
+#----------------------------------------------------------#
+# Functional correctness -----
+#----------------------------------------------------------#
+
+testthat::test_that("filter_datasets_by_n_bins() keeps rows", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b", "b", "c"),
+      taxa = c("t1", "t1", "t2", "t1", "t2", "t1"),
+      BIN = c(1L, 2L, 3L, 1L, 1L, 5L)
+    )
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  data_expected <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a"),
+      taxa = c("t1", "t1", "t2"),
+      BIN = c(1L, 2L, 3L)
+    )
+
+  testthat::expect_equal(res, data_expected)
+})
+
+testthat::test_that("filter_datasets_by_n_bins() boundary", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b", "b", "c"),
+      BIN = c(1L, 2L, 3L, 1L, 2L, 5L)
+    )
+
+  res_equal <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 3
+    )
+
+  res_above <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 4
+    )
+
+  res_two <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  testthat::expect_equal(base::unique(dplyr::pull(res_equal, dataset_id)), "a")
+  testthat::expect_equal(base::nrow(res_above), 0L)
+  testthat::expect_equal(
+    base::unique(dplyr::pull(res_two, dataset_id)),
+    c("a", "b")
   )
-  
-  expected <- df[df$dataset_id %in% c("1001"), ]
-  
-  out <- select_cores_with_specific_number_of_bins(df, 2)
-  
-  expect_equal(out[order(out$dataset_id, out$BIN), ],
-               expected[order(expected$dataset_id, expected$BIN), ])
 })
 
-test_that("select_cores_with_specific_number_of_bins() handles edge cases", {
-  df_single <- data.frame(dataset_id = "1001", BIN = 1)
-  
-  out1 <- select_cores_with_specific_number_of_bins(df_single, 1)
-  expect_equal(out1, df_single)
-  
-  out2 <- select_cores_with_specific_number_of_bins(df_single, 2)
-  expect_equal(nrow(out2), 0)
-  
-  df_dup <- data.frame(dataset_id = c("1001","1001","1001"), BIN = c(1,1,1))
-  out_dup <- select_cores_with_specific_number_of_bins(df_dup, 1)
-  expect_equal(out_dup, df_dup)
-  
-  out_dup2 <- select_cores_with_specific_number_of_bins(df_dup, 2)
-  expect_equal(nrow(out_dup2), 0)
+testthat::test_that("filter_datasets_by_n_bins() distinct", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "a"),
+      taxa = c("t1", "t2", "t3", "t4"),
+      BIN = c(1L, 1L, 1L, 1L)
+    )
+
+  res_two <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  res_one <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 1
+    )
+
+  testthat::expect_equal(base::nrow(res_two), 0L)
+  testthat::expect_equal(base::nrow(res_one), 4L)
 })
 
+testthat::test_that("filter_datasets_by_n_bins() order", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("b", "a", "b", "a"),
+      BIN = c(2L, 1L, 1L, 2L)
+    )
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  testthat::expect_equal(res, data_binned)
+})
+
+testthat::test_that("filter_datasets_by_n_bins() factor BIN", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "b"),
+      BIN = base::factor(c("1", "2", "1"))
+    )
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  testthat::expect_equal(dplyr::pull(res, dataset_id), c("a", "a"))
+})
+
+
+#----------------------------------------------------------#
+# Edge cases -----
+#----------------------------------------------------------#
+
+testthat::test_that("filter_datasets_by_n_bins() low n_bins", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "b"),
+      BIN = c(1L, 2L)
+    )
+
+  res_zero <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 0
+    )
+
+  res_negative <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = -3
+    )
+
+  testthat::expect_equal(res_zero, data_binned)
+  testthat::expect_equal(res_negative, data_binned)
+})
+
+testthat::test_that("filter_datasets_by_n_bins() 1 row", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = "a",
+      BIN = 1L
+    )
+
+  res_keep <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 1
+    )
+
+  res_drop <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  testthat::expect_equal(base::nrow(res_keep), 1L)
+  testthat::expect_equal(base::nrow(res_drop), 0L)
+})
+
+testthat::test_that("filter_datasets_by_n_bins() 0 rows", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = character(),
+      BIN = integer()
+    )
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 1
+    )
+
+  testthat::expect_equal(base::nrow(res), 0L)
+  testthat::expect_named(res, c("dataset_id", "BIN"))
+})
+
+testthat::test_that("filter_datasets_by_n_bins() grouped", {
+  data_binned <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "b"),
+      BIN = c(1L, 2L, 1L)
+    ) |>
+    dplyr::group_by(dataset_id)
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 2
+    )
+
+  testthat::expect_equal(dplyr::pull(res, dataset_id), c("a", "a"))
+})
+
+
+#----------------------------------------------------------#
+# Scale -----
+#----------------------------------------------------------#
+
+testthat::test_that("filter_datasets_by_n_bins() large", {
+  base::set.seed(900723)
+
+  data_binned <-
+    tibble::tibble(
+      dataset_id = base::sample(base::paste0("d", 1:200), 5000, TRUE),
+      taxa = base::sample(base::paste0("t", 1:5), 5000, TRUE),
+      BIN = base::sample(1:30, 5000, TRUE)
+    )
+
+  res <-
+    filter_datasets_by_n_bins(
+      data_input = data_binned,
+      n_bins = 20
+    )
+
+  data_n_bins <-
+    data_binned |>
+    dplyr::distinct(dataset_id, BIN) |>
+    dplyr::count(dataset_id)
+
+  vec_expected_ids <-
+    data_n_bins |>
+    dplyr::filter(n >= 20) |>
+    dplyr::pull(dataset_id)
+
+  testthat::expect_named(res, c("dataset_id", "taxa", "BIN"))
+  testthat::expect_equal(
+    base::sort(base::unique(dplyr::pull(res, dataset_id))),
+    base::sort(vec_expected_ids)
+  )
+  testthat::expect_equal(
+    base::nrow(res),
+    base::sum(dplyr::pull(data_binned, dataset_id) %in% vec_expected_ids)
+  )
+})

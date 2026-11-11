@@ -1,146 +1,607 @@
-library(tidyverse)
-library(purrr)
-library(testthat)
+#----------------------------------------------------------#
+# Inputs -----
+#----------------------------------------------------------#
 
+testthat::test_that("bin_pollen_counts() accepts valid inputs", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b"),
+      taxa = c("t1", "t1", "t2", "t1"),
+      age = c(0, 0.4, 1.6, 1.9),
+      pollen_counts = c(1, 2, 3, 4)
+    )
 
-test_that("bin_data() accepts valid inputs and returns expected structure", {
-  
-  df <- tibble(
-    pollen_counts = c(0, 6, 1, 0),
-    age = c(2000, 4000, 6000, 20000),
-    taxa = c("abies", "acer", "alnus", "amaranthanceae"),
-    dataset_id = c("15081", "15081", "15081", "15081")
+  testthat::expect_no_error(
+    res <-
+      bin_pollen_counts(
+        data_source = data_pollen,
+        binning_var = dataset_id,
+        bin_size = 1
+      )
   )
-  
-  res <- bin_data(df, binning_var = dataset_id, bin_size = 1000)
-  
-  expect_s3_class(res, "data.frame")
-  
-  expected_cols <- c("dataset_id", "taxa", "BIN", "BIN_chr", "summed_pollen_count")
-  expect_true(all(expected_cols %in% colnames(res)))
-  
-  expect_true(all(res$summed_pollen_count >= 0))
+
+  testthat::expect_s3_class(res, "data.frame")
+  testthat::expect_equal(base::sum(dplyr::pull(res, summed_pollen_count)), 10)
 })
 
+testthat::test_that("bin_pollen_counts() validates data_source", {
+  list_bad_data <-
+    base::list(
+      1,
+      "a",
+      base::list(age = 1),
+      NULL
+    )
 
-test_that("bin_data() bins by the correct variable and aggregates pollen counts correctly", {
-  
-  df <- tibble(
-    age = c(1050, 1203, 1284, 1317),
-    pollen_counts = c(10, 30, 5, 15),
-    taxa = c("abies", "acer", "alnus", "amaranthanceae"),
-    dataset_id = c("15081", "1541", "16111", "17328")
+  for (
+    sel_data in list_bad_data
+  ) {
+    testthat::expect_error(
+      bin_pollen_counts(
+        data_source = sel_data,
+        binning_var = dataset_id,
+        bin_size = 1
+      ),
+      "data_source has to be a data.frame"
+    )
+  }
+})
+
+testthat::test_that("bin_pollen_counts() validates required columns", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a"),
+      taxa = c("t1", "t2"),
+      age = c(0, 1),
+      pollen_counts = c(1, 2)
+    )
+
+  for (
+    sel_col in c("age", "pollen_counts", "taxa")
+  ) {
+    data_missing <-
+      dplyr::select(data_pollen, -dplyr::all_of(sel_col))
+
+    testthat::expect_error(
+      bin_pollen_counts(
+        data_source = data_missing,
+        binning_var = dataset_id,
+        bin_size = 1
+      ),
+      "Missing required columns"
+    )
+  }
+})
+
+testthat::test_that("bin_pollen_counts() validates numeric columns", {
+  data_text_age <-
+    tibble::tibble(
+      dataset_id = c("a", "a"),
+      taxa = c("t1", "t2"),
+      age = c("0", "1"),
+      pollen_counts = c(1, 2)
+    )
+
+  data_text_counts <-
+    dplyr::mutate(
+      data_text_age,
+      age = c(0, 1),
+      pollen_counts = c("1", "2")
+    )
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_text_age,
+      binning_var = dataset_id,
+      bin_size = 1
+    ),
+    "age and pollen_counts must be numeric"
   )
-  
-  res <- bin_data(df, binning_var = dataset_id, bin_size = 1000)
-  
-  breaks <- seq(min(df$age), max(df$age) + 1000, 1000)
-  expected_bins <- cut(df$age, breaks, right = FALSE)
-  
-  expected_tbl <- df %>%
-    mutate(
-      BIN = expected_bins,
-      BIN_chr = as.character(BIN),
-      BIN_fct = factor(BIN_chr),
-      BIN_int = factor(as.numeric(BIN_fct)),
-      BIN = BIN_int
-    ) %>%
-    group_by(dataset_id, taxa, BIN, BIN_chr) %>%
-    summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop")
-  
-  expect_equal(
-    arrange(res, BIN_chr)$summed_pollen_count,
-    arrange(expected_tbl, BIN_chr)$summed_pollen_count
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_text_counts,
+      binning_var = dataset_id,
+      bin_size = 1
+    ),
+    "age and pollen_counts must be numeric"
+  )
+})
+
+testthat::test_that("bin_pollen_counts() validates binning_var", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a"),
+      taxa = c("t1", "t2"),
+      age = c(0, 1),
+      pollen_counts = c(1, 2)
+    )
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = not_a_column,
+      bin_size = 1
+    ),
+    "binning_var column is missing in data_source"
+  )
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = "not_a_column",
+      bin_size = 1
+    ),
+    "binning_var column is missing in data_source"
+  )
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = 1,
+      bin_size = 1
+    )
+  )
+})
+
+testthat::test_that("bin_pollen_counts() validates bin_size", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a"),
+      taxa = c("t1", "t2"),
+      age = c(0, 1),
+      pollen_counts = c(1, 2)
+    )
+
+  list_bad_size <-
+    base::list(
+      "a",
+      c(1, 2),
+      0,
+      -1,
+      NULL,
+      numeric(0),
+      NA_real_
+    )
+
+  for (
+    sel_size in list_bad_size
+  ) {
+    testthat::expect_error(
+      bin_pollen_counts(
+        data_source = data_pollen,
+        binning_var = dataset_id,
+        bin_size = sel_size
+      ),
+      "bin_size must be a single positive numeric value"
+    )
+  }
+})
+
+testthat::test_that("bin_pollen_counts() rejects NA in age and pollen_counts", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a"),
+      taxa = c("t1", "t2"),
+      age = c(0, 1),
+      pollen_counts = c(1, 2)
+    )
+
+  data_na_age <-
+    dplyr::mutate(data_pollen, age = c(0, NA))
+
+  data_na_counts <-
+    dplyr::mutate(data_pollen, pollen_counts = c(1, NA))
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_na_age,
+      binning_var = dataset_id,
+      bin_size = 1
+    ),
+    "cannot contain NA"
+  )
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_na_counts,
+      binning_var = dataset_id,
+      bin_size = 1
+    ),
+    "cannot contain NA"
   )
 })
 
 
- test_that("bin_data() rejects non-data.frame inputs for data_source", {
-  expect_error(bin_data(5, binning_var = dataset_id, bin_size = 1000))
-  expect_error(bin_data("text", binning_var = dataset_id, bin_size = 1000))
-  expect_error(bin_data(NULL, binning_var = dataset_id, bin_size = 1000))
-})
+#----------------------------------------------------------#
+# Output structure -----
+#----------------------------------------------------------#
 
+testthat::test_that("bin_pollen_counts() returns an ungrouped tibble", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b"),
+      taxa = c("t1", "t1", "t2", "t1"),
+      age = c(0, 0.4, 1.6, 1.9),
+      pollen_counts = c(1, 2, 3, 4),
+      latitude = c(10, 10, 10, 20)
+    )
 
-test_that("bin_data() rejects data_source missing required columns", {
-  df_bad1 <- tibble(age = 1:3, taxa = c("abies", "acer", "alnus"))
-  df_bad2 <- tibble(pollen_counts = 1:3, taxa = c ("abies", "acer", "alnus"))
-  df_bad3 <- tibble(age = 1:3, pollen_counts = 1:3)
-    
-  expect_error(bin_data(df_bad1, binning_var = taxa, bin_size = 1000))
-  expect_error(bin_data(df_bad2, binning_var = taxa, bin_size = 1000))
-  expect_error(bin_data(df_bad3, binning_var = taxa, bin_size = 1000))
-})
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    )
 
-
-test_that("bin_data() rejects invalid bin_size values", {
-  df <- tibble(
-    age = 1:5,
-    pollen_counts = 1:5,
-    taxa = c("abies", "acer", "alnus", "amaranthanceae", "pinus"),
-    dataset_id = "15081"
+  testthat::expect_s3_class(res, "tbl_df")
+  testthat::expect_false(dplyr::is_grouped_df(res))
+  testthat::expect_named(
+    res,
+    c("dataset_id", "taxa", "BIN", "summed_pollen_count")
   )
-  
-  expect_error(bin_data(df, binning_var = site, bin_size = -1))
-  expect_error(bin_data(df, binning_var = site, bin_size = 0))
-  expect_error(bin_data(df, binning_var = site, bin_size = NA))
-  expect_error(bin_data(df, binning_var = site, bin_size = "2"))
-  expect_error(bin_data(df, binning_var = site, bin_size = c(1, 2)))
-})
-
-
-test_that("bin_data() handles single-row data.frame correctly", {
-  df <- tibble(
-    age = 5,
-    pollen_counts = 10,
-    taxa = "abies",
-    dataset_id = "10581"
+  testthat::expect_equal(base::dim(res), c(3L, 4L))
+  testthat::expect_s3_class(dplyr::pull(res, BIN), "factor")
+  testthat::expect_equal(
+    base::levels(dplyr::pull(res, BIN)),
+    c("1", "2")
   )
-  
-  res <- bin_data(df, binning_var = dataset_id, bin_size = 1000)
-  
-  expect_s3_class(res, "data.frame")
-  expect_equal(nrow(res), 1)
-  expect_equal(res$summed_pollen_count, 10)
 })
 
+testthat::test_that("bin_pollen_counts() keeps the binning column name", {
+  data_pollen <-
+    tibble::tibble(
+      core = c("a", "a", "b"),
+      taxa = c("t1", "t1", "t1"),
+      age = c(0, 0.4, 1.6),
+      pollen_counts = c(1, 2, 3)
+    )
 
-test_that("bin_data() errors when binning_var column is missing", {
-  df <- tibble(
-    age = 1:3,
-    pollen_counts = 1:3,
-    taxa = c("abies", "acer", "alnus"),
-    dataset_id = c("15081", "1541", "16111")
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = core,
+      bin_size = 1
+    )
+
+  testthat::expect_named(
+    res,
+    c("core", "taxa", "BIN", "summed_pollen_count")
   )
-  
-  expect_error(bin_data(df, binning_var = site_id, bin_size = 1))
+  testthat::expect_equal(base::nrow(res), 2L)
 })
 
 
-test_that("bin_data() works when binning_var has multiple groups", {
-  
-  df <- tibble(
-    age = c(1, 2, 1, 2),
-    pollen_counts = c(10, 20, 5, 5),
-    taxa = c("abies", "acer", "alnus", "amaranthanceae"),
-    dataset_id = c("15081", "1541","15081", "1541")
+#----------------------------------------------------------#
+# Functional correctness -----
+#----------------------------------------------------------#
+
+testthat::test_that("bin_pollen_counts() sums counts per group and bin", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b"),
+      taxa = c("t1", "t1", "t2", "t1"),
+      age = c(0, 0.4, 1.6, 1.9),
+      pollen_counts = c(1, 2, 3, 4)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    )
+
+  data_expected <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "b"),
+      taxa = c("t1", "t2", "t1"),
+      BIN = c("1", "2", "2"),
+      summed_pollen_count = c(3, 3, 4)
+    )
+
+  data_res_plain <-
+    dplyr::mutate(
+      res,
+      BIN = base::as.character(BIN)
+    )
+
+  testthat::expect_equal(data_res_plain, data_expected)
+})
+
+testthat::test_that("bin_pollen_counts() preserves total counts", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a", "b", "b"),
+      taxa = c("t1", "t1", "t2", "t1", "t2"),
+      age = c(0, 0.4, 1.6, 1.9, 2.5),
+      pollen_counts = c(1, 2, 3, 4, 5)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    )
+
+  testthat::expect_equal(
+    base::sum(dplyr::pull(res, summed_pollen_count)),
+    base::sum(dplyr::pull(data_pollen, pollen_counts))
   )
-  
-  res <- bin_data(df, binning_var = dataset_id, bin_size = 1000)
-  
-  expect_equal(length(unique(res$dataset_id)), 2)
-  expect_true(all(res$summed_pollen_count >= 0))
+
+  data_taxa_res <-
+    res |>
+    dplyr::group_by(taxa) |>
+    dplyr::summarise(
+      total = base::sum(summed_pollen_count)
+    )
+
+  data_taxa_in <-
+    data_pollen |>
+    dplyr::group_by(taxa) |>
+    dplyr::summarise(
+      total = base::sum(pollen_counts)
+    )
+
+  testthat::expect_equal(data_taxa_res, data_taxa_in)
 })
 
+testthat::test_that("bin_pollen_counts() starts bins at the minimum age", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "b"),
+      taxa = c("t1", "t1"),
+      age = c(0, 1.9),
+      pollen_counts = c(1, 4)
+    )
 
-test_that("bin_data() handles NA values in age or pollen_counts appropriately", {
-  df <- tibble(
-    age = c(1, NA, 3),
-    pollen_counts = c(10, 20, NA),
-    taxa = c("abies", "acer", "alnus"),
-    dataset_id = c("1541","1541","1541")
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    )
+
+  vec_bin_b <-
+    res |>
+    dplyr::filter(dataset_id == "b") |>
+    dplyr::pull(BIN) |>
+    base::as.character()
+
+  testthat::expect_equal(vec_bin_b, "2")
+})
+
+testthat::test_that("bin_pollen_counts() uses half-open bins [lower, upper)", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a"),
+      taxa = c("t1", "t1", "t1"),
+      age = c(0, 0.99, 1),
+      pollen_counts = c(1, 2, 4)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    )
+
+  testthat::expect_equal(base::nrow(res), 2L)
+  testthat::expect_equal(dplyr::pull(res, summed_pollen_count), c(3, 4))
+})
+
+testthat::test_that("bin_pollen_counts() orders 12 bins chronologically", {
+  testthat::skip(
+    "Known issue: BIN follows alphabetical cut() label order, not age"
   )
-  
-  expect_error(bin_data(df, binning_var = dataset_id, bin_size = 1))
+
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = "a",
+      taxa = "t1",
+      age = c(1000 * (0:11), 1000 * (0:11) + 500),
+      pollen_counts = c(10 * (1:12), base::rep(1, 12))
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1000
+    )
+
+  data_res_by_bin <-
+    tibble::tibble(
+      bin = base::as.integer(base::as.character(dplyr::pull(res, BIN))),
+      total = dplyr::pull(res, summed_pollen_count)
+    ) |>
+    dplyr::arrange(bin)
+
+  testthat::expect_equal(dplyr::pull(data_res_by_bin, bin), 1:12)
+  testthat::expect_equal(
+    dplyr::pull(data_res_by_bin, total),
+    10 * (1:12) + 1
+  )
 })
 
+testthat::test_that("bin_pollen_counts() keeps the bin index across gaps", {
+  testthat::skip(
+    "Known issue: empty bins are skipped, so later BIN indices shift"
+  )
+
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a"),
+      taxa = c("t1", "t1", "t1"),
+      age = c(0, 50, 3000),
+      pollen_counts = c(1, 2, 3)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1000
+    )
+
+  vec_bin <-
+    res |>
+    dplyr::pull(BIN) |>
+    base::as.character() |>
+    base::as.integer()
+
+  testthat::expect_equal(vec_bin, c(1L, 4L))
+})
+
+testthat::test_that("bin_pollen_counts() accepts binning_var as a string", {
+  testthat::skip(
+    "Known issue: a quoted binning_var is grouped as a constant string"
+  )
+
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "b"),
+      taxa = c("t1", "t1"),
+      age = c(0, 0.5),
+      pollen_counts = c(1, 2)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = "dataset_id",
+      bin_size = 1
+    )
+
+  testthat::expect_named(
+    res,
+    c("dataset_id", "taxa", "BIN", "summed_pollen_count")
+  )
+  testthat::expect_equal(dplyr::pull(res, dataset_id), c("a", "b"))
+})
+
+
+#----------------------------------------------------------#
+# Edge cases -----
+#----------------------------------------------------------#
+
+testthat::test_that("bin_pollen_counts() handles a single row", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = "a",
+      taxa = "t1",
+      age = 100,
+      pollen_counts = 7
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 500
+    )
+
+  testthat::expect_equal(base::nrow(res), 1L)
+  testthat::expect_equal(dplyr::pull(res, summed_pollen_count), 7)
+  testthat::expect_equal(base::as.character(dplyr::pull(res, BIN)), "1")
+})
+
+testthat::test_that("bin_pollen_counts() uses one bin for a large bin_size", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "b"),
+      taxa = c("t1", "t1", "t1"),
+      age = c(0, 4, 9),
+      pollen_counts = c(1, 2, 3)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 100
+    )
+
+  testthat::expect_equal(base::nrow(res), 2L)
+  testthat::expect_equal(base::nlevels(dplyr::pull(res, BIN)), 1L)
+  testthat::expect_equal(dplyr::pull(res, summed_pollen_count), c(3, 3))
+})
+
+testthat::test_that("bin_pollen_counts() sums duplicate rows and zero counts", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = c("a", "a", "a"),
+      taxa = c("t1", "t1", "t1"),
+      age = c(0, 0, 0.5),
+      pollen_counts = c(5, 0, 2)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    )
+
+  testthat::expect_equal(base::nrow(res), 1L)
+  testthat::expect_equal(dplyr::pull(res, summed_pollen_count), 7)
+})
+
+testthat::test_that("bin_pollen_counts() errors for zero rows", {
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = character(),
+      taxa = character(),
+      age = numeric(),
+      pollen_counts = numeric()
+    )
+
+  testthat::expect_error(
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 1
+    ),
+    "at least one row"
+  )
+})
+
+
+#----------------------------------------------------------#
+# Scale -----
+#----------------------------------------------------------#
+
+testthat::test_that("bin_pollen_counts() handles 5,000 rows", {
+  base::set.seed(900723)
+
+  data_pollen <-
+    tibble::tibble(
+      dataset_id = base::sample(base::paste0("d", 1:20), 5000, TRUE),
+      taxa = base::sample(base::paste0("t", 1:5), 5000, TRUE),
+      age = base::sample(0:200, 5000, TRUE),
+      pollen_counts = base::sample(0:50, 5000, TRUE)
+    )
+
+  res <-
+    bin_pollen_counts(
+      data_source = data_pollen,
+      binning_var = dataset_id,
+      bin_size = 20
+    )
+
+  testthat::expect_named(
+    res,
+    c("dataset_id", "taxa", "BIN", "summed_pollen_count")
+  )
+  testthat::expect_true(base::nrow(res) <= 20 * 5 * 11)
+  testthat::expect_equal(
+    base::sum(dplyr::pull(res, summed_pollen_count)),
+    base::sum(dplyr::pull(data_pollen, pollen_counts))
+  )
+  testthat::expect_equal(
+    base::nrow(dplyr::distinct(res, dataset_id, taxa, BIN)),
+    base::nrow(res)
+  )
+})

@@ -48,15 +48,15 @@ sapply(
 #----------------------------------------------------------#
 
 data_binned_500 <- 
-  get_pollen_counts_with_ages(data) %>% 
-  bin_data(., 500)   # bin_size = 500          
+  prepare_pollen_counts_with_ages(data) %>% 
+  bin_pollen_counts(., 500)   # bin_size = 500          
                                           # binned data
 data_binned_1000 <- 
-  get_pollen_counts_with_ages(data) %>% 
-  bin_data(., 1000)   # bin_size = 500  
+  prepare_pollen_counts_with_ages(data) %>% 
+  bin_pollen_counts(., 1000)   # bin_size = 500  
 
 data_not_binned <-
-  get_pollen_counts_with_ages(data) # nonbinned data
+  prepare_pollen_counts_with_ages(data) # nonbinned data
 
 
 #----------------------------------------------------------#
@@ -76,9 +76,9 @@ summary(data_for_richness_estimation_unbinned)
 #----------------------------------------------------------#
 
 
-richness_age_binned_500 <-  estimate_richness(data_for_richness_estimation_binned_500)
-richness_age_binned_1000 <-  estimate_richness(data_for_richness_estimation_binned_1000)
-richness_age_unbinned <-  estimate_richness(data_for_richness_estimation_unbinned)
+richness_age_binned_500 <-  compute_richness(data_for_richness_estimation_binned_500)
+richness_age_binned_1000 <-  compute_richness(data_for_richness_estimation_binned_1000)
+richness_age_unbinned <-  compute_richness(data_for_richness_estimation_unbinned)
 
 summary(richness_age_binned_500)
 summary(richness_age_binned_1000)
@@ -86,21 +86,21 @@ summary(richness_age_unbinned)
 
 
 
-get_pollen_counts_with_ages(data) %>% 
-  bin_data(bin_size = 500) %>% 
+prepare_pollen_counts_with_ages(data) %>% 
+  bin_pollen_counts(bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned") %>% 
-  estimate_richness()
+  compute_richness()
 
 data %>% 
   filter(region == "Europe") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned") %>% 
-  estimate_richness()
+  compute_richness()
 
-get_pollen_counts_with_ages(data) %>% 
+prepare_pollen_counts_with_ages(data) %>% 
   prepare_data_for_richness_estimation(type = "nonbinned") %>% 
-  estimate_richness()
+  compute_richness()
 
 #----------------------------------------------------------#
 # 5. Rarefaction ------------------------------------------
@@ -115,7 +115,7 @@ data_source <- data
 # Filter the full dataset to keep only the specified sample
 pollen_sample <-
   data %>% 
-  get_pollen_counts_with_ages() %>%   
+  prepare_pollen_counts_with_ages() %>%   
   filter(sample_id == 21042)
 
 # Check pollen counts
@@ -136,7 +136,7 @@ set.seed(1234)
 
 rarefied_all_samples <-  data %>% 
   filter(region == "Europe") %>% 
-   get_pollen_counts_with_ages() %>% 
+   prepare_pollen_counts_with_ages() %>% 
     rarefy_all_samples(
      data_source =.,
      n_grains = 300)
@@ -167,16 +167,16 @@ set.seed(1234)
  
 data %>% 
   filter(region == "Asia") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 500) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "nonbinned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate_wider_delim(sample_id, "-", names = c("sample_id","age"))%>% 
-   estimate_richness() %>% 
+   compute_richness() %>% 
    ggplot(aes(y = richness, x =  age)) + 
    geom_point() +
    geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -186,16 +186,16 @@ data %>%
 
 data %>% 
   filter(region == "Europe") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 500) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate_wider_delim(sample_id, "-", names = c("sample_id","age")) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   arrange(age) %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
@@ -205,16 +205,16 @@ data %>%
   
 data %>% 
   filter(region == "Europe") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 500) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -226,16 +226,16 @@ data %>%
 #w/o points
 data %>% 
   filter(region == "Europe") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
   theme_classic()
@@ -250,16 +250,16 @@ library(ggpubr)
 
 s1 <- data %>% 
   filter(region == "Europe") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)%>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -269,16 +269,16 @@ s1 <- data %>%
 
 s2 <- data %>% 
   filter(region == "North America") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot2:::ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -289,16 +289,16 @@ s2 <- data %>%
 
 s3 <- data %>% 
   filter(region == "North America") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 500) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)%>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -309,16 +309,16 @@ s3 <- data %>%
 
 s4 <- data %>% 
   filter(region == "Asia") %>% 
-  get_pollen_counts_with_ages() %>% 
+  prepare_pollen_counts_with_ages() %>% 
   prepare_data_for_richness_estimation(type = "nonbinned" ) %>% 
   
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -336,16 +336,16 @@ sc <- ggarrange(s1,s2,s3,s4,
 
 s1_NA <- data %>% 
   filter(region == "North America") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)%>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -355,16 +355,16 @@ s1_NA <- data %>%
 
 s2_NA <- data %>% 
   filter(region == "North America") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot2:::ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -373,16 +373,16 @@ s2_NA <- data %>%
 
 s3_NA <- data %>% 
   filter(region == "North America") %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 500) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 500) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)%>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -391,15 +391,15 @@ s3_NA <- data %>%
 
 s4_NA <- data %>% 
   filter(region == "NOrth America") %>% 
-  get_pollen_counts_with_ages() %>% 
+  prepare_pollen_counts_with_ages() %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 300,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE) %>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   ggplot(aes(y = richness, x =  age)) + 
   geom_point() +
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +
@@ -419,16 +419,16 @@ region <- data %>% distinct(dataset_id,region)
 region
   
 data %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)%>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   inner_join(., region, by = "dataset_id") %>% 
   ggplot(aes(y = richness, x =  age, group = region, colour = region)) + 
   geom_point() +
@@ -439,16 +439,16 @@ data %>%
 #without points
 
 data %>% 
-  get_pollen_counts_with_ages() %>% 
-  bin_data(bin_size = 1000) %>% 
+  prepare_pollen_counts_with_ages() %>% 
+  bin_pollen_counts(bin_size = 1000) %>% 
   prepare_data_for_richness_estimation(type = "binned" ) %>% 
   mutate(sample_id = paste0(dataset_id,"-",age)) %>% 
-  rarefy_all_samples_iter(
+  save_rarefied_iterations(
     data_source =.,
     n_grains = 500,
     n_iter = 10) %>% 
   separate(sample_id, into = c("sample_id", "age"), sep = "-", convert = TRUE)%>% 
-  estimate_richness() %>% 
+  compute_richness() %>% 
   inner_join(., region, by = "dataset_id") %>% 
   ggplot(aes(y = richness, x =  age, group = region, colour = region)) + 
   geom_smooth(method = "gam", se = TRUE, linewidth = 0.5,) +

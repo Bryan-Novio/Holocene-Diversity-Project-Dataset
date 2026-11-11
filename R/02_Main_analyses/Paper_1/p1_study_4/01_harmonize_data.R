@@ -101,7 +101,7 @@ source_files <-
 )
 
 #----------------------------------------------------------#
-# 3. Test {harmonize_taxa} at different taxo rank --
+# 3. Test {harmonise_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
 pollen_data_s4_renamed <- 
@@ -115,7 +115,7 @@ pollen_data_s4_renamed %>% distinct(taxon_name) # 899 taxa
 # Harmonize taxa at different taxonomic levels
 
 data_study4_harmonised <-
-  harmonize_taxa(
+  harmonise_taxa(
     data_to_harmonize = pollen_data_s4_renamed,
     harmonisation_table = harmonisation_table_study4_asia,
     level = "level_to_harm") # did not omit 'undif'
