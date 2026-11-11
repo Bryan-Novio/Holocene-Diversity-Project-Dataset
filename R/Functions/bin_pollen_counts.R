@@ -40,70 +40,64 @@
 #'     bin_size = 500
 #'   )
 #' }
-bin_pollen_counts <- function(data_source, binning_var, bin_size){
-
-  #------------------------------------------------------#
-  # 0. Minimal input validation additions (required)
-  #------------------------------------------------------#
-  
-  # Check data_source is a data.frame (your original)
+bin_pollen_counts <- function(data_source, binning_var, bin_size) {
+  # Check that data_source is a data frame
   assertthat::assert_that(
     is.data.frame(data_source),
     msg = "data_source has to be a data.frame"
   )
-  
-  # NEW: check required columns exist
+
+  # Check that the required columns exist
   required_cols <- c("age", "pollen_counts", "taxa")
   missing_cols <- setdiff(required_cols, colnames(data_source))
   assertthat::assert_that(
     length(missing_cols) == 0,
     msg = paste("Missing required columns:", paste(missing_cols, collapse = ", "))
   )
-  
+
+  # Check that there is at least one row to bin
   assertthat::assert_that(
     nrow(data_source) > 0,
     msg = "data_source must have at least one row"
   )
 
+  # Check that ages and counts are numeric
   assertthat::assert_that(
     is.numeric(data_source[["age"]]),
     is.numeric(data_source[["pollen_counts"]]),
     msg = "age and pollen_counts must be numeric"
   )
 
-  # NEW: tidy-eval conversion so binning_var works as bare or string
+  # Capture the bare column name of 'binning_var' to check that it exists
   bin_col <- rlang::ensym(binning_var)
   assertthat::assert_that(
     rlang::as_string(bin_col) %in% colnames(data_source),
     msg = "binning_var column is missing in data_source"
   )
-  
-  # Check bin_size (your original)
+
+  # Check that bin_size is a single positive number
   assertthat::assert_that(
     is.numeric(bin_size) && length(bin_size) == 1 && !is.na(bin_size) &&
       bin_size > 0,
     msg = "bin_size must be a single positive numeric value"
   )
-  
-  # NEW: reject NA in critical columns (Test 9)
+
+  # Reject missing ages and counts, which cannot be binned or summed
   assertthat::assert_that(
     !any(is.na(data_source$age)) && !any(is.na(data_source$pollen_counts)),
     msg = "age and pollen_counts cannot contain NA values"
   )
-  
-  data_binned <- data_source %>% 
+
+  data_binned <- data_source %>%
     mutate(
       BIN = cut(age, seq(min(age), max(age) + bin_size, bin_size), right = FALSE),
-      
       BIN_chr = as.character(BIN),
       BIN_fct = as.factor(BIN_chr),
       BIN_int = as.factor(as.numeric(BIN_fct)), # recode bins to integer, then factor
       BIN = BIN_int
-    ) %>% 
-    group_by({{binning_var}}, taxa, BIN) %>% 
+    ) %>%
+    group_by({{ binning_var }}, taxa, BIN) %>%
     summarise(summed_pollen_count = sum(pollen_counts), .groups = "drop")
-  
+
   return(data_binned)
 }
-
-
