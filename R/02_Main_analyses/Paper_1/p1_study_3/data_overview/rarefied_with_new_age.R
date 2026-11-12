@@ -39,7 +39,7 @@ purrr::walk(
     
     n_datasets <- 
       data_temp_rarefied_new_age %>% 
-      get_number_of_datasets(group_var = "region", name = "rarefied_new_age") %>% 
+      summarise_n_datasets(group_var = "region", name = "rarefied_new_age") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )
@@ -52,7 +52,7 @@ purrr::walk(
     
     n_samples <- 
       data_temp_rarefied_new_age %>% 
-      get_number_of_samples(name = "rarefied_new_age", group_var = "region")  %>% 
+      summarise_n_samples(name = "rarefied_new_age", group_var = "region")  %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       )
@@ -73,7 +73,7 @@ purrr::walk(
       ) %>% 
       select(-region) %>% 
       left_join(all_taxa_harm, by = "taxa", relationship = "many-to-many") %>% 
-      get_number_of_taxa(name = "rarefied_new_age", group_var = "region") %>% 
+      summarise_n_taxa(name = "rarefied_new_age", group_var = "region") %>% 
       rlang::set_names(
         nm = c("region", "n", "step")
       ) %>% 

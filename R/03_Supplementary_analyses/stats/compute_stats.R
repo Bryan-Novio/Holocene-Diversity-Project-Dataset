@@ -157,7 +157,7 @@ s2_new <- s2 %>%
   mutate(age = age *1000)
 
 s2_new %>% 
-  plot_trend_study_2()
+  plot_trend_with_reference_line()
 
 
 #Plot S3-Asia
@@ -172,7 +172,7 @@ s3_as_new <- s3_as %>%
 
 
 
-gen_trend <- plot_trend_general(s3_as_new, "red") 
+gen_trend <- plot_trend(s3_as_new, "red") 
 
 gen_trend + coord_cartesian(ylim = c(15,23)) 
 
@@ -212,7 +212,7 @@ s3_eu_new <- s3_eu %>%
   drop_na()
 
 
-gen_trend_eu <- plot_trend_general(s3_eu_new, "darkorchid3") 
+gen_trend_eu <- plot_trend(s3_eu_new, "darkorchid3") 
 
 gen_trend_eu + coord_cartesian(ylim = c(15,36)) 
 
@@ -228,7 +228,7 @@ s3_na_new <- s3_na %>%
 
 
 gen_trend_na <- 
-  plot_trend_general(s3_na_new , "orange") 
+  plot_trend(s3_na_new , "orange") 
 
 gen_trend_na + coord_cartesian(ylim = c(12,23))
 
@@ -245,7 +245,7 @@ s4_new <- s4 %>%
   pivot_wider(names_from = id, values_from = "estimate")
 
 gen_trend_as_2 <- 
-  plot_trend_general( s4_new , "black") 
+  plot_trend( s4_new , "black") 
   
 gen_trend_as_2  +  coord_cartesian(ylim = c(10.3,23)) 
   

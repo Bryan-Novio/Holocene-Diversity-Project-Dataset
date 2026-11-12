@@ -81,7 +81,7 @@ for (i in seq_along(rarefied_data_iter)) {
   
   richness_estimate <- 
         rarefied_data_iter_re %>% 
-          estimate_richness() %>% 
+          compute_richness() %>% 
           dplyr::mutate(age = as.numeric(age)) %>% 
           dplyr::mutate(dataset_id = as_factor(dataset_id)) %>% 
           dplyr::filter(age <= 12000)

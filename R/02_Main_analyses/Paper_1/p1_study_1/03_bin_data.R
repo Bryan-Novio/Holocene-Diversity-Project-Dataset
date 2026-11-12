@@ -49,14 +49,15 @@ source_files <-
 
 rarefied_data_to_bin <- 
   rarefied_data %>% 
-  tidyr::separate(dataset_id_age, c("dataset_id", "age"))  %>% 
+  # Split on "_" only, so that negative and decimal ages stay intact
+  tidyr::separate(dataset_id_age, c("dataset_id", "age"), sep = "_")  %>%
   pivot_longer(-c(dataset_id,age),names_to = "taxa", values_to  = "pollen_counts")  %>% 
   dplyr::mutate(age = as.double(age)) 
 
 
 data_binned <-
   rarefied_data_to_bin  %>% 
-  bin_data(dataset_id, 1000)
+  bin_pollen_counts(dataset_id, 1000)
 
 # discard samples containing less than 500 pollen counts
 

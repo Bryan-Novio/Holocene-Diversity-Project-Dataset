@@ -207,7 +207,7 @@ data_to_harmonize_namerica <-
 ## 4.2. Harmonize taxa for each region
 
 data_study3_harmonised_asia <-
-  harmonize_taxa(
+  harmonise_taxa(
     data_to_harmonize = data_to_harmonize_asia,
     harmonisation_table = birks_aux_harm_table_asia_merged,
     level = "level_6") %>% 
@@ -215,14 +215,14 @@ data_study3_harmonised_asia <-
 
 
 data_study3_harmonised_europe <-
-  harmonize_taxa(
+  harmonise_taxa(
     data_to_harmonize = data_to_harmonize_europe,
     harmonisation_table = birks_aux_harm_table_europe_merged ,
     level = "level_6") %>% 
     rename(taxa = taxon_name) # do
 
 data_study3_harmonised_namerica <-
-  harmonize_taxa(
+  harmonise_taxa(
     data_to_harmonize = data_to_harmonize_namerica,
     harmonisation_table = birks_aux_harm_table_namerica_merged,
     level = "level_6") %>% 

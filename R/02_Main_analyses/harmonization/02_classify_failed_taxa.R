@@ -49,7 +49,7 @@ classified_taxa_checked <-
   dplyr::mutate(
     has_no_results = purrr::map_lgl(
       .x = classification ,.f =
-        return_taxa_not_classified
+        is_taxon_unclassified
     )
   ) 
 

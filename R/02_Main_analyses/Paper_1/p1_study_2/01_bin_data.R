@@ -52,17 +52,17 @@ source_files <-
 
 data_binned <- 
   data_p1_s2_12k_1k_counts_ages %>% 
-  bin_data(dataset_id,1000)
+  bin_pollen_counts(dataset_id,1000)
 
 # Filter out bins with < 400 pollen grains total
 
 data_binned_400 <- 
-  select_only_bins_with_specific_pollen_grain_sum(data_binned, 400)
+  filter_bins_by_pollen_sum(data_binned, 400)
 
 # Filter out cores with < 11 bins
 
 data_binned_filtered <-
-  select_cores_with_specific_number_of_bins(
+  filter_datasets_by_n_bins(
     data_binned_400,
     n_bins = 11
   )

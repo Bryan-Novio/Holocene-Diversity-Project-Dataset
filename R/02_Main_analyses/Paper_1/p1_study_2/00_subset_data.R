@@ -83,7 +83,7 @@ data_p1_s2_12k_1k %>% distinct(dataset_id)
 
 data_p1_s2_12k_1k_counts_ages <- 
   data_p1_s2_12k_1k %>%
-  get_pollen_counts_with_ages()
+  prepare_pollen_counts_with_ages()
 
 data_p1_s2_12k_1k_counts_ages %>%  distinct(dataset_id)
 

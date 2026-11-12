@@ -71,7 +71,7 @@ median_richness_back <-
   rlang::set_names() %>% 
   purrr::map(
     .progress = TRUE,
-    .f = load_pred_richness_and_select) %>% 
+    .f = load_predicted_richness) %>% 
   bind_rows(.id = "iter") %>% 
   group_by(region, age) %>% 
   summarise (
@@ -106,7 +106,7 @@ readr::read_rds(data_rich[[1]]) %>% summary()
 
 ### e.g. for iteration 1
 
-plot_richness_iter(data_back,data_rich,1)
+plot_richness_iteration(data_back,data_rich,1)
 
 ##4.2. for all iterations and summarized to one trend line
 

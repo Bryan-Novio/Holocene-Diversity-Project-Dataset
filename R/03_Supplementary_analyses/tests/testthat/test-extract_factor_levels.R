@@ -1,376 +1,481 @@
-test_that("extract_factor_levels() validates input types", {
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      group = factor(rep(c("A", "B", "C", "D"), 25))
+#----------------------------------------------------------#
+# Inputs -----
+#----------------------------------------------------------#
+
+testthat::test_that("extract_factor_levels() accepts valid inputs", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 40),
+      group = base::factor(base::rep(c("A", "B", "C", "D"), times = 10))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 40, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = group), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group),
+      data = data_fit
+    )
 
-  expect_error(
-    extract_factor_levels(
-      model = "not_a_model",
-      sel_term = "group"
-    ),
-    "`model` must be a GAM/BAM object."
+  testthat::expect_no_error(
+    res <-
+      extract_factor_levels(
+        model = mod,
+        sel_term = "group"
+      )
   )
 
-  expect_error(
-    extract_factor_levels(
-      model = lm(y ~ x, data = data_test),
-      sel_term = "group"
-    ),
-    "`model` must be a GAM/BAM object."
-  )
-
-  expect_error(
-    extract_factor_levels(
-      model = list(),
-      sel_term = "group"
-    ),
-    "`model` must be a GAM/BAM object."
-  )
-
-  expect_error(
-    extract_factor_levels(
-      model = NULL,
-      sel_term = "group"
-    ),
-    "`model` must be a GAM/BAM object."
-  )
+  testthat::expect_length(res, 4L)
 })
 
-test_that("extract_factor_levels() validates sel_term argument", {
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      group = factor(rep(c("A", "B"), 50))
+testthat::test_that("extract_factor_levels() validates model", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 40),
+      group = base::factor(base::rep(c("A", "B"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 40, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = group), data = data_test)
+  mod_lm <-
+    stats::lm(
+      formula = y ~ x,
+      data = data_fit
+    )
 
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = c("group", "other")
-    ),
-    "`sel_term` must be a single character string."
-  )
+  list_bad_model <-
+    base::list(
+      "not_a_model",
+      mod_lm,
+      base::list(),
+      NULL
+    )
 
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = 123
-    ),
-    "`sel_term` must be a single character string."
-  )
-
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = TRUE
-    ),
-    "`sel_term` must be a single character string."
-  )
-
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = NULL
-    ),
-    "`sel_term` must be a single character string."
-  )
-
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = factor("group")
-    ),
-    "`sel_term` must be a single character string."
-  )
+  for (
+    sel_model in list_bad_model
+  ) {
+    testthat::expect_error(
+      extract_factor_levels(
+        model = sel_model,
+        sel_term = "group"
+      ),
+      "`model` must be a GAM/BAM object\\."
+    )
+  }
 })
 
-test_that("extract_factor_levels() errors when term not found", {
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      group = factor(rep(c("A", "B"), 50))
+testthat::test_that("extract_factor_levels() validates sel_term", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 40),
+      group = base::factor(base::rep(c("A", "B"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 40, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = group), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group),
+      data = data_fit
+    )
 
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = "nonexistent"
-    ),
-    "No predictor variables found for term 'nonexistent'. Please ensure 'sel_term' matches a single factor variable in the model."
-  )
+  list_bad_term <-
+    base::list(
+      c("group", "x"),
+      123,
+      TRUE,
+      NULL,
+      base::factor("group"),
+      NA_character_,
+      character(0)
+    )
 
-  expect_error(
-    extract_factor_levels(
-      model = model_test,
-      sel_term = "xyz"
-    ),
-    "No predictor variables found for term 'xyz'. Please ensure 'sel_term' matches a single factor variable in the model."
-  )
+  for (
+    sel_bad in list_bad_term
+  ) {
+    testthat::expect_error(
+      extract_factor_levels(
+        model = mod,
+        sel_term = sel_bad
+      ),
+      "`sel_term` must be a single character string\\."
+    )
+  }
 })
 
-test_that("extract_factor_levels() returns factor", {
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      group = factor(rep(c("A", "B", "C"), length.out = 100))
+
+#----------------------------------------------------------#
+# Output structure -----
+#----------------------------------------------------------#
+
+testthat::test_that("extract_factor_levels() returns a factor for a factor", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 60),
+      group = base::factor(base::rep(c("A", "B", "C"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 60, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = group), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group),
+      data = data_fit
+    )
 
-  result <-
+  res <-
     extract_factor_levels(
-      model = model_test,
+      model = mod,
       sel_term = "group"
     )
 
-  expect_s3_class(result, "factor")
-  expect_true(is.factor(result))
-  expect_false(is.list(result))
+  testthat::expect_s3_class(res, "factor")
+  testthat::expect_false(base::is.list(res))
+  testthat::expect_equal(base::levels(res), c("A", "B", "C"))
 })
 
-test_that("extract_factor_levels() extracts correct factor levels from gam", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(120),
-      x = rnorm(120),
-      group = factor(rep(c("A", "B", "C", "D"), 30))
+testthat::test_that("extract_factor_levels() works with bam models", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 90),
+      category = base::factor(base::rep(c("cat1", "cat2", "cat3"), times = 30))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 90, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = group), data = data_test)
+  mod <-
+    mgcv::bam(
+      formula = y ~ s(x, by = category),
+      data = data_fit
+    )
 
-  result <-
+  res <-
     extract_factor_levels(
-      model = model_test,
-      sel_term = "group"
-    )
-
-  expect_true(length(result) >= 1)
-  expect_true(all(nchar(as.character(result)) > 0))
-
-  tidy_result <-
-    factor(c("A", "B", "C", "D"))
-
-  expect_true(length(tidy_result) > 0)
-  expect_equal(length(result), length(tidy_result))
-})
-
-test_that("extract_factor_levels() works with bam models", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(200),
-      x = rnorm(200),
-      category = factor(rep(c("cat1", "cat2", "cat3"), length.out = 200))
-    )
-
-  model_test <-
-    mgcv::bam(y ~ s(x, by = category), data = data_test)
-
-  result <-
-    extract_factor_levels(
-      model = model_test,
+      model = mod,
       sel_term = "category"
     )
 
-  expect_s3_class(result, "factor")
-  expect_true(length(result) >= 1)
+  testthat::expect_s3_class(mod, "bam")
+  testthat::expect_s3_class(res, "factor")
+  testthat::expect_equal(base::as.character(res), c("cat1", "cat2", "cat3"))
 })
 
-test_that("extract_factor_levels() handles models with multiple terms", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(150),
-      x1 = rnorm(150),
-      x2 = rnorm(150),
-      group1 = factor(rep(c("G1", "G2"), 75)),
-      group2 = factor(rep(c("H1", "H2", "H3"), 50))
+
+#----------------------------------------------------------#
+# Functional correctness -----
+#----------------------------------------------------------#
+
+testthat::test_that("extract_factor_levels() keeps order of appearance", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 60),
+      group = base::factor(
+        base::rep(c("C", "A", "B"), times = 20),
+        levels = c("A", "B", "C")
+      )
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 60, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x1, by = group1) + s(x2, by = group2), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group),
+      data = data_fit
+    )
 
-  result1 <-
+  res <-
     extract_factor_levels(
-      model = model_test,
-      sel_term = "group1"
-    )
-  result2 <-
-    extract_factor_levels(
-      model = model_test,
-      sel_term = "group2"
+      model = mod,
+      sel_term = "group"
     )
 
-  expect_s3_class(result1, "factor")
-  expect_s3_class(result2, "factor")
-  expect_true(length(result1) >= 1)
-  expect_true(length(result2) >= 1)
+  vec_expected <-
+    base::factor(
+      c("C", "A", "B"),
+      levels = c("A", "B", "C")
+    )
+
+  testthat::expect_equal(res, vec_expected)
 })
 
-test_that("extract_factor_levels() extracts levels matching term pattern", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      treatment = factor(rep(c("control", "low", "medium", "high"), 25))
+testthat::test_that("extract_factor_levels() returns distinct values only", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 120),
+      stage = base::factor(base::rep(c("early", "mid", "late"), times = 40))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 120, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = treatment), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = stage),
+      data = data_fit
+    )
 
-  result <-
+  res <-
     extract_factor_levels(
-      model = model_test,
-      sel_term = "treatment"
-    )
-
-  tidy_data <-
-    model_test %>%
-    broom::tidy()
-
-  terms_with_treatment <-
-    tidy_data %>%
-    dplyr::filter(stringr::str_detect(term, ":treatment"))
-
-  expected_levels <-
-    c("control", "low", "medium", "high") %>%
-    factor()
-
-  expect_equal(result, expected_levels)
-})
-
-test_that("extract_factor_levels() handles factor with two levels", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(80),
-      x = rnorm(80),
-      binary = factor(rep(c("yes", "no"), 40))
-    )
-
-  model_test <-
-    mgcv::gam(y ~ s(x, by = binary), data = data_test)
-
-  result <-
-    extract_factor_levels(
-      model = model_test,
-      sel_term = "binary"
-    )
-
-  expect_s3_class(result, "factor")
-  expect_true(length(result) >= 1)
-  expect_true(all(as.character(result) %in% c("yes", "no")))
-})
-
-test_that("extract_factor_levels() returns levels in consistent order", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(120),
-      x = rnorm(120),
-      stage = factor(rep(c("early", "mid", "late"), 40))
-    )
-
-  model_test <-
-    mgcv::gam(y ~ s(x, by = stage), data = data_test)
-
-  result1 <-
-    extract_factor_levels(
-      model = model_test,
+      model = mod,
       sel_term = "stage"
     )
 
-  result2 <-
+  testthat::expect_equal(base::length(res), 3L)
+  testthat::expect_equal(
+    base::as.character(res),
+    c("early", "mid", "late")
+  )
+  testthat::expect_identical(
+    res,
     extract_factor_levels(
-      model = model_test,
+      model = mod,
       sel_term = "stage"
     )
-
-  expect_identical(result1, result2)
+  )
 })
 
-test_that("extract_factor_levels() handles numeric-like factor levels", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      year = factor(rep(c("2020", "2021", "2022", "2023"), 25))
+testthat::test_that("extract_factor_levels() selects the requested term", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x1 = stats::rnorm(n = 60),
+      x2 = stats::rnorm(n = 60),
+      region = base::factor(base::rep(c("G1", "G2"), times = 30)),
+      habitat = base::factor(base::rep(c("H1", "H2", "H3"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x1) + stats::rnorm(n = 60, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = year), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x1, by = region) + s(x2, by = habitat),
+      data = data_fit
+    )
 
-  result <-
+  res_region <-
     extract_factor_levels(
-      model = model_test,
-      sel_term = "year"
+      model = mod,
+      sel_term = "region"
     )
 
-  expect_s3_class(result, "factor")
-  expect_true(length(result) >= 1)
-  expect_true(all(grepl("^[0-9]{4}$", as.character(result))))
+  res_habitat <-
+    extract_factor_levels(
+      model = mod,
+      sel_term = "habitat"
+    )
+
+  testthat::expect_equal(base::as.character(res_region), c("G1", "G2"))
+  testthat::expect_equal(
+    base::as.character(res_habitat),
+    c("H1", "H2", "H3")
+  )
 })
 
-test_that("extract_factor_levels() handles special characters in levels", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      code = factor(rep(c("A-1", "B-2", "C-3", "D-4"), 25))
+testthat::test_that("extract_factor_levels() matches by prefix, any case", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 60),
+      group_type = base::factor(base::rep(c("t1", "t2", "t3"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 60, sd = 0.1)
     )
 
-  model_test <-
-    mgcv::gam(y ~ s(x, by = code), data = data_test)
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group_type),
+      data = data_fit
+    )
 
-  result <-
+  res_prefix <-
     extract_factor_levels(
-      model = model_test,
-      sel_term = "code"
+      model = mod,
+      sel_term = "group"
     )
 
-  expect_s3_class(result, "factor")
-  expect_true(length(result) >= 1)
-})
-
-test_that("extract_factor_levels() handles underscore in term name", {
-  set.seed(19900723)
-  data_test <-
-    data.frame(
-      y = rnorm(100),
-      x = rnorm(100),
-      group_type = factor(rep(c("type1", "type2", "type3"), length.out = 100))
-    )
-
-  model_test <-
-    mgcv::gam(y ~ s(x, by = group_type), data = data_test)
-
-  result <-
+  res_full <-
     extract_factor_levels(
-      model = model_test,
+      model = mod,
       sel_term = "group_type"
     )
 
-  expect_s3_class(result, "factor")
-  expect_true(length(result) >= 1)
+  res_case <-
+    extract_factor_levels(
+      model = mod,
+      sel_term = "GROUP"
+    )
+
+  testthat::expect_equal(res_prefix, res_full)
+  testthat::expect_equal(res_case, res_full)
+  testthat::expect_equal(base::as.character(res_full), c("t1", "t2", "t3"))
+})
+
+testthat::test_that("extract_factor_levels() returns numeric predictors", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = c(3, 1, 2, 3, 1, 2, 3, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 20, sd = 0.1)
+    )
+
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, k = 5),
+      data = data_fit
+    )
+
+  res <-
+    extract_factor_levels(
+      model = mod,
+      sel_term = "x"
+    )
+
+  testthat::expect_type(res, "double")
+  testthat::expect_equal(res, c(3, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14))
+})
+
+testthat::test_that("extract_factor_levels() keeps special characters", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 80),
+      code = base::factor(base::rep(c("A-1", "B 2", "C.3", "D/4"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 80, sd = 0.1)
+    )
+
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = code),
+      data = data_fit
+    )
+
+  res <-
+    extract_factor_levels(
+      model = mod,
+      sel_term = "code"
+    )
+
+  testthat::expect_equal(
+    base::as.character(res),
+    c("A-1", "B 2", "C.3", "D/4")
+  )
+})
+
+
+#----------------------------------------------------------#
+# Edge cases -----
+#----------------------------------------------------------#
+
+testthat::test_that("extract_factor_levels() errors when no term matches", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 40),
+      group = base::factor(base::rep(c("A", "B"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 40, sd = 0.1)
+    )
+
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group),
+      data = data_fit
+    )
+
+  testthat::expect_error(
+    extract_factor_levels(
+      model = mod,
+      sel_term = "nonexistent"
+    ),
+    "No predictor variables found for term 'nonexistent'\\."
+  )
+})
+
+testthat::test_that("extract_factor_levels() errors on several matches", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x1 = stats::rnorm(n = 60),
+      x2 = stats::rnorm(n = 60),
+      group1 = base::factor(base::rep(c("G1", "G2"), times = 30)),
+      group2 = base::factor(base::rep(c("H1", "H2", "H3"), times = 20))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x1) + stats::rnorm(n = 60, sd = 0.1)
+    )
+
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x1, by = group1) + s(x2, by = group2),
+      data = data_fit
+    )
+
+  testthat::expect_error(
+    extract_factor_levels(
+      model = mod,
+      sel_term = "group"
+    ),
+    "Multiple predictor variables found for term 'group'\\."
+  )
+})
+
+testthat::test_that("extract_factor_levels() handles a one-level factor", {
+  base::set.seed(900723)
+
+  data_fit <-
+    tibble::tibble(
+      x = stats::rnorm(n = 40),
+      group = base::factor(base::rep("only", times = 40))
+    ) |>
+    dplyr::mutate(
+      y = base::sin(x) + stats::rnorm(n = 40, sd = 0.1)
+    )
+
+  mod <-
+    mgcv::gam(
+      formula = y ~ s(x, by = group),
+      data = data_fit
+    )
+
+  res <-
+    extract_factor_levels(
+      model = mod,
+      sel_term = "group"
+    )
+
+  testthat::expect_s3_class(res, "factor")
+  testthat::expect_equal(base::as.character(res), "only")
 })

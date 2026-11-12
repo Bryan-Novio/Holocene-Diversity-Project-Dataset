@@ -63,7 +63,7 @@ source_files <-
   source
 )
 
-# 3. Test {harmonize_taxa} at different taxo rank --
+# 3. Test {harmonise_taxa} at different taxo rank --
 #----------------------------------------------------------#
 
 data_only_woody_renamed <- 
@@ -85,7 +85,7 @@ data_only_woody_renamed %>% anti_join(harmonisation_table)
 # Harmonize taxa at different taxonomic levels
 
 data_study2_harmonised <-
-  harmonize_taxa(
+  harmonise_taxa(
     data_to_harmonize = data_only_woody_renamed,
     harmonisation_table = study2_hlist_updated,
     level = "level_6"

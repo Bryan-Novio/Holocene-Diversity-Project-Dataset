@@ -94,7 +94,7 @@ source_files <-
   )
 
 #----------------------------------------------------------#
-# 3. Test {harmonize_taxa} at different taxo rank --
+# 3. Test {harmonise_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
 #Rename taxa with neotoma name
@@ -108,7 +108,7 @@ pollen_data_s1_renamed <-
 # Harmonize taxa at a selected taxonomic level
 
 data_study1_harmonised <-
-  harmonize_taxa(
+  harmonise_taxa(
     data_to_harmonize = pollen_data_s1_renamed,
     harmonisation_table = birks_aux_harm_table_merged_with_pollen_data,
     level = "Pollen_type") %>%

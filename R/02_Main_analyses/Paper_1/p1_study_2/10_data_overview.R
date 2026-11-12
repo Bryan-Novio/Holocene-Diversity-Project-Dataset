@@ -74,21 +74,21 @@ source_files <-
 
 raw_n_datasets <- 
   pollen_data_study2 %>% 
-  get_number_of_datasets(group_var = NULL, name = "raw") %>% 
+  summarise_n_datasets(group_var = NULL, name = "raw") %>% 
   rlang::set_names(
     nm = c( "n", "step")
   )
 
 raw_n_samples <- 
   pollen_data_study2 %>% 
-  get_number_of_samples(name = "raw", group_var = NULL)  %>% 
+  summarise_n_samples(name = "raw", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
 
 raw_n_taxa <- 
   pollen_data_study2 %>%
-  get_number_of_taxa(name = "raw", group_var = NULL) %>% 
+  summarise_n_taxa(name = "raw", group_var = NULL) %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -114,7 +114,7 @@ data_overview_raw <-
 
 harm_n_datasets <- 
   data_harmonised_study2 %>% 
-  get_number_of_datasets(group_var = NULL, name = "harm") %>% 
+  summarise_n_datasets(group_var = NULL, name = "harm") %>% 
   rlang::set_names(
     nm = c( "n", "step")
   )
@@ -122,7 +122,7 @@ harm_n_datasets <-
 harm_n_samples <- 
   data_harmonised_study2 %>% 
   tidyr::unite("sample_id", c("dataset_id","age"), sep = "_", remove = FALSE ) %>% 
-  get_number_of_samples(name = "harm", group_var = NULL)  %>% 
+  summarise_n_samples(name = "harm", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -130,7 +130,7 @@ harm_n_samples <-
 harm_n_taxa <- 
   data_harmonised_study2 %>%
   dplyr::rename(taxa = taxon_name) %>% 
-  get_number_of_taxa(name = "harm", group_var = NULL) %>% 
+  summarise_n_taxa(name = "harm", group_var = NULL) %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -157,7 +157,7 @@ data_overview_harm <-
 rarefied_n_datasets <- 
   data_rarefied_study2 %>% 
   tidyr::separate("dataset_id_age", c("dataset_id", "age"), sep = "_",remove = FALSE) %>%
-  get_number_of_datasets(group_var = NULL, name = "rarefied") %>% 
+  summarise_n_datasets(group_var = NULL, name = "rarefied") %>% 
   rlang::set_names(
     nm = c( "n", "step")
   )
@@ -165,7 +165,7 @@ rarefied_n_datasets <-
 rarefied_n_samples <- 
   data_rarefied_study2 %>% 
   dplyr::rename(sample_id = dataset_id_age) %>% 
-  get_number_of_samples(name = "rarefied", group_var = NULL)  %>% 
+  summarise_n_samples(name = "rarefied", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -173,7 +173,7 @@ rarefied_n_samples <-
 rarefied_n_taxa <- 
   data_rarefied_study2 %>%
   pivot_longer(cols =  c(-dataset_id_age), values_to = "value", names_to = "taxa") %>% 
-  get_number_of_taxa(name = "rarefied", group_var = NULL) %>% 
+  summarise_n_taxa(name = "rarefied", group_var = NULL) %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -199,7 +199,7 @@ data_overview_rarefied <-
 
 binned_n_datasets <- 
   data_study2_binned %>% 
-  get_number_of_datasets(group_var = NULL, name = "binned") %>% 
+  summarise_n_datasets(group_var = NULL, name = "binned") %>% 
   rlang::set_names(
     nm = c( "n", "step")
   )
@@ -207,14 +207,14 @@ binned_n_datasets <-
 binned_n_samples <- 
   data_study2_binned %>% 
   tidyr::unite("sample_id", c("dataset_id","BIN"), sep = "_", remove = FALSE) %>% 
-  get_number_of_samples(name = "binned", group_var = NULL)  %>% 
+  summarise_n_samples(name = "binned", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
 
 binned_n_taxa <- 
   data_study2_binned %>%
-  get_number_of_taxa(name = "binned", group_var = NULL) %>% 
+  summarise_n_taxa(name = "binned", group_var = NULL) %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -240,7 +240,7 @@ data_overview_binned <-
 
 richness_n_datasets <- 
   data_richness_study2 %>% 
-  get_number_of_datasets(group_var = NULL, name = "richness") %>% 
+  summarise_n_datasets(group_var = NULL, name = "richness") %>% 
   rlang::set_names(
     nm = c( "n", "step")
   )
@@ -248,7 +248,7 @@ richness_n_datasets <-
 richness_n_samples <- 
   data_richness_study2 %>% 
   tidyr::unite("sample_id", c("dataset_id","age"), sep = "_", remove = FALSE) %>% 
-  get_number_of_samples(name = "richness", group_var = NULL)  %>% 
+  summarise_n_samples(name = "richness", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
@@ -267,7 +267,7 @@ data_overview_richness <-
 
 select_woody_taxa_n_datasets <- 
   data_only_woody_study2 %>% 
-  get_number_of_datasets(group_var = NULL, name = "select_woody_taxa") %>% 
+  summarise_n_datasets(group_var = NULL, name = "select_woody_taxa") %>% 
   rlang::set_names(
     nm = c( "n", "step")
   )
@@ -275,14 +275,14 @@ select_woody_taxa_n_datasets <-
 select_woody_taxa_richness_n_samples <- 
   data_only_woody_study2  %>% 
   tidyr::unite("sample_id", c("dataset_id","BIN"), sep = "_", remove = TRUE) %>% 
-  get_number_of_samples(name = "select_woody_taxa", group_var = NULL)  %>% 
+  summarise_n_samples(name = "select_woody_taxa", group_var = NULL)  %>% 
   rlang::set_names(
     nm = c("n", "step")
   )
 
 select_woody_taxa_n_taxa <- 
   data_only_woody_study2 %>%
-  get_number_of_taxa(name = "select_woody_taxa", group_var = NULL) %>% 
+  summarise_n_taxa(name = "select_woody_taxa", group_var = NULL) %>% 
   rlang::set_names(
     nm = c("n", "step")
   )

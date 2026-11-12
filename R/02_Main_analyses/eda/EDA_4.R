@@ -39,8 +39,8 @@ source_files <- sapply(
 
 # bins = 500; 1000, non-binned
 
-binned_data_500 <- purrr::map(harmonized_data, ~ bin_data(.x, 500)) 
-binned_data_1000 <- purrr:::map(harmonized_data,~ bin_data(.x, 1000))
+binned_data_500 <- purrr::map(harmonized_data, ~ bin_pollen_counts(.x, dataset_id, 500)) 
+binned_data_1000 <- purrr:::map(harmonized_data,~ bin_pollen_counts(.x, dataset_id, 1000))
 non_binned_data <-  harmonized_data
 
 # # Prepare data for richness estimation
@@ -63,25 +63,25 @@ prepared_data_for_richness_estimation_nonbinned <-
 
 ##### s1
 
-rarefied_data_s1 <- purrr::map(prepared_data_for_richness_estimation_1000, ~ rarefy_all_samples_iter(
+rarefied_data_s1 <- purrr::map(prepared_data_for_richness_estimation_1000, ~ save_rarefied_iterations(
   data_source =.,n_grains = 500, n_iter = 10)) %>% 
   purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
 
 ##### s2 
 
-rarefied_data_s2 <- purrr::map(prepared_data_for_richness_estimation_1000, ~ rarefy_all_samples_iter(
+rarefied_data_s2 <- purrr::map(prepared_data_for_richness_estimation_1000, ~ save_rarefied_iterations(
   data_source =.,n_grains = 400, n_iter = 10)) %>% 
   purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
 
 ##### s3
 
-rarefied_data_s3 <- purrr::map(prepared_data_for_richness_estimation_500, ~ rarefy_all_samples_iter(
+rarefied_data_s3 <- purrr::map(prepared_data_for_richness_estimation_500, ~ save_rarefied_iterations(
   data_source =.,n_grains = 300, n_iter = 10)) %>% 
   purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
 
 ##### s4
 
-rarefied_data_s4 <- purrr::map(prepared_data_for_richness_estimation_nonbinned, ~ rarefy_all_samples_iter(
+rarefied_data_s4 <- purrr::map(prepared_data_for_richness_estimation_nonbinned, ~ save_rarefied_iterations(
   data_source =.,n_grains = 300, n_iter = 10)) %>% 
   purrr::map (~ separate_wider_delim(.x,sample_id, "-", names = c("sample_id","age")))
 
@@ -92,16 +92,16 @@ rarefied_data_s1$genus %>% arrange(desc(age))
 # 4. Estimate richness  at different taxo rank --
 #----------------------------------------------------------# 
 
-richness_s1 <- purrr::map(rarefied_data_s1, ~ estimate_richness(.x)) %>% 
+richness_s1 <- purrr::map(rarefied_data_s1, ~ compute_richness(.x)) %>% 
   purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
 
-richness_s2 <- purrr::map(rarefied_data_s2, ~ estimate_richness(.x)) %>% 
+richness_s2 <- purrr::map(rarefied_data_s2, ~ compute_richness(.x)) %>% 
   purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
 
-richness_s3 <- purrr::map(rarefied_data_s3, ~ estimate_richness(.x)) %>% 
+richness_s3 <- purrr::map(rarefied_data_s3, ~ compute_richness(.x)) %>% 
   purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
 
-richness_s4 <- purrr::map(rarefied_data_s4, ~ estimate_richness(.x)) %>% 
+richness_s4 <- purrr::map(rarefied_data_s4, ~ compute_richness(.x)) %>% 
   purrr::map( ~ dplyr::mutate(.x,age = as.numeric(age)))
 
 richness_s1$genus %>% arrange(desc(age))

@@ -103,7 +103,7 @@ data_p1_s1_sub_region %>% filter(subregion == "Temperate Oceanic") %>% unnest(le
 #----------------------------------------------------------# 
 
 data_p1_s1_subregion_counts_ages <- data_p1_s1_sub_region %>% 
-  get_pollen_counts_with_ages() 
+  prepare_pollen_counts_with_ages() 
 
 data_p1_s1_subregion_counts_ages %>% arrange(desc(age)) %>% head(10) # max. age
 
@@ -120,7 +120,7 @@ harmonization_table  <- read_csv(here("Data/harmonization_table_rev.csv"), show_
 neotoma_taxa <- readr::read_csv(here("Data/Input/Harmonisation_tables/taxa_reference_table_2025-01-24.csv"), show_col_types = FALSE)
 
 #----------------------------------------------------------#
-# 2. Test {harmonize_taxa} at different taxo rank --
+# 2. Test {harmonise_taxa} at different taxo rank --
 #----------------------------------------------------------# 
 
 taxa_level <- c("level_5", "level_6", "level_7") 
@@ -128,7 +128,7 @@ taxa_name <- c("family", "genus", "species")
 
 # Harmonize taxa at different taxonomic levels
 
-harmonized_data_study <- purrr::map(taxa_level, ~ harmonize_taxa(data_p1_s1_subregion_counts_ages, data_ancillary, .x)) %>%
+harmonized_data_study <- purrr::map(taxa_level, ~ harmonise_taxa(data_p1_s1_subregion_counts_ages, data_ancillary, .x)) %>%
   set_names(taxa_name)
 
 harmonized_data_study$genus
@@ -136,7 +136,7 @@ harmonized_data_study$genus
 #               ----  BINNING  ----
 #----------------------------------------------------------#
 
-harmonized_data_study$genus %>% bin_data(1000)
+harmonized_data_study$genus %>% bin_pollen_counts(dataset_id, 1000)
 
 max(harmonized_data_study$genus$age)
 
