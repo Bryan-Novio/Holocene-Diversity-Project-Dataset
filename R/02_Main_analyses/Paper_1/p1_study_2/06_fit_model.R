@@ -164,7 +164,7 @@ data_pred_full <-
 
 data_pred_general <-
   predict_model(
-    model = gam_1 ,
+    model = gam_s2 ,
     newdata = data_dummy_general,
     type = "response",
     exclude_terms = "dataset_id"
@@ -304,14 +304,13 @@ data_pred_s2 %>%
 
 #### with original
  
- s2_new
+data_orig_digitised <- 
+   read_csv(here("Data/Paper_1/data_supplementary/s2_digitised_data.csv"))
  
  ggplot()+ 
-  # geom_ribbon(data =  s2_new, aes(x = age, ymin = low, ymax = upp), fill= "grey",alpha = 0.2
-   #) +
-  # ggplot2::geom_line( data = s2_new, aes(x = age, y = est),color = "grey40", linewidth = 2) +
-geom_ribbon(data = data_pred_s2, aes(x = age, ymin = low, ymax = upp), fill= "orange",alpha = 0.2
- ) +
+  geom_ribbon(data = data_orig_digitised, aes(x = age, ymin = lower, ymax = upper), fill= "grey",alpha = 0.2) +
+  ggplot2::geom_line( data = data_orig_digitised, aes(x = age, y = est),color = "grey40", linewidth = 2) +
+  geom_ribbon(data = data_pred_s2, aes(x = age, ymin = low, ymax = upp), fill= "orange",alpha = 0.2) +
  ggplot2::geom_line( data = data_pred_s2, aes(x = age, y = est),color = "darkorange", linewidth = 2) +
    ggplot2::theme(
      axis.text.x = element_text(size = 15, color = "black"),

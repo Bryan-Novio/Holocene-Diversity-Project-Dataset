@@ -71,25 +71,13 @@ Spiraea
 Tofieldia
 Vaccinium
 Valeriana
-Ericaceae
-Fabaceae
-Geranium
-Liliaceae
-Mertensia
-Persicaria amphibia
-Persicaria lapathifolia
-Rumex/Oxyria digyna
-Sanguisorba
-Saxifragaceae
-Elaeagnus/Shepherdia argentea
-Lewisia
-Malvaceae sensu stricto
-Polygonaceae
-Ranunculaceae
 Angiospermae undiff. (herbs)
 Arceuthobium
 Cyclachaena xanthiifolia-type
+Ericaceae
 Eriogonum
+Fabaceae
+Liliaceae
 Onagraceae
 Persicaria amphibia-type
 Polygonaceae undiff.
@@ -97,7 +85,6 @@ Polygonum californicum-type
 Potentilla-type
 Scrophulariaceae-type
 Sphaeralcea
-Campanula
 Bistorta bistortoides-type
 Caryophyllaceae undiff.
 Cornus canadensis-type
@@ -105,6 +92,7 @@ Epilobium-type
 Eriogonum-type
 Hydrophyllaceae-type
 Lysichiton
+Saxifragaceae
 Spiraea-type
 Stellaria-type
 Valeriana-type
@@ -119,6 +107,7 @@ Dalea
 Humulus/Cannabis sativa
 Hypoxis
 Iva annua-type
+Malvaceae sensu stricto
 Persicaria hydropiper-type
 Plantago lanceolata
 Poaceae undiff.
@@ -146,6 +135,8 @@ Plantago undiff.
 Polemoniaceae undiff.
 Rhododendron
 Rhododendron subsect. Ledum-type
+Rumex/Oxyria digyna
+Sanguisorba
 Saxifraga cernua-type
 Saxifraga tricuspidata-type
 Anemone
@@ -153,6 +144,7 @@ Bistorta bistortoides
 Boraginaceae
 Claytonia
 Micranthes foliolosa
+Persicaria amphibia
 Primulaceae
 Scrophulariaceae undiff.
 Sedum
@@ -181,24 +173,21 @@ Polygonum
 Rhamnaceae
 Scrophulariaceae
 Geum-type
-Cupressaceae/Taxaceae
-Urticaceae
 Asteroideae (coarse spine)
 Asteroideae (large)
 Humulus/Cannabis
-Dalea purpurea
-Myricaceae
-Vitis
 Avena/Triticum
 Brassica
 Campanulaceae
 Caryophyllaceae cf. Dianthus
 Chenopodium-type
 Cyclachaena xanthiifolia
+Dalea purpurea
 Melilotus-type
 Ranunculus pensylvanicus-type
 Salsola
 Secale
+Vitis
 Anacardiaceae undiff.
 Asteraceae (high spine)
 Asteraceae (low spine)
@@ -207,34 +196,37 @@ Hypericum
 Parthenocissus
 Rosaceae (trees)
 Bistorta officinalis
+Mertensia
 Saxifraga hirculus
 Elymus
 Ranunculus
 Rhamnaceae/Vitaceae
 Rubiaceae
+Cupressaceae/Taxaceae
 Euphorbiaceae
 Fagaceae
 Gentianaceae
 Malvaceae
+Ranunculaceae
 Caprifoliaceae undiff.
-Parnassia
-Pinaceae undiff.
-Poaceae (Cerealia)
-Verbena
+Persicaria lapathifolia
 Chenopodium
 Eupatorium
+Geranium
 Menispermaceae
 Mitella
 Oxalis
 Actaea rubra
 Mitchella repens
 Viola
+Myricaceae
 cf. Dryas
 Galium-type
 Lactuca
 Lonicera
 Lotus
 Resedaceae
+Urticaceae
 Allenrolfea occidentalis
 Cactaceae
 Armeria maritima
@@ -247,7 +239,7 @@ Saxifraga oppositifolia-type
 Bistorta
 Cupressaceae/Taxaceae undiff.
 Navarretia
-Asteraceae
+Poaceae (Cerealia)
 Allium
 cf. Aquilegia
 cf. Collinsia
@@ -260,9 +252,8 @@ Phacelia
 Asteroideae
 Fragaria
 Lycopus
+Asteraceae
 cf. Vitis
-Calendula
-Lysichiton americanus
 Boraginaceae undiff.
 Castilleja
 Cryptantha
@@ -282,8 +273,10 @@ Crassulaceae undiff.
 Filipendula
 Illecebrum
 Lotus-type
+Lysichiton americanus
 Micranthes nivalis-type
 Parnassia palustris
+Pinaceae undiff.
 Plantago lanceolata-type
 Polygonum aviculare
 Ranunculus-type
@@ -323,6 +316,7 @@ Cannabis sativa
 Spermatophyta undiff. (trees/shrubs)
 Fragaria-type
 Leptosiphon
+Lewisia
 Anemone sect. Hepatica
 Cannabaceae
 Caprifoliaceae
@@ -343,8 +337,6 @@ Betula det. shrub
 Betula det. tree
 Picea det. P. glauca
 Picea det. P. mariana
-Anacardiaceae
-Rhamnaceae/Vitaceae undiff.
 Arenaria
 Cerastium-type
 Fagopyrum
@@ -368,15 +360,13 @@ Polygonum sect. Duravia
 Ranunculus orthorhynchus
 Silene
 Pinus/Picea
-Iva undiff.
-Spermatophyta undiff. (shrubs)
 Lagotis
+Campanula
 Gentianaceae undiff.
 Papaver
 Primula
 Rubus arcticus
 Swertia
-Salix reticulata-type
 Pedicularis verticillata
 Acacia
 Agave
@@ -417,6 +407,7 @@ Dicentra
 Helianthemum
 Menispermum
 Monotropa
+Polygonaceae
 Alternanthera
 Araceae
 Chamaesyce-type
@@ -429,6 +420,7 @@ Polygonum subsect. Polygonella
 Solanum
 Stachys-type
 Trifolium-type
+Verbena
 Rhododendron subsect. Ledum/Chamaedaphne calyculata
 Arabis
 Linum
@@ -440,25 +432,18 @@ Rhamnus/Vitis
 Sium
 Smilax
 Stachys
-Pinguicula
 Betulaceae/Myricaceae undiff.
 cf. Hypericum
 Kalmia
 Plantago media
+Iva undiff.
 Solanaceae
-Circaea alpina
-Claytonia acutifolia
-Draba
-Koenigia
-Picea sect. Eupicea
-Plantaginaceae
 Saxifraga-type
 Celtis/Maclura-type
 Chamaedaphne calyculata
 Gaultheria
 Gaylussacia
 Pyrus-type
-Empetrum-type
 Montia
 Balsaminaceae
 Oxalidaceae
@@ -466,6 +451,7 @@ Vitaceae
 Betulaceae
 Hippocastanoideae
 Rumex/Oxyria digyna undiff.
+Elaeagnus/Shepherdia argentea
 Salsola-type
 Iridaceae
 Lonicera caerulea
@@ -477,13 +463,9 @@ Zygophyllaceae
 Cichorieae
 Pedicularis-type
 Saxifragaceae-type
+Spermatophyta undiff. (shrubs)
 Polygonum californicum
 Rhamnaceae undiff.
-Anemone sect. Pulsatilla
-Cercocarpus/Purshia
-cf. Rumex
-Lactuca-type
-Rutaceae
 Campanula-type
 Asteroideae (high spine)
 Coniferae undiff.
@@ -493,10 +475,13 @@ Caltha leptosepala
 Conioselinum
 Coptis
 Gentiana douglasiana
+Pinguicula
 Valeriana sitchensis
 cf. Liliaceae
 Coptis aspleniifolia
+Empetrum-type
 Taraxacum-type
+Rhamnaceae/Vitaceae undiff.
 Cichorioideae undiff.
 Cichorium-type
 Loranthaceae
@@ -504,6 +489,7 @@ Rosaceae/Quercus undiff.
 Laportea-type
 cf. Castilleja
 Prunella-type
+Salix reticulata-type
 Camassia
 Heuchera-type
 Juncaceae
@@ -518,17 +504,14 @@ Pedicularis groenlandica-type
 Pedicularis undiff.
 Sphaeralcea-type
 Veronica
-Cannabaceae cf. Humulus
-cf. Fraxinus
-cf. Phacelia
-Ranunculaceae cf. Aconitum
-Rosaceae cf. Adenostoma
 Saxifraga oppositifolia
 Acer cf. A. glabrum
+cf. Fraxinus
 Plectritis
 Rosaceae (>20 µm)
 Rosaceae (<20 µm)
 Mimulus
+Anacardiaceae
 Moraceae undiff.
 Berlandiera-type
 Bumelia
@@ -568,15 +551,13 @@ cf. Eriogonum
 cf. Phacelia hastata
 Fallopia convolvulus-type
 Rumex undiff.
-Campanula aparinoides-type
-Cannabaceae sensu stricto undiff.
-Cannabis sativa-type
-Ranunculus undiff.
-Triticum
+Parnassia
 Koenigia alaskana
 cf. Descurainia
 Violaceae
 Anemone quinquefolia-type
+Campanula aparinoides-type
+Cannabis sativa-type
 Comandra
 Dalea candida-type
 Lilium philadelphicum-type
@@ -588,8 +569,6 @@ Sisyrinchium
 Solanum rostratum
 Trifolium pratense
 Trifolium repens-type
-Bidens
-Plantago/Thalictrum
 Boerhavia
 cf. Ceanothus velutinus
 cf. Scrophulariaceae
@@ -597,8 +576,10 @@ Persicaria maculosa
 Polygonum ramosissimum-type
 Chamaecrista-type
 Combretaceae/Melastomataceae
+Rutaceae
 Urticalean Rosids undiff.
 Viscaceae sensu stricto undiff.
+Plantaginaceae
 Phlox-type
 Sanguisorba-type
 Malva
@@ -626,6 +607,7 @@ Rhododendron subsect. Ledum/Chamaedaphne
 Trifolium
 Cannabis
 cf. Parthenocissus
+Triticum
 Cannabis-type
 Cucurbita
 Ledum-type
@@ -663,6 +645,7 @@ Betula (large)
 cf. Shepherdia
 Sapindaceae
 Valerianaceae undiff.
+cf. Rumex
 cf. Sanguisorba
 cf. Verbena
 Fagus/Nyssa
@@ -678,6 +661,7 @@ Limonium
 Erythranthe guttata
 Lithospermum
 Polygonum tenue-type
+Ranunculus undiff.
 Lithocarpus-type
 Crassulaceae
 Sanguinaria canadensis
@@ -690,7 +674,6 @@ Asteraceae indet.
 Orontium
 Rumex acetosella
 Rumex mexicanus
-Microsteris
 Morus rubra-type
 Rhus typhina
 Lobelia-type

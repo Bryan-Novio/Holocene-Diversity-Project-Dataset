@@ -139,24 +139,28 @@ median_richness_15k %>%
 
 
 
-
 ###with original
 
+data_orig_digitised <- 
+  read_csv(here("Data/Paper_1/data_supplementary/s1_digitised_data.csv"))
 
-s1_new <- s1_new %>% 
-  mutate(Subregion = fct_relevel(Subregion, c("Alps", "Boreal", "Meridional/Submeridional","Temperate Continental","Temperate Oceanic"))) %>%
-  arrange(Subregion)
+data_orig_digitised_fct <- 
+  data_orig_digitised %>% 
+  mutate(Subregion = fct_relevel(site, c("Alps", "Boreal", "Meridional/Submeridional","Temperate Continental","Temperate Oceanic"))) %>%
+  arrange(Subregion) %>% 
+  select(age, richness, Subregion)
 
 
-median_richness_15k <- median_richness_15k %>% 
+median_richness_15k <-
+  median_richness_15k %>% 
   mutate(Subregion = as.factor(Subregion))
 
 
 
 ggplot() +
-  geom_line(data = median_richness_15k, aes(x = age, y = median_richness, color = Subregion),linewidth = 2) +
- # geom_line(data = s1_new , aes(x = age, y = richness, color = Subregion),
-       #     ,linewidth = 1, linetype = 2) +
+  geom_line(data = median_richness_15k, aes(x = age, y = median_richness, color = "Subregion"),linewidth = 2) +
+   geom_line(data = data_orig_digitised_fct , aes(x = age, y = richness, color = "Subregion"),
+     ,linewidth = 1, linetype = 2) +
   mutate(Subregion = fct_relevel(Subregion, c("Alps", "Boreal", "Meridional/Submeridional","Temperate Continental","Temperate Oceanic")))
   scale_x_reverse(
     breaks = seq(0, 15000, by = 1000),
@@ -186,8 +190,10 @@ ggplot() +
   
 library (ggh4x)
 
+
+
 ggplot() +
-# geom_line(data = s1_new,(aes(x = age, y = richness)),linewidth = 0.7, linetype = 2, color = "purple") +
+geom_line(data = data_orig_digitised_fct,(aes(x = age, y = richness)),linewidth = 0.7, linetype = 2, color = "purple") +
 geom_line(data = median_richness_15k,aes( x = age, y = median_richness
   ),linewidth = 2, color =  "purple") +
   facet_wrap2(~Subregion,

@@ -68,3 +68,4 @@ summary(richness)
 #----------------------------------------------------------#
 
 write_csv(richness, here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
+
