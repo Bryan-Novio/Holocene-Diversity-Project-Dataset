@@ -61,7 +61,7 @@ data_prepared_richness_estimation <-
 #Recheck if taxa is found in Simova list/ correct assignment of taxa based on this list (additional check)
 
 data_prepared_richness_estimation_taxa <- 
-  data_prepared_richness_estimation2 %>% distinct(taxa)
+  data_prepared_richness_estimation %>% distinct(taxa)
 
 Not_is_simova_list <-
   read_csv(here("Data/Paper_1/data_supplementary/Not_is_simova_list.csv"))

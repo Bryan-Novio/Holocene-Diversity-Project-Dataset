@@ -154,7 +154,12 @@ s2_new <- s2 %>%
   rename(estimate = diversity, age = time) %>% 
   mutate(age = round(age)) %>% 
   pivot_wider(names_from = id, values_from = "estimate") %>% 
-  mutate(age = age *1000)
+  mutate(age = age *1000) %>% 
+  unnest(est) %>% 
+  unnest(upper) %>% 
+  unnest(lower)
+
+
 
 s2_new %>% 
   plot_trend_with_reference_line()
@@ -678,8 +683,13 @@ bind_s2 %>%
   scale_x_reverse()
 
 #----------------------------------------------------------#
-# 5. Save estimates with CI as csv files --------------------
+# 5. Save {digitised_data}, {estimates  with CI} ----------
 #----------------------------------------------------------#
+
+## 5.1.Digitised Data
+
+write_csv(s1_new, here("Data/Paper_1/data_supplementary/s1_digitised_data.csv"))
+write_csv(s2_new, here("Data/Paper_1/data_supplementary/s2_digitised_data.csv"))
 
 est_ci_all <- 
  list("s2_rep_round_summ_join", "s3_na_rep_summ_join",

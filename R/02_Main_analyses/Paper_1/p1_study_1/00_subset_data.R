@@ -139,6 +139,7 @@ data_p1_s1_subregion_counts_ages <-
   data_p1_s1_sub_region %>% 
   prepare_pollen_counts_with_ages() 
 
+
 data_p1_s1_subregion_counts_ages_subregion <-  # 477 sites
   data_p1_s1_subregion_counts_ages %>% 
   inner_join(data_p1_s1_sub_region, by = "dataset_id") %>% 
