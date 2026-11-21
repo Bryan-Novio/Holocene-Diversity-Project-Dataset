@@ -7,20 +7,25 @@
 #                       
 #                          2023
 # Asia, site-based richness (dataset_id,age)
-# nonbinned  - rarefy 300 
+# nonbinned  
 #
-#            ---- RICHNESS ESTIMATION ----
+#    ----RAREFACTION & RICHNESS ESTIMATION(Hill's N)  ----
 #----------------------------------------------------------#
+
 
 library(tidyverse)
 library(here)
+library(iNEXT)
+library(microbenchmark)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-rarefied_data_4 <- 
-  read_rds(here("Data/Paper_1/data_rarefy/data_study4_rarefied.rds"))
+data_study4_harmonised <- 
+  read_rds(here("Data/Paper_1/data_harmonize/data_study4_harmonised.rds"))  %>% 
+rename(taxa = "taxon_name",
+ pollen_grains = "pollen_counts") 
 
 #----------------------------------------------------------#
 # 2. Load functions ---------------------------------------
@@ -37,39 +42,52 @@ fun_list <-
 
 # Load the function into the global environment
 
-source_files <- 
-  sapply(
+source_files <- sapply(
   paste0("R/Functions/", fun_list, sep = ""),
   source
 )
 
 #----------------------------------------------------------#
-# 3. Estimate richness  at different taxo rank --
+# 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-#3.1 Format rarefied data
 
-data_prepared_richness_estimation4 <- 
-  rarefied_data_4 %>% 
-  separate_wider_delim(dataset_id_age, delim = "_", 
-                       names = c("dataset_id","BIN")) %>% 
-  pivot_longer(cols = -c(dataset_id, BIN), 
-               names_to = "taxa", values_to = "summed_pollen_count") %>% 
-  rename(age = BIN, pollen_counts = summed_pollen_count) %>% 
-  prepare_data_for_richness_estimation(type = "nonbinned")
+set.seed(1234)
 
-#3.2. Estimate richness
+data_rarefy_then_hill <- 
+  data_study4_harmonised %>% 
+  dplyr::filter(dataset_id == "1155") %>% 
+  tidyr::pivot_wider(
+    names_from = "taxa",
+    values_from = "pollen_grains",
+    values_fill = 0
+  ) %>% 
+  select(-dataset_id) %>% 
+  tibble::column_to_rownames("age") %>% 
+  as.matrix() %>% 
+  t() %>% 
+  iNEXT::estimateD( # Based on Chao et al (2014)
+    q = 0,
+    level = 150,
+    nboot = 50,
+    conf = 0.95
+  )
 
-richness4 <- 
-  data_prepared_richness_estimation4 %>% 
-  compute_richness() %>% 
-  mutate(age = as.numeric(age)) %>% 
-  mutate(dataset_id = as_factor(dataset_id))
+# set daemons(# parallel processes)
 
-summary(richness4)
+library(mirai)
+mirai:: daemons(30)
+
+
+
+
+purrr::map
+data_rarefy_then_hill_tib <- 
+  data_rarefy_then_hill %>% as_tibble()
 
 #----------------------------------------------------------#
-# 4. Write the richness data to an RDS file
-#----------------------------------------------------------#
+# 4. Write results as csv file
+#----------------------------------------------------------# 
 
-write_csv(richness4, here("Data/Paper_1/data_estimate_richness/study4_richness.csv"))
+write_csv(data_rarefy_then_hill_tib, here("Data/Paper_1/data_rarefy/data_rarefy_then_hill.csv"))
+

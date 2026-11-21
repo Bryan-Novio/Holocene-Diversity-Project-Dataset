@@ -7,7 +7,7 @@
 #                       
 #                          2023
 # Asia, site-based richness (dataset_id,age)
-# nonbinned  - rarefy 300 
+# nonbinned  
 #
 #                 ---- MODEL FITTING ----
 #----------------------------------------------------------#
@@ -38,7 +38,7 @@ source_files <-
 # 2. Load data set -----------------------------------------
 #----------------------------------------------------------# 
 
-richness_data4 <- read_csv(here("Data/Paper_1/data_estimate_richness/study4_richness.csv")) %>%
+richness_data4 <- read_csv(here("Data/Paper_1/data_rarefy/data_rarefy_then_hill.csv")) %>%
   # read_csv() reads dataset_id as a number; the random intercept needs a factor
   mutate(dataset_id = as.factor(dataset_id))
 
