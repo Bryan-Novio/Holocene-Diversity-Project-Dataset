@@ -51,43 +51,54 @@ source_files <- sapply(
 # 3. Rarefy data  at different taxo rank --
 #----------------------------------------------------------# 
 
-
 set.seed(1234)
 
 data_rarefy_then_hill <- 
   data_study4_harmonised %>% 
-  dplyr::filter(dataset_id == "1155") %>% 
-  tidyr::pivot_wider(
-    names_from = "taxa",
-    values_from = "pollen_grains",
-    values_fill = 0
-  ) %>% 
-  select(-dataset_id) %>% 
-  tibble::column_to_rownames("age") %>% 
-  as.matrix() %>% 
-  t() %>% 
-  iNEXT::estimateD( # Based on Chao et al (2014)
-    q = 0,
-    level = 150,
-    nboot = 50,
-    conf = 0.95
-  )
+  split(.$dataset_id) %>% 
+  purrr::map(~ {
+    data <- 
+    .x %>% 
+      tidyr::pivot_wider(
+        names_from = taxa,
+        values_from = pollen_grains,
+        values_fill = 0
+      ) %>% 
+      mutate(age = as.character(age)) %>% 
+      unite(
+        "dataset_id_age",
+        c("dataset_id", "age"),
+        sep = "_"
+      ) %>% 
+      tibble::column_to_rownames("dataset_id_age") %>% 
+      as.matrix() %>% 
+      t() %>% 
+      iNEXT::estimateD(
+        q = 0,
+        level = 150,
+        nboot = 50
+      )
+    
+    
+    data_tib <- 
+      data %>%
+      as_tibble() %>% 
+      tidyr::separate(Assemblage, c("dataset_id","age"), sep = "_") %>% 
+      select(dataset_id,age,qD) %>% 
+      rename(richness = qD) %>% 
+      mutate(age = as.double(age))
+  })
 
-# set daemons(# parallel processes)
+##combine as one dataframe
 
-library(mirai)
-mirai:: daemons(30)
+data_rarefy_then_hill_all <- 
+  data_rarefy_then_hill %>% 
+  list_rbind()
 
-
-
-
-purrr::map
-data_rarefy_then_hill_tib <- 
-  data_rarefy_then_hill %>% as_tibble()
 
 #----------------------------------------------------------#
 # 4. Write results as csv file
 #----------------------------------------------------------# 
 
-write_csv(data_rarefy_then_hill_tib, here("Data/Paper_1/data_rarefy/data_rarefy_then_hill.csv"))
+write_csv(data_rarefy_then_hill_all, here("Data/Paper_1/data_rarefy/data_rarefy_then_hill.csv"))
 
