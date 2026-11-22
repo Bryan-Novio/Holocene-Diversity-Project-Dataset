@@ -247,7 +247,10 @@ s4_new <- s4 %>%
   rename(estimate = richness) %>% 
   mutate(age = round(age)) %>% 
   mutate(age = age*1000) %>% 
-  pivot_wider(names_from = id, values_from = "estimate")
+  pivot_wider(names_from = id, values_from = "estimate") %>% 
+  unnest(est) %>% 
+  unnest(upper) %>% 
+  unnest(lower)
 
 gen_trend_as_2 <- 
   plot_trend( s4_new , "black") 
