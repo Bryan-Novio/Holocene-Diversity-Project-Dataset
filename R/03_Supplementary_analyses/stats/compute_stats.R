@@ -241,16 +241,21 @@ gen_trend_na + coord_cartesian(ylim = c(12,23))
 
 #Plot S4
 
-s4_new <- s4 %>% 
-  rename(age = x, richness = y) %>% 
-  select(id,age, richness) %>% 
-  rename(estimate = richness) %>% 
-  mutate(age = round(age)) %>% 
-  mutate(age = age*1000) %>% 
-  pivot_wider(names_from = id, values_from = "estimate") %>% 
-  unnest(est) %>% 
-  unnest(upper) %>% 
-  unnest(lower)
+
+s4_new <- s4 %>%
+  rename(age = x, richness = y) %>%
+  group_by(id) %>%
+  arrange(age, .by_group = TRUE) %>%
+  mutate(point = row_number()) %>%
+  ungroup() %>%
+  pivot_wider(
+    id_cols = point,
+    names_from = id,
+    values_from = c(age, richness)
+  ) %>%
+  mutate(age = round(age_est) * 1000) %>%
+  select(age, est = richness_est, upper = richness_upper, lower = richness_lower)
+
 
 gen_trend_as_2 <- 
   plot_trend( s4_new , "black") 

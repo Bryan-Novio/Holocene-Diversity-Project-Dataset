@@ -23,7 +23,7 @@ library(metaDigitise)
 # 1.1. set directory
 
 data_dig <-
-  metaDigitise::metaDigitise(here("Data/Paper_1/s1_dig"), summary = FALSE)
+  metaDigitise::metaDigitise(here("Data/Paper_1/s2_dig"), summary = FALSE)
 
 
 #----------------------------------------------------------#

@@ -20,9 +20,8 @@ library(here)
 #----------------------------------------------------------# 
 
 richness <-
-  read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv"))
-
-
+  read_csv(here("Data/Paper_1/data_estimate_richness/study1_richness.csv")) %>% 
+  mutate(dataset_id = as.character(dataset_id))
 
 data_p1_s1_counts_ages_subregion <- 
   read_rds(here("Data/Paper_1/data_subset/datasub_p1_s1_counts_ages.rds"))
@@ -33,10 +32,10 @@ data_p1_s1_counts_ages_subregion <-
 
 data_subregion <- 
   data_p1_s1_counts_ages_subregion %>%
-  distinct(subregion, dataset_id)
+  distinct(subregion, dataset_id) 
 
 richness_subregion <-
-  left_join(richness , data_subregion, by ="dataset_id") 
+  left_join(richness, data_subregion, by ="dataset_id") 
 
 
 # compute median richness

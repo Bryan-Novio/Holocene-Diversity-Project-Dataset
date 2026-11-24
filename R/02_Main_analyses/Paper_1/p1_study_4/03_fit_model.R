@@ -223,11 +223,82 @@ p +
 
 
 
-##original
+##original - digitized
+
+
+
+
+
+
+## Read original archived data
+
+
+s4_orig_data1 <- 
+  read_rds(here("Data/Paper_1/s4_data_arch/Data_diverity_2022-07-30.rds")) %>% 
+  unnest(PAP_diversity)
+
+s4_orig_data2 <- 
+  read_rds(here("Data/Paper_1/s4_data_arch/Data_for_analyses-2022-09-29.rds")) %>% 
+  unnest(PAP_merge)
+
+
+orig_data_continental <- 
+  s4_orig_data2 %>% 
+  select(dataset_id, n0,age) %>% 
+  group_by(dataset_id,age) %>% 
+  summarise (
+    richness = median(n0),
+    upper = quantile(richness, 0.975),
+    lower = quantile(richness, 0.025)
+  ) %>% 
+  ungroup()
+
+orig_data_continental %>% 
+ggplot()+
+  ggplot2::geom_ribbon(
+    ggplot2::aes(
+      x = age,
+      y = richness,
+      ymin = lower,
+      ymax = upper
+    ),
+    fill = "grey",
+    alpha = 0.1
+  ) +
+  ggplot2::geom_line(
+    data =  orig_data_continental ,
+    ggplot2::aes(x = age, y = richness),
+    linewidth = 2,
+    color = "grey40"
+  ) + ggplot2::theme(
+    legend.position = "none",
+    axis.text.x  = element_text(color = "black", size = 15,  hjust = .2, vjust = 0.05),
+    axis.text.y =  element_text(color = "black", size = 15,  hjust = 0.8),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.line.x.bottom = element_line(color = "black"),
+    axis.line.y.left = element_line(color = "black"),
+    panel.background = element_blank()
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(10.3, 17),
+    xlim = c(0, 12000)
+  ) +
+  scale_x_reverse()
+
+
+data_preds <-  
+  data_pred_general %>% 
+  select(estimate,age,conf_low, conf_high)
 
 s4_new <- 
   s4_new %>%
   mutate(age = if_else(age==12000,11700,age))
+
+
+data_all <- bind_rows(data_preds,s4_new, .id = "id") %>% 
+
+
   
 p +
     ggplot2::geom_ribbon(
@@ -235,8 +306,8 @@ p +
     ggplot2::aes(
       x = age,
      y = est,
-    ymin = low,
-      ymax = upp
+    ymin = lower,
+      ymax = upper
    ),
     fill = "grey",
    alpha = 0.1
@@ -247,32 +318,33 @@ p +
   linewidth = 2,
   color = "grey40"
   ) +
- # ggplot2::geom_ribbon(
-  #data = data_pred_general,
+  #ggplot2::geom_ribbon(
+ # data = data_pred_general,
  # ggplot2::aes(
  # x = age,
  # y = estimate,
-  #ymin = conf_low,
-  # ymax = conf_high
- # ),
-  #fill = "red",
- # alpha = 0.1
- #) +
- #ggplot2::geom_line(
+ # ymin = conf_low,
+#  ymax = conf_high
+  #),
+ # fill = "red",
+#  alpha = 0.1
+ # ) +
+ # ggplot2::geom_line(
 #  data = data_pred_general,
-  #ggplot2::aes(x = age, y = estimate),
-  #linewidth = 2,
-#  color = "red"
-#) +
+ # ggplot2::aes(x = age, y = estimate),
+ # linewidth = 2,
+ # color = "red") +
   ggplot2::theme(
     legend.position = "none",
     axis.text.x  = element_text(color = "black", size = 15,  hjust = .2, vjust = 0.05),
     axis.text.y =  element_text(color = "black", size = 15,  hjust = 0.8),
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18),
-    axis.line.x.bottom = element_line(color = "black"),
-    axis.line.y.left = element_line(color = "black"),
-    panel.background = element_blank()
+    axis.line.x.bottom = element_line(color = "black", size = 1),
+    axis.line.y.left = element_line(color = "black", size = 1),
+    axis.ticks.y.left = element_line(color = "black", size = 1),
+    axis.ticks.x.bottom  = element_line(color = "black", size = 1),
+    panel.background = element_blank(),
   ) +
   ggplot2::coord_cartesian(
     ylim = c(10.3, 17),

@@ -16,7 +16,6 @@
 library(tidyverse)
 library(here)
 library(iNEXT)
-library(microbenchmark)
 
 #----------------------------------------------------------#
 # 1. Load data set -----------------------------------------
