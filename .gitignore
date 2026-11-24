@@ -66,6 +66,9 @@ Data/Paper_1/data_estimate_richness/*
 Data/Paper_1/data_harmonize/*
 Data/Paper_1/data_rarefy/*
 Data/Paper_1/s1_dig/*
+Data/Paper_1/s1_dig2/*
+Data/Paper_1/s2_dig/*
+Data/Paper_1/s4_data_arch/*
 Data/Paper_1/data_estimate_richness/s3_richness_test/*
 Data/Paper_1/data_rarefy/iterations_test/*
 Data/Paper_1/data_rarefy/rarefied_data_test/*
